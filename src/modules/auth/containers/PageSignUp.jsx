@@ -1,6 +1,7 @@
 import { Box, Button, Paper, Stack, Typography, useTheme } from "@mui/material";
 import { InputControl } from "../../../shared";
 import Logo from "../../../assets/logo-dark.svg";
+import { Link } from "react-router-dom";
 
 export const PageSignUp = () => {
   const { palette } = useTheme();
@@ -19,7 +20,7 @@ export const PageSignUp = () => {
         component={Paper}
         elevation={0}
         boxShadow="none"
-        outline="0.5px solid #BCB6B6"
+        outline={{ md: "0.5px solid #BCB6B6", xs: "none" }}
         sx={{ transition: "0.5s all" }}
       >
         <Stack>
@@ -49,6 +50,18 @@ export const PageSignUp = () => {
             placeholder="Confirm your password"
             showPassword={true}
           />
+
+          <Link
+            to="/"
+            style={{
+              textDecoration: "none",
+              fontSize: "14px",
+              color: "#051A34",
+              fontWeight: "600",
+            }}
+          >
+            <span style={{ color: "dimgray" }}>Have an account</span> Login?
+          </Link>
           <Button variant="contained" size="small">
             Sign Up
           </Button>

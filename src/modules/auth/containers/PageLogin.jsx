@@ -35,11 +35,11 @@ export const PageLogin = () => {
         component={Paper}
         flexDirection={isLargeDevice ? "row" : "column"}
         gap={isLargeDevice ? "26px" : "8px"}
-        p={isLargeDevice ? 5 : 3}
+        p={isLargeDevice ? 5 : 2.5}
         elevation={0}
         boxShadow={0}
-        border="1px solid #BCB6B6"
-        alignItems="center"
+        outline={{ md: "0.5px solid #BCB6B6", xs: "none" }}
+        alignItems={isLargeDevice ? "center" : "start"}
         sx={{ transition: "0.5s all " }}
       >
         <Stack gap={isLargeDevice ? "8px" : "2px"}>
@@ -51,7 +51,7 @@ export const PageLogin = () => {
             sx={{
               fontSize: "14px",
               color: palette.action.active,
-              width: isLargeDevice ? "396px" : "250px",
+              width: isLargeDevice ? "396px" : "240px",
             }}
           >
             {slogan}
@@ -89,10 +89,11 @@ export const PageLogin = () => {
             placeholder="Enter your password"
             showPassword={true}
           />
-          <Stack flexDirection="row" justifyContent="space-between">
+          <Stack flexDirection="column">
             <Link
               to="/auth/reset-password"
               style={{
+                fontSize: "14px",
                 textDecoration: "none",
                 color: "#051A34",
               }}
@@ -102,6 +103,7 @@ export const PageLogin = () => {
             <Link
               to="/register"
               style={{
+                fontSize: "14px",
                 textDecoration: "none",
                 color: "#051A34",
                 display: isLargeDevice ? "none" : "block",
