@@ -57,7 +57,7 @@ export const PageLogin = () => {
             {slogan}
           </Typography>
           <Link
-            to="/register"
+            to="/signup/nhg"
             style={{
               textDecoration: "none",
               fontSize: "14px",
