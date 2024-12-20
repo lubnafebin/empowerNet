@@ -1,0 +1,9 @@
+# Indicates that this is the root configuration file and stops
+# EditorConfig from searching for further .editorconfig files 
+    # in parent directories.
+root = true
+# Applies settings to all files in the project.
+    
+[*]
+# Ensures that all files use LF (Line Feed) as the line ending.
+end_of_line = lf

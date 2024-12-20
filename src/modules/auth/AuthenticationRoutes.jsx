@@ -1,13 +1,11 @@
-import React from 'react'
-import { Routes, Route } from "react-router-dom"
-import { PageLogin, PageSignUp } from './containers'
+import { Routes, Route } from "react-router-dom";
+import { PageLogin, PageSignUp } from "./containers";
 
 export const AuthenticationRoutes = () => {
-    return (
-        <Routes>
-            <Route path='/' element={<PageLogin />} />
-            <Route path='/sign-up' element={<PageSignUp />} />
-        </Routes>
-    )
-}
-
+  return (
+    <Routes>
+      <Route index element={<PageLogin />} />
+      <Route path="/register/*" element={<PageSignUp />} />
+    </Routes>
+  );
+};
