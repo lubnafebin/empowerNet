@@ -4,6 +4,7 @@ import { CdsRoutes } from "../modules/cds"
 import { CssBaseline, ThemeProvider } from "@mui/material";
 import { Theme } from "../utils";
 import { DashboardLayout } from "../shared";
+import { AdsRoutes } from "../modules/ads";
 
 export const Master = () => {
   return (
@@ -14,6 +15,12 @@ export const Master = () => {
         <Route path="/cds/*" element={
           <DashboardLayout>
             <CdsRoutes />
+          </DashboardLayout>
+        }
+        />
+        <Route path="/ads/*" element={
+          <DashboardLayout>
+            <AdsRoutes />
           </DashboardLayout>
         }
         />
