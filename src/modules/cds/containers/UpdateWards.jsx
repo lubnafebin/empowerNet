@@ -1,4 +1,3 @@
-import React from 'react'
 import { Box, Stack, Button, Typography } from '@mui/material';
 import { InputControl } from '../../../shared';
 
@@ -47,7 +46,7 @@ export const UpdateWards = () => {
                             '&:hover': { color: '#ff0000' }, // Optional hover effect for the X
                         }}
                         onClick={() => {
-                            console.log('Close button clicked'); // Add your close logic here
+                            // Close the form
                         }}
                     >
                         X

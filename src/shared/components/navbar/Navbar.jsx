@@ -12,7 +12,7 @@ import AccountCircle from '@mui/icons-material/AccountCircle';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import MoreIcon from '@mui/icons-material/MoreVert';
 
-export const Navbar = () => {
+export const Navbar = ({ toggleSidebar }) => {
     const [anchorEl, setAnchorEl] = React.useState(null);
     const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
 
@@ -110,8 +110,9 @@ export const Navbar = () => {
                         size="large"
                         edge="start"
                         color="inherit"
-                        aria-label="open drawer"
+                        aria-label="menu"
                         sx={{ mr: 2 }}
+                        onClick={toggleSidebar}
                        
                     >
                         <MenuIcon />

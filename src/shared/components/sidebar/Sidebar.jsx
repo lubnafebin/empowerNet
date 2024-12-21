@@ -1,7 +1,6 @@
 import * as React from 'react';
 import Box from '@mui/material/Box';
 import Drawer from '@mui/material/Drawer';
-import Button from '@mui/material/Button';
 import List from '@mui/material/List';
 import Divider from '@mui/material/Divider';
 import ListItem from '@mui/material/ListItem';
@@ -11,7 +10,7 @@ import ListItemText from '@mui/material/ListItemText';
 import InboxIcon from '@mui/icons-material/MoveToInbox';
 import MailIcon from '@mui/icons-material/Mail';
 
-export const Sidebar = () => {
+export const Sidebar = ({ sidebarOpen }) => {
     const [open, setOpen] = React.useState(false);
 
     const toggleDrawer = (newOpen) => () => {
@@ -19,7 +18,7 @@ export const Sidebar = () => {
     };
 
     const DrawerList = (
-        <Box sx={{ width: 250 }} role="presentation" onClick={toggleDrawer(false)}>
+        <Box sx={{ width: 270 }} role="presentation" onClick={toggleDrawer(false)}>
             <List>
                 {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
                     <ListItem key={text} disablePadding>
@@ -51,10 +50,17 @@ export const Sidebar = () => {
     return (
         <div>
             <Drawer
-                open={true}
+                open={sidebarOpen}
                 onClose={toggleDrawer}
-                variant="permanent"
-                sx={{ '& .MuiDrawer-paper': { marginTop: '64px' } }}
+                variant="persistent"
+                sx={{
+                    '& .MuiDrawer-paper': {
+                        marginTop: '64px', // This ensures the sidebar is not overlapping the header
+                        height: '100vh', // Ensures the sidebar takes full height
+                    },
+                    width: sidebarOpen ? 150 : 70, // Adjust width when sidebar is open or closed
+                    transition: 'width 0.3s ease-in-out',
+                }}
 
             >
                 {DrawerList}
