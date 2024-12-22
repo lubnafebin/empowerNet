@@ -5,6 +5,7 @@ import { CssBaseline, ThemeProvider } from "@mui/material";
 import { Theme } from "../utils";
 import { DashboardLayout } from "../shared";
 import { AdsRoutes } from "../modules/ads";
+import { NhgRoutes } from "../modules/nhg/NhgRoutes";
 
 export const Master = () => {
   return (
@@ -21,6 +22,12 @@ export const Master = () => {
         <Route path="/ads/*" element={
           <DashboardLayout>
             <AdsRoutes />
+          </DashboardLayout>
+        }
+        />
+        <Route path="/nhg/*" element={
+          <DashboardLayout>
+            <NhgRoutes />
           </DashboardLayout>
         }
         />

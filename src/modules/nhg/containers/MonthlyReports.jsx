@@ -1,0 +1,150 @@
+import {
+  Button,
+  Chip,
+  IconButton,
+  Paper,
+  Stack,
+  TextField,
+  Typography,
+} from "@mui/material";
+import { BasicTable, InputControl } from "../../../shared";
+import { ArrowForward } from "@mui/icons-material";
+import TextSnippetIcon from "@mui/icons-material/TextSnippet";
+
+export const MonthlyReports = () => {
+  const columns = [
+    { label: "No", field: "no" },
+    { label: "ID", field: "id" },
+    { label: "Report (Month)", field: "report" },
+    { label: "Date Range", field: "daterange" },
+    { label: "Created At", field: "createdat" },
+    { label: "Deposit", field: "deposit" },
+    { label: "Refund", field: "refund" },
+    { label: "Subscription", field: "subscription" },
+    { label: "Approved By", field: "approvedby" },
+    {
+      label: "Status",
+      field: "status",
+      cell(row) {
+        return (
+          <Chip
+            label={row.status}
+            color={
+              row.status === "New"
+                ? "warning"
+                : row.status === "Verified"
+                  ? "success"
+                  : "default"
+            }
+          />
+        );
+      },
+    },
+    {
+      label: "Actions",
+      field: "actions",
+      cell: () => (
+        <Stack direction="row" spacing={1}>
+          <IconButton>
+            <ArrowForward />
+          </IconButton>
+        </Stack>
+      ),
+    },
+  ];
+  const rows = [
+    {
+      no: 1,
+      id: "A001",
+      report: "January",
+      daterange: "2023-01-01 to 2023-01-31",
+      createdat: "2023-01-01",
+      deposit: 1000,
+      refund: 200,
+      subscription: 50,
+      approvedby: "CDS",
+      status: "Verified",
+    },
+    {
+      no: 2,
+      id: "A002",
+      report: "February",
+      daterange: "2023-02-01 to 2023-02-28",
+      createdat: "2023-02-01",
+      deposit: 1500,
+      refund: 300,
+      subscription: 60,
+      approvedby: "CDS",
+      status: "New",
+    },
+    {
+      no: 3,
+      id: "A003",
+      report: "March",
+      daterange: "2023-03-01 to 2023-03-31",
+      createdat: "2023-03-01",
+      deposit: 2000,
+      refund: 400,
+      subscription: 70,
+      approvedby: "ADS",
+      status: "Verified",
+    },
+    {
+      no: 4,
+      id: "A004",
+      report: "April",
+      daterange: "2023-04-01 to 2023-04-30",
+      createdat: "2023-04-01",
+      deposit: 2500,
+      refund: 500,
+      subscription: 80,
+      approvedby: "ADS",
+      status: "New",
+    },
+    {
+      no: 5,
+      id: "A005",
+      report: "May",
+      daterange: "2023-05-01 to 2023-05-31",
+      createdat: "2023-05-01",
+      deposit: 3000,
+      refund: 600,
+      subscription: 90,
+      approvedby: "CDS",
+      status: "Verified",
+    },
+  ];
+  const newDate = new Date();
+  return (
+    <Stack gap={1} px={2}>
+      <Typography variant="h5" gutterBottom>
+        Reports
+      </Typography>
+      <Paper
+        variant="outlined"
+        sx={{
+          p: 2,
+          gap:2,
+          elevation: 0,
+          display: "flex",
+          flexDirection: "row",
+          justifyContent: "space-between",
+        }}
+      >
+          <InputControl
+            label="Report"
+            placeholder="Select Report"
+            type="dropdown"
+            options={["January", "February", "March", "April", "May"]}
+            value="January"
+            renderInput={(params) => <TextField {...params} />}
+          />
+          <InputControl type="date" label="Date Range" value={newDate} />
+          <Button variant="contained" startIcon={<TextSnippetIcon />} fullWidth>
+            Generate Report
+          </Button>
+      </Paper>
+      <BasicTable title="Monthly Reports" columns={columns} rows={rows} />;
+    </Stack>
+  );
+};

@@ -45,7 +45,7 @@ export const BasicTable = ({
             minWidth={300}
           >
             {title && <Typography variant="h5">{title}</Typography>}
-            <Stack ml='auto' >{headerAction}</Stack>
+            <Stack ml="auto">{headerAction}</Stack>
           </Stack>
         )
       }
