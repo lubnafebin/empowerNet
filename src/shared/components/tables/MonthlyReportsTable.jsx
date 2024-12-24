@@ -1,17 +1,9 @@
-import {
-  Button,
-  Chip,
-  IconButton,
-  Paper,
-  Stack,
-  TextField,
-  Typography,
-} from "@mui/material";
-import { BasicTable, InputControl } from "../../../shared";
 import { ArrowForward } from "@mui/icons-material";
-import TextSnippetIcon from "@mui/icons-material/TextSnippet";
+import { BasicTable, InputControl } from "../../../shared";
+import { Chip, IconButton, Stack, TextField } from "@mui/material";
+import PropTypes from "prop-types";
 
-export const MonthlyReports = () => {
+export const MonthlyReportsTable = ({hideMonthFilter=true}) => {
   const columns = [
     { label: "No", field: "no" },
     { label: "ID", field: "id" },
@@ -114,37 +106,27 @@ export const MonthlyReports = () => {
       status: "Verified",
     },
   ];
-  const newDate = new Date();
   return (
-    <Stack gap={1} px={2}>
-      <Typography variant="h5" gutterBottom>
-        Reports
-      </Typography>
-      <Paper
-        variant="outlined"
-        sx={{
-          p: 2,
-          gap:2,
-          elevation: 0,
-          display: "flex",
-          flexDirection: "row",
-          justifyContent: "space-between",
-        }}
-      >
-          <InputControl
-            label="Report"
-            placeholder="Select Report"
-            type="dropdown"
-            options={["January", "February", "March", "April", "May"]}
-            value="January"
-            renderInput={(params) => <TextField {...params} />}
-          />
-          <InputControl type="date" label="Date Range" value={newDate} />
-          <Button variant="contained" startIcon={<TextSnippetIcon />} fullWidth>
-            Generate Report
-          </Button>
-      </Paper>
-      <BasicTable title="Monthly Reports" columns={columns} rows={rows} />;
-    </Stack>
+    <BasicTable
+      title="Monthly Reports"
+      columns={columns}
+      rows={rows}
+      headerAction={
+        hideMonthFilter ? null :
+        <InputControl
+          sx={{ minWidth: "300px" }}
+          label="Month"
+          placeholder="Select Month"
+          type="dropdown"
+          options={["January", "February", "March", "April", "May"]}
+          value="January"
+          renderInput={(params) => <TextField {...params} />}
+        />
+      }
+    />
   );
 };
+
+MonthlyReportsTable.propTypes = {
+  hideMonthFilter: PropTypes.bool,
+};  

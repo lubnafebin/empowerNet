@@ -1,7 +1,7 @@
 import { Button, Stack } from "@mui/material";
 import { BasicTable, InputControl } from "../../../shared";
 
-export const DepositsandRefund = () => {
+export const DepositsAndRefund = () => {
   const columns = [
     { label: "No", field: "no" },
     { label: "Date", field: "date" },

@@ -1,6 +1,6 @@
 import { Route, Routes } from "react-router-dom";
 import { AuthenticationRoutes } from "../modules/auth";
-import { CdsRoutes } from "../modules/cds"
+import { CdsRoutes } from "../modules/cds";
 import { CssBaseline, ThemeProvider } from "@mui/material";
 import { Theme } from "../utils";
 import { DashboardLayout } from "../shared";
@@ -13,26 +13,31 @@ export const Master = () => {
       <CssBaseline />
       <Routes>
         <Route path="/*" element={<AuthenticationRoutes />} />
-        <Route path="/cds/*" element={
-          <DashboardLayout>
-            <CdsRoutes />
-          </DashboardLayout>
-        }
+        <Route
+          path="/cds/*"
+          element={
+            <DashboardLayout>
+              <CdsRoutes />
+            </DashboardLayout>
+          }
         />
-        <Route path="/ads/*" element={
-          <DashboardLayout>
-            <AdsRoutes />
-          </DashboardLayout>
-        }
+        <Route
+          path="/ads/*"
+          element={
+            <DashboardLayout>
+              <AdsRoutes />
+            </DashboardLayout>
+          }
         />
-        <Route path="/nhg/*" element={
-          <DashboardLayout>
-            <NhgRoutes />
-          </DashboardLayout>
-        }
+        <Route
+          path="/nhg/*"
+          element={
+            <DashboardLayout>
+              <NhgRoutes />
+            </DashboardLayout>
+          }
         />
       </Routes>
     </ThemeProvider>
-
   );
 };
