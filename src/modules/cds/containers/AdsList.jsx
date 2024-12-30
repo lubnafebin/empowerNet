@@ -151,10 +151,17 @@ export const AdsList = () => {
       wardno: "10",
     },
   ];
+
   return (
     <BasicTable
       title="ADS List"
-      headerAction={<InputControl type="search" placeholder="Search here.." sx={{width:300}}/>}
+      headerAction={
+        <InputControl
+          type="search"
+          placeholder="Search here.."
+          sx={{ width: 300 }}
+        />
+      }
       columns={columns}
       rows={rows}
     />

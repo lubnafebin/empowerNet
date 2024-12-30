@@ -1,8 +1,20 @@
-import {  Stack, Button,  IconButton } from "@mui/material";
+import {
+  Stack,
+  Button,
+  IconButton,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+} from "@mui/material";
 import { BasicTable } from "../../../shared/components/tables/BasicTable";
 import { Delete, Edit, Visibility } from "@mui/icons-material";
+import { useAlertDialogContext } from "../../../shared/hooks";
+import { DialogSlide, InputControl } from "../../../shared";
+import { useLocation, useNavigate } from "react-router-dom";
 
 export const PageWards = () => {
+  const { handleDeleteWard, handleOpenCreateDialog ,handleDialogClose} = usePageWards();
+
   const columns = [
     { label: "No", field: "no" },
     { label: "Ward No", field: "wardNo" },
@@ -23,7 +35,7 @@ export const PageWards = () => {
           <IconButton>
             <Edit />
           </IconButton>
-          <IconButton>
+          <IconButton onClick={handleDeleteWard}>
             <Delete />
           </IconButton>
         </Stack>
@@ -103,11 +115,57 @@ export const PageWards = () => {
     },
   ];
   return (
-    <BasicTable
-      title="Wards"
-      headerAction={<Button variant="contained">New Wards</Button>}
-      columns={columns}
-      rows={rows}
-    />
+    <Stack>
+      <BasicTable
+        title="Wards"
+        headerAction={
+          <Button variant="contained" onClick={handleOpenCreateDialog}>
+            New Wards
+          </Button>
+        }
+        columns={columns}
+        rows={rows}
+      />
+      <DialogSlide
+        dialogValue="?create-ward"
+        disableCloseOnBackgroundClick={false}
+      >
+        <DialogTitle>Create Ward</DialogTitle>
+        <DialogContent sx={{ minWidth: 400, p: 2 }}>
+          <InputControl label="Name" />
+        </DialogContent>
+        <DialogActions>
+          <Button variant="outlined" color="error" onClick={handleDialogClose}>
+            Close
+          </Button>
+          <Button variant="contained">Create</Button>
+        </DialogActions>
+      </DialogSlide>
+    </Stack>
   );
+};
+
+const usePageWards = () => {
+  const { setAlert } = useAlertDialogContext();
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const handleDeleteWard = () => {
+    setAlert((draft) => {
+      draft.open = true;
+      draft.title = "Delete Ward?";
+      draft.description = "Are you sure?  Do you want to delete the ward?";
+      draft.dialogValue = "?deleteWard";
+    });
+  };
+
+  const handleOpenCreateDialog = () => {
+    navigate(location.pathname + "?create-ward");
+  };
+
+  const handleDialogClose = () => {
+    navigate(location.pathname, { replace: true });
+  };
+
+  return { handleDeleteWard, handleOpenCreateDialog, handleDialogClose };
 };
