@@ -18,6 +18,7 @@ import CloseIcon from "@mui/icons-material/Close";
 
 export const InputControl = React.forwardRef(function InputControl(
   {
+    id,
     onMouseDown,
     onClick,
     showPassword,
@@ -72,7 +73,7 @@ export const InputControl = React.forwardRef(function InputControl(
       inputElement = (
         <FormControl fullWidth variant="outlined">
           <InputLabel
-            id="password-input"
+            id={id}
             htmlFor={rest?.id || rest?.name}
             shrink={autofill}
           >
@@ -80,7 +81,7 @@ export const InputControl = React.forwardRef(function InputControl(
           </InputLabel>
           <OutlinedInput
             type={showPassword ? "text" : "password"}
-            id="outlined-adornment-password"
+            id={id}
             label={label}
             value={value}
             {...rest}
@@ -211,6 +212,7 @@ export const InputControl = React.forwardRef(function InputControl(
 
 // Define prop types for InputControl
 InputControl.propTypes = {
+  id: PropTypes.string,
   onMouseDown: PropTypes.func,
   onClick: PropTypes.func,
   showPassword: PropTypes.bool,

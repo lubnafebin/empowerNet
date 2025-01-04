@@ -11,10 +11,18 @@ import { InputControl } from "../../../shared";
 import Logo from "../../../assets/logo-dark.svg";
 import { CONSTANTS } from "../../../utils/constants/constants";
 import { Link } from "react-router-dom";
+import { usePageLogin } from "../hooks";
 
 export const PageLogin = () => {
   const { palette } = useTheme();
   const isLargeDevice = useMediaQuery("(min-width:1024px)");
+  const {
+    handlePasswordToggle,
+    state,
+    formValidator,
+    handleSubmit,
+    handleFormChange,
+  } = usePageLogin();
   const slogan = !isLargeDevice
     ? "Welcome to EmpowerNet. Digitalize your work."
     : `Kudumbashree empowers women and families through self-help groups,
@@ -23,7 +31,16 @@ export const PageLogin = () => {
             decision-making, driving poverty eradication and enhancing the
             quality of life for marginalized communities in Kerala.`;
   const title = !isLargeDevice ? " Sign In" : CONSTANTS.appName;
-
+  const emailHelperText = formValidator.current.message(
+    "username",
+    state.formdata.email,
+    "required|email",
+  );
+  const passwordHelperText = formValidator.current.message(
+    "password",
+    state.formdata.password,
+    "required",
+  );
   return (
     <Stack
       width="100%"
@@ -70,6 +87,8 @@ export const PageLogin = () => {
           </Link>
         </Stack>
         <Stack
+          onSubmit={handleSubmit}
+          component="form"
           gap="14px"
           sx={{ width: isLargeDevice ? 250 : "100%", transition: "0.5s all" }}
         >
@@ -82,12 +101,24 @@ export const PageLogin = () => {
           >
             Sign In
           </Typography>
-          <InputControl label="User name" placeholder="Jhon@gmail.com" />
           <InputControl
+            name="email"
+            label="User name"
+            placeholder="Jhon@gmail.com"
+            helperText={emailHelperText}
+            error={Boolean(emailHelperText)}
+            onChange={handleFormChange}
+          />
+          <InputControl
+            name="password"
             label="Password"
             type="password"
             placeholder="Enter your password"
-            showPassword={true}
+            onClick={() => handlePasswordToggle("showPassword")}
+            showPassword={state.showPassword}
+            helperText={passwordHelperText}
+            onChange={handleFormChange}
+            error={Boolean(passwordHelperText)}
           />
           <Stack flexDirection="row" justifyContent="space-between">
             <Link
@@ -110,7 +141,7 @@ export const PageLogin = () => {
               Register your NHG?
             </Link>
           </Stack>
-          <Button variant="contained" size="small">
+          <Button variant="contained" size="small" type="submit">
             Sign In
           </Button>
         </Stack>

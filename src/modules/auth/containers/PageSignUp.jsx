@@ -1,24 +1,69 @@
-import { Box, Button, FormControl, Paper, Stack, Typography, useTheme, Autocomplete, TextField } from "@mui/material";
+import {
+  Box,
+  Button,
+  FormControl,
+  Paper,
+  Stack,
+  Typography,
+  useTheme,
+  Autocomplete,
+  TextField,
+} from "@mui/material";
 import { InputControl } from "../../../shared";
 import Logo from "../../../assets/logo-dark.svg";
 import { usePageSignUp } from "../hooks";
 import { Link } from "react-router-dom";
 
 export const PageSignUp = ({ loginType }) => {
-  console.log('loginType:', loginType);
   const { palette } = useTheme();
-  const { handleFormChange, handleSignUp, handlePasswordToggle, state, formValidator } = usePageSignUp();
-
-  const cdsHelperText = formValidator.current.message("cds", state.formData.cds, "required|alpha_space")
-  const emailHelperText = formValidator.current.message("email", state.formData.email, "required|email")
-  const passwordHelperText = formValidator.current.message("password", state.formData.password, "required")
-  const confirmPasswordHelperText = formValidator.current.message("confirm password", { password: state.formData.password, confirmPassword: state.formData.confirmPassword }, "required|confirmPassword");
-
-  const wardHelperText = formValidator.current.message("ward", state.formData.ward, "required");
-  const nhgHelperText = formValidator.current.message("nhg", state.formData.nhg, "required|alpha_space");
-  const usernameHelperText = formValidator.current.message("username", state.formData.username, "required");
-
-
+  const {
+    handleFormChange,
+    handleSignUp,
+    handlePasswordToggle,
+    state,
+    cdsFormValidator,
+    nhgFormValidator,
+  } = usePageSignUp(loginType);
+  const formValidator =
+    loginType === "cds" ? cdsFormValidator : nhgFormValidator;
+  const passwordHelperText = formValidator.current.message(
+    "password",
+    state.formData.password,
+    "required",
+  );
+  const confirmPasswordHelperText = formValidator.current.message(
+    "confirm password",
+    {
+      password: state.formData.password,
+      confirmPassword: state.formData.confirmPassword,
+    },
+    "required|confirmPassword",
+  );
+  const cdsHelperText = cdsFormValidator.current.message(
+    "cds",
+    state.formData.name,
+    "required|alpha_space",
+  );
+  const emailHelperText = cdsFormValidator.current.message(
+    "email",
+    state.formData.email,
+    "required|email",
+  );
+  const wardHelperText = nhgFormValidator.current.message(
+    "ward",
+    state.formData.ward,
+    "required",
+  );
+  const nhgHelperText = nhgFormValidator.current.message(
+    "name",
+    state.formData.name,
+    "required|alpha_space",
+  );
+  const usernameHelperText = nhgFormValidator.current.message(
+    "email",
+    state.formData.email,
+    "required|email",
+  );
 
   return (
     <Stack
@@ -52,16 +97,17 @@ export const PageSignUp = ({ loginType }) => {
           sx={{ width: { md: 300, sx: "100%" }, transition: "0.5s all" }}
           onSubmit={handleSignUp}
         >
-          {loginType === 'cds' ? (
+          {loginType === "cds" ? (
             <>
               <InputControl
                 label="CDS"
                 placeholder="Enter CDS name"
-                name="cds"
-                value={state.formData.cds}
+                name="name"
+                value={state.formData.name}
                 onChange={handleFormChange}
                 helperText={cdsHelperText}
-                error={Boolean(cdsHelperText)} />
+                error={Boolean(cdsHelperText)}
+              />
               <InputControl
                 label="Email"
                 placeholder="cdsemail@gmail.com"
@@ -76,7 +122,11 @@ export const PageSignUp = ({ loginType }) => {
             <>
               <Autocomplete
                 value={state.formData.ward}
-                onChange={(event, newValue) => handleFormChange({ target: { name: 'ward', value: newValue } })}
+                onChange={(event, newValue) =>
+                  handleFormChange({
+                    target: { name: "ward", value: newValue },
+                  })
+                }
                 options={["Ward 1", "Ward 2", "Ward 3", "Ward 4"]}
                 disableClearable
                 renderInput={(params) => (
@@ -91,23 +141,26 @@ export const PageSignUp = ({ loginType }) => {
               <InputControl
                 label="NHG"
                 placeholder="Enter NHG Name"
-                name="nhg"
-                value={state.formData.nhg}
+                name="name"
+                value={state.formData.name}
                 onChange={handleFormChange}
                 helperText={nhgHelperText}
-                error={Boolean(nhgHelperText)} />
+                error={Boolean(nhgHelperText)}
+              />
 
               <InputControl
                 label="User name"
                 placeholder="jhone@gmail.com"
-                name="username"
-                value={state.formData.username}
+                name="email"
+                value={state.formData.email}
                 onChange={handleFormChange}
                 helperText={usernameHelperText}
-                error={Boolean(usernameHelperText)} />
+                error={Boolean(usernameHelperText)}
+              />
             </>
           )}
           <InputControl
+            id="password-input"
             label="Password"
             type="password"
             placeholder="Enter your password"
@@ -120,6 +173,7 @@ export const PageSignUp = ({ loginType }) => {
             error={Boolean(passwordHelperText)}
           />
           <InputControl
+            id="confirm-password-input"
             label="Confirm Password"
             type="password"
             placeholder="Confirm your password"
@@ -148,4 +202,9 @@ export const PageSignUp = ({ loginType }) => {
       </Stack>
     </Stack>
   );
+};
+import PropTypes from "prop-types";
+
+PageSignUp.propTypes = {
+  loginType: PropTypes.oneOf(["cds", "nhg"]).isRequired,
 };
