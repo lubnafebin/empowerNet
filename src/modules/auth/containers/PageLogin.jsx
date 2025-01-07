@@ -34,7 +34,7 @@ export const PageLogin = () => {
   const emailHelperText = formValidator.current.message(
     "username",
     state.formdata.email,
-    "required|email",
+    "required",
   );
   const passwordHelperText = formValidator.current.message(
     "password",

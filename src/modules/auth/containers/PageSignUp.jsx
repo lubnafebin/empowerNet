@@ -17,6 +17,7 @@ import { Link } from "react-router-dom";
 export const PageSignUp = ({ loginType }) => {
   const { palette } = useTheme();
   const {
+    // getWardsForCds,
     handleFormChange,
     handleSignUp,
     handlePasswordToggle,
@@ -48,6 +49,11 @@ export const PageSignUp = ({ loginType }) => {
     "email",
     state.formData.email,
     "required|email",
+  );
+  const selectCdsHelperText = cdsFormValidator.current.message(
+    "cds",
+    state.formData.cds,
+    "required",
   );
   const wardHelperText = nhgFormValidator.current.message(
     "ward",
@@ -121,13 +127,34 @@ export const PageSignUp = ({ loginType }) => {
           ) : (
             <>
               <Autocomplete
+                value={state.formData.cds}
+                onChange={(event, newValue) =>
+                  handleFormChange({
+                    target: { name: "cds", value: newValue },
+                  })
+                }
+                getOptionLabel={(option) => option.name}
+                options={state.cdsList}
+                disableClearable
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="CDS"
+                    error={Boolean(selectCdsHelperText)}
+                    helperText={selectCdsHelperText}
+                  />
+                )}
+              />
+              <Autocomplete
                 value={state.formData.ward}
                 onChange={(event, newValue) =>
                   handleFormChange({
                     target: { name: "ward", value: newValue },
                   })
                 }
-                options={["Ward 1", "Ward 2", "Ward 3", "Ward 4"]}
+                getOptionLabel={(option) => option.name}
+                disabled={state.formData.cds == null}
+                options={state.wardList}
                 disableClearable
                 renderInput={(params) => (
                   <TextField

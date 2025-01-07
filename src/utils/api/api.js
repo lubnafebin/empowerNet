@@ -4,7 +4,19 @@ export const axios = axiosInstance.create({
   baseURL: BASE_URL,
   headers: {
     "Content-Type": "application/json",
-    Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTEsImVtYWlsIjoibmlsYXZ1a3VkdW1iYXNocmVlQGdtYWlsLmNvbSIsInJvbGVJZCI6MiwiaWF0IjoxNzM1OTg0ODE0LCJleHAiOjE3MzY0MTY4MTR9.HjR53VEDMCqia53MeEZqhU8TOoPIS9EBRyaR5AlMuC4`,
     Accept: "application/json",
   },
 });
+axios.interceptors.request.use(
+  (config) => {
+    const authDetails = localStorage.getItem("authDetails");
+    if (authDetails) {
+      const parsedAuthDetails = JSON.parse(authDetails);
+      config.headers.Authorization = `Bearer ${parsedAuthDetails.accessToken}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  },
+);

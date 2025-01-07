@@ -2,6 +2,7 @@ import { useImmer } from "use-immer";
 import { login } from "../apis/authApis";
 import React from "react";
 import SimpleReactValidator from "simple-react-validator";
+import { useNavigate } from "react-router-dom";
 
 export const usePageLogin = () => {
   const [_, setForceUpdate] = React.useState(0);
@@ -13,6 +14,9 @@ export const usePageLogin = () => {
       password: "",
     },
   });
+
+  const navigate = useNavigate();
+
   const formValidator = React.useRef(
     new SimpleReactValidator({
       autoForceUpdate: { forceUpdate: setForceUpdate },
@@ -25,7 +29,12 @@ export const usePageLogin = () => {
       const response = await login(credentials);
       const { success, message, data } = response.data;
       if (success) {
-        console.log(data);
+        localStorage.setItem("authDetails", JSON.stringify(data));
+        if (data.cdsId) {
+          navigate("/cds/wards");
+        } else if (data.nhgId) {
+          navigate("/nhg/roles");
+        }
       } else {
         throw { response: { data: { message } } };
       }

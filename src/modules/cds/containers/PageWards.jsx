@@ -7,113 +7,60 @@ import {
   DialogActions,
 } from "@mui/material";
 import { BasicTable } from "../../../shared/components/tables/BasicTable";
-import { Delete, Edit, Visibility } from "@mui/icons-material";
+import { Delete, Edit } from "@mui/icons-material";
 import { useAlertDialogContext } from "../../../shared/hooks";
-import { DialogSlide, InputControl } from "../../../shared";
+import { AlertRowAction, DialogSlide, InputControl } from "../../../shared";
 import { useLocation, useNavigate } from "react-router-dom";
+import { usePageWards } from "../hooks";
 
 export const PageWards = () => {
-  const { handleDeleteWard, handleOpenCreateDialog ,handleDialogClose} = usePageWards();
+  const {
+    handleCreate,
+    state,
+    formValidator,
+    handleFormChange,
+    deleteWardHandler,
+  } = usePageWards();
+
+  const nameHelperText = formValidator.current.message(
+    "name",
+    state.formData.name,
+    "required|alpha_space",
+  );
+  const wardNoHelperText = formValidator.current.message(
+    "wardNo",
+    state.formData.wardNo,
+    "required|numeric",
+  );
+
+  const { handleDeleteWard, handleOpenCreateDialog, handleDialogClose } =
+    usePageWardsDialog(deleteWardHandler);
 
   const columns = [
-    { label: "No", field: "no" },
+    { label: "Id", field: "id" },
     { label: "Ward No", field: "wardNo" },
-    { label: "Ward", field: "ward" },
+    { label: "Ward", field: "name" },
     { label: "Created At", field: "createdAt" },
-    { label: "ADS Name", field: "ADSname" },
+    { label: "ADS Name", field: "adsId" },
     {
       label: "Actions",
       field: "actions",
-      cell: () => (
+      cell: (row) => (
         <Stack direction="row" spacing={1}>
           <Button variant="contained" size="small">
             Update Ads
           </Button>
           <IconButton>
-            <Visibility />
-          </IconButton>
-          <IconButton>
             <Edit />
           </IconButton>
-          <IconButton onClick={handleDeleteWard}>
+          <IconButton onClick={() => handleDeleteWard(row)}>
             <Delete />
           </IconButton>
         </Stack>
       ),
     },
   ];
-  const rows = [
-    {
-      no: 1,
-      wardNo: 1,
-      ward: "Ward 1",
-      createdAt: "2021-10-12",
-      ADSname: "ADS 1",
-    },
-    {
-      no: 2,
-      wardNo: 2,
-      ward: "Ward 2",
-      createdAt: "2021-10-12",
-      ADSname: "ADS 2",
-    },
-    {
-      no: 3,
-      wardNo: 3,
-      ward: "Ward 3",
-      createdAt: "2021-10-12",
-      ADSname: "ADS 3",
-    },
-    {
-      no: 4,
-      wardNo: 4,
-      ward: "Ward 4",
-      createdAt: "2021-10-12",
-      ADSname: "ADS 4",
-    },
-    {
-      no: 5,
-      wardNo: 5,
-      ward: "Ward 5",
-      createdAt: "2021-10-12",
-      ADSname: "ADS 5",
-    },
-    {
-      no: 6,
-      wardNo: 6,
-      ward: "Ward 6",
-      createdAt: "2021-10-12",
-      ADSname: "ADS 6",
-    },
-    {
-      no: 7,
-      wardNo: 7,
-      ward: "Ward 7",
-      createdAt: "2021-10-12",
-      ADSname: "ADS 7",
-    },
-    {
-      no: 8,
-      wardNo: 8,
-      ward: "Ward 8",
-      createdAt: "2021-10-12",
-      ADSname: "ADS 8",
-    },
-    {
-      no: 9,
-      wardNo: 9,
-      ward: "Ward 9",
-      createdAt: "2021-10-12",
-      ADSname: "ADS 9",
-    },
-    {
-      no: 10,
-      wardNo: 10,
-      ward: "Ward 10",
-      createdAt: "2021-10-12",
-      ADSname: "ADS 10",
-    },
-  ];
+
   return (
     <Stack>
       <BasicTable
@@ -124,38 +71,64 @@ export const PageWards = () => {
           </Button>
         }
         columns={columns}
-        rows={rows}
+        rows={state.wards}
       />
       <DialogSlide
         dialogValue="?create-ward"
         disableCloseOnBackgroundClick={false}
       >
-        <DialogTitle>Create Ward</DialogTitle>
+        <DialogTitle>Create New Ward</DialogTitle>
         <DialogContent sx={{ minWidth: 400, p: 2 }}>
-          <InputControl label="Name" />
+          <Stack spacing={2}>
+            <InputControl
+              label="Name"
+              name="name"
+              value={state.formData.name}
+              helperText={nameHelperText}
+              error={Boolean(nameHelperText)}
+              onChange={handleFormChange}
+            />
+            <InputControl
+              label="No"
+              name="wardNo"
+              value={state.formData.wardNo}
+              helperText={wardNoHelperText}
+              error={Boolean(wardNoHelperText)}
+              onChange={handleFormChange}
+            />
+          </Stack>
         </DialogContent>
         <DialogActions>
           <Button variant="outlined" color="error" onClick={handleDialogClose}>
             Close
           </Button>
-          <Button variant="contained">Create</Button>
+          <Button variant="contained" onClick={handleCreate}>
+            Create
+          </Button>
         </DialogActions>
       </DialogSlide>
     </Stack>
   );
 };
 
-const usePageWards = () => {
+const usePageWardsDialog = (deleteWardHandler) => {
   const { setAlert } = useAlertDialogContext();
   const navigate = useNavigate();
   const location = useLocation();
 
-  const handleDeleteWard = () => {
+  const handleDeleteWard = (row) => {
     setAlert((draft) => {
       draft.open = true;
       draft.title = "Delete Ward?";
       draft.description = "Are you sure?  Do you want to delete the ward?";
       draft.dialogValue = "?deleteWard";
+      draft.rowAction = (
+        <AlertRowAction
+          onClick={async () => {
+            await deleteWardHandler(row.id);
+          }}
+        />
+      );
     });
   };
 

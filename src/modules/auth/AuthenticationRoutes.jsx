@@ -5,8 +5,8 @@ export const AuthenticationRoutes = () => {
   return (
     <Routes>
       <Route index element={<PageLogin />} />
-      <Route path="/signup/cds/*" element={<PageSignUp loginType="cds"/>} />
-      <Route path="/signup/nhg/*" element={<PageSignUp loginType="nhg"/>} />
+      <Route path="/register/cds/*" element={<PageSignUp loginType="cds" />} />
+      <Route path="/register/nhg/*" element={<PageSignUp loginType="nhg" />} />
     </Routes>
   );
 };

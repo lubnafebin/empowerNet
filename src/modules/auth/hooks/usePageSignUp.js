@@ -1,18 +1,22 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import SimpleReactValidator from "simple-react-validator";
 import { useImmer } from "use-immer";
 import { signup } from "../apis/authApis";
+import { getCds, getWardsApi } from "../../../utils/services";
 
 export const usePageSignUp = (loginType) => {
   const [_, setForceUpdate] = React.useState(0);
   const [state, setState] = useImmer({
     showConfirmPassword: false,
     showPassword: false,
+    cdsList: [],
+    wardList: [],
     formData: {
       name: "",
       email: "",
-      ward: "",
+      cds: null,
+      ward: null,
       password: "",
       confirmPassword: "",
     },
@@ -48,7 +52,7 @@ export const usePageSignUp = (loginType) => {
     }),
   );
   // ==================================================API SECTIONS =====================================
-  const doSignIn = async (userData, type) => {
+  const doSignUp = async (userData, type) => {
     console.log("doSignIn called with:", userData, type);
     try {
       const response = await signup(userData, type);
@@ -72,11 +76,46 @@ export const usePageSignUp = (loginType) => {
     });
   };
 
-  const handleFormChange = (event) => {
+  const handleFormChange = async (event) => {
     const { name, value } = event.target;
     setState((draft) => {
       draft.formData[name] = value;
     });
+    if (name === "cds") {
+      await getWardsForCds(value.id);
+    }
+  };
+
+  const getCdsList = async () => {
+    try {
+      const response = await getCds();
+      const { success, message, data } = response.data;
+      if (success) {
+        setState((draft) => {
+          draft.cdsList = data;
+        });
+      } else {
+        throw { response: { data: { message } } };
+      }
+    } catch (error) {
+      console.log("Error fetching CDS:", error);
+    }
+  };
+
+  const getWardsForCds = async (cdsId) => {
+    try {
+      const response = await getWardsApi(cdsId);
+      const { success, message, data } = response.data;
+      if (success) {
+        setState((draft) => {
+          draft.wardList = data;
+        });
+      } else {
+        throw { response: { data: { message } } };
+      }
+    } catch (error) {
+      console.log("Error fetching CDS:", error);
+    }
   };
 
   const handleSignUp = async (event) => {
@@ -89,13 +128,16 @@ export const usePageSignUp = (loginType) => {
       console.log("Validation passed. Preparing to submit...");
       const payload = { ...state.formData, type: loginType };
       console.log("Payload to submit:", payload);
-      await doSignIn(payload, loginType);
+      await doSignUp(payload, loginType);
     } else {
       console.log("Validation failed.");
       formValidator.current.showMessages();
       setForceUpdate(1);
     }
   };
+  useEffect(() => {
+    getCdsList();
+  }, []);
 
   return {
     cdsFormValidator,
