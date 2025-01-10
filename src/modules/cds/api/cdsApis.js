@@ -11,12 +11,7 @@ export const getWards = async ({ page, limit }) => {
 };
 
 export const updateWard = async (wardId, wardData) => {
-  try {
-    const response = await axios.put(`/ward/update/${wardId}`, wardData);
-    return response.data;
-  } catch (error) {
-    throw new Error("Error updating ward: " + error.message);
-  }
+  return await axios.put(`cds/ward/${wardId}/update`, wardData);
 };
 
 export const deleteWard = async (wardId) => {

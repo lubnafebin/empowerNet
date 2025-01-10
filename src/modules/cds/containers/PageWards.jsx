@@ -15,8 +15,10 @@ import { usePageWards } from "../hooks";
 
 export const PageWards = () => {
   const {
+    handleUpdate,
     handleCreate,
     state,
+    setState,
     formValidator,
     handleFormChange,
     deleteWardHandler,
@@ -33,8 +35,12 @@ export const PageWards = () => {
     "required|numeric",
   );
 
-  const { handleDeleteWard, handleOpenCreateDialog, handleDialogClose } =
-    usePageWardsDialog(deleteWardHandler);
+  const {
+    handleDeleteWard,
+    handleOpenCreateDialog,
+    handleDialogClose,
+    handleOpenUpdateDialog,
+  } = usePageWardsDialog(deleteWardHandler, setState);
 
   const columns = [
     { label: "Id", field: "id" },
@@ -50,7 +56,7 @@ export const PageWards = () => {
           <Button variant="contained" size="small">
             Update Ads
           </Button>
-          <IconButton>
+          <IconButton onClick={() => handleOpenUpdateDialog(row)}>
             <Edit />
           </IconButton>
           <IconButton onClick={() => handleDeleteWard(row)}>
@@ -83,7 +89,7 @@ export const PageWards = () => {
             <InputControl
               label="Name"
               name="name"
-              value={state.formData.name}
+              value={state.formData.name || ""}
               helperText={nameHelperText}
               error={Boolean(nameHelperText)}
               onChange={handleFormChange}
@@ -91,7 +97,7 @@ export const PageWards = () => {
             <InputControl
               label="No"
               name="wardNo"
-              value={state.formData.wardNo}
+              value={state.formData.wardNo || ""}
               helperText={wardNoHelperText}
               error={Boolean(wardNoHelperText)}
               onChange={handleFormChange}
@@ -107,11 +113,53 @@ export const PageWards = () => {
           </Button>
         </DialogActions>
       </DialogSlide>
+      <DialogSlide
+        dialogValue="?update-ward"
+        disableCloseOnBackgroundClick={false}
+      >
+        <DialogTitle>Update Ward Details</DialogTitle>
+        <DialogContent sx={{ minWidth: 400, p: 2 }}>
+          <Stack spacing={2}>
+            <InputControl
+              label="Name"
+              name="name"
+              value={state.formData.name}
+              helperText={nameHelperText}
+              error={Boolean(nameHelperText)}
+              onChange={(e) =>
+                setState((draft) => {
+                  draft.formData.name = e.target.value; // Update state
+                })
+              }
+            />
+            <InputControl
+              label="No"
+              name="wardNo"
+              value={state.formData.wardNo}
+              helperText={wardNoHelperText}
+              error={Boolean(wardNoHelperText)}
+              onChange={(e) =>
+                setState((draft) => {
+                  draft.formData.wardNo = e.target.value; // Update state
+                })
+              }
+            />
+          </Stack>
+        </DialogContent>
+        <DialogActions>
+          <Button variant="outlined" color="error" onClick={handleDialogClose}>
+            Close
+          </Button>
+          <Button variant="contained" onClick={handleUpdate}>
+            Update
+          </Button>
+        </DialogActions>
+      </DialogSlide>
     </Stack>
   );
 };
 
-const usePageWardsDialog = (deleteWardHandler) => {
+const usePageWardsDialog = (deleteWardHandler, setState) => {
   const { setAlert } = useAlertDialogContext();
   const navigate = useNavigate();
   const location = useLocation();
@@ -136,9 +184,26 @@ const usePageWardsDialog = (deleteWardHandler) => {
     navigate(location.pathname + "?create-ward");
   };
 
+  const handleOpenUpdateDialog = (row) => {
+    setState((draft) => {
+      draft.formData = {
+        name: row.name || "", // Populate name from row
+        wardNo: row.wardNo || "", // Populate wardNo from row
+      };
+      draft.selectedWardId = row.id;
+    });
+
+    navigate(location.pathname + "?update-ward");
+  };
+
   const handleDialogClose = () => {
     navigate(location.pathname, { replace: true });
   };
 
-  return { handleDeleteWard, handleOpenCreateDialog, handleDialogClose };
+  return {
+    handleDeleteWard,
+    handleOpenCreateDialog,
+    handleDialogClose,
+    handleOpenUpdateDialog,
+  };
 };

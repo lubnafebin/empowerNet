@@ -12,25 +12,10 @@ export const usePageWards = () => {
       wardNo: "",
       name: "",
     },
+    selectedWardId: null,
   });
   const location = useLocation();
   const navigate = useNavigate();
-
-  const fetchWards = async () => {
-    try {
-      const response = await getWards({ limit: 50, page: 1 });
-      const { success, message, data } = response.data;
-      if (success) {
-        setState((draft) => {
-          draft.wards = data.rows ?? [];
-        });
-      } else {
-        throw { response: { data: { message } } };
-      }
-    } catch (error) {
-      console.error("Error fetching wards:", error);
-    }
-  };
 
   const formValidator = React.useRef(
     new SimpleReactValidator({
@@ -46,6 +31,22 @@ export const usePageWards = () => {
     setState((draft) => {
       draft.formData[name] = value;
     });
+  };
+
+  const fetchWards = async () => {
+    try {
+      const response = await getWards({ limit: 50, page: 1 });
+      const { success, message, data } = response.data;
+      if (success) {
+        setState((draft) => {
+          draft.wards = data.rows ?? [];
+        });
+      } else {
+        throw { response: { data: { message } } };
+      }
+    } catch (error) {
+      console.error("Error fetching wards:", error);
+    }
   };
 
   const createWardHandler = async (wardData) => {
@@ -66,11 +67,10 @@ export const usePageWards = () => {
   const updateWardHandler = async (wardId, wardData) => {
     try {
       const response = await updateWard(wardId, wardData);
-      console.log(response.data);
       const { success, message } = response.data;
       if (success) {
-        console.log("Ward updated successfully. Message:", message);
-        fetchWards();
+        navigate(location.pathname, { replace: true });
+        await fetchWards();
       } else {
         throw { response: { data: { message } } };
       }
@@ -103,6 +103,21 @@ export const usePageWards = () => {
     }
   };
 
+  const handleUpdate = async (event) => {
+    event.preventDefault();
+    if (formValidator.current.allValid()) {
+      const wardId = state.selectedWardId;
+      if (!wardId) {
+        console.error("Ward ID is undefined.");
+        return;
+      }
+      await updateWardHandler(wardId, state.formData);
+    } else {
+      formValidator.current.showMessages();
+      setForceUpdate((prev) => prev + 1);
+    }
+  };
+
   useEffect(() => {
     fetchWards();
   }, []);
@@ -111,7 +126,9 @@ export const usePageWards = () => {
     deleteWardHandler,
     handleFormChange,
     state,
+    setState,
     handleCreate,
+    handleUpdate,
     fetchWards,
     formValidator,
   };
