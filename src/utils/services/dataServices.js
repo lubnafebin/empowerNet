@@ -7,3 +7,7 @@ export const getCds = async () => {
 export const getWardsApi = async (cdsId) => {
   return await axios.get(`data/${cdsId}/wards`);
 };
+
+export const getDistrict = async () => {
+  return await axios.get(`data/districts`);
+};

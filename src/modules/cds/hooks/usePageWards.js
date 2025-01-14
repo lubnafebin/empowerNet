@@ -55,7 +55,7 @@ export const usePageWards = () => {
       const { success, message } = response.data;
       if (success) {
         navigate(location.pathname, { replace: true });
-        await fetchWards(); // Call fetchWards directly
+        await fetchWards();
       } else {
         throw { response: { data: { message } } };
       }

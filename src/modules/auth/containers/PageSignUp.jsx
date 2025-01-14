@@ -17,7 +17,6 @@ import { Link } from "react-router-dom";
 export const PageSignUp = ({ loginType }) => {
   const { palette } = useTheme();
   const {
-    // getWardsForCds,
     handleFormChange,
     handleSignUp,
     handlePasswordToggle,

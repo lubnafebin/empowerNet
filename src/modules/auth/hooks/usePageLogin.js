@@ -33,7 +33,7 @@ export const usePageLogin = () => {
         if (data.cdsId) {
           navigate("/cds/wards");
         } else if (data.nhgId) {
-          navigate("/nhg/roles");
+          navigate("nhg/minutes");
         }
       } else {
         throw { response: { data: { message } } };

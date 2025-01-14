@@ -53,13 +53,10 @@ export const usePageSignUp = (loginType) => {
   );
   // ==================================================API SECTIONS =====================================
   const doSignUp = async (userData, type) => {
-    console.log("doSignIn called with:", userData, type);
     try {
       const response = await signup(userData, type);
-      console.log("API response:", response.data);
       const { success, message, data } = response.data;
       if (success) {
-        console.log("Signup successful. Message:", message);
         localStorage.setItem("userData", JSON.stringify(data));
         navigate("/");
       } else {
@@ -120,14 +117,11 @@ export const usePageSignUp = (loginType) => {
 
   const handleSignUp = async (event) => {
     event.preventDefault();
-    console.log("Current form data:", state.formData);
     const formValidator =
       loginType === "cds" ? cdsFormValidator : nhgFormValidator;
     if (formValidator.current.allValid()) {
       // call signup api
-      console.log("Validation passed. Preparing to submit...");
       const payload = { ...state.formData, type: loginType };
-      console.log("Payload to submit:", payload);
       await doSignUp(payload, loginType);
     } else {
       console.log("Validation failed.");
