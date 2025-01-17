@@ -72,7 +72,7 @@ export const InputControl = React.forwardRef(function InputControl(
       inputElement = (
         <FormControl fullWidth variant="outlined">
           <InputLabel
-            id="password-input"
+            id={label + "-input"}
             htmlFor={rest?.id || rest?.name}
             shrink={autofill}
           >
@@ -80,7 +80,6 @@ export const InputControl = React.forwardRef(function InputControl(
           </InputLabel>
           <OutlinedInput
             type={showPassword ? "text" : "password"}
-            id="outlined-adornment-password"
             label={label}
             value={value}
             {...rest}

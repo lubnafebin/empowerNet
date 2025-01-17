@@ -11,6 +11,7 @@ import { InputControl } from "../../../shared";
 import Logo from "../../../assets/logo-dark.svg";
 import { CONSTANTS } from "../../../utils/constants/constants";
 import { Link } from "react-router-dom";
+import { usePageSignIn } from "../hooks";
 
 export const PageLogin = () => {
   const { palette } = useTheme();
@@ -23,7 +24,27 @@ export const PageLogin = () => {
             decision-making, driving poverty eradication and enhancing the
             quality of life for marginalized communities in Kerala.`;
   const title = !isLargeDevice ? " Sign In" : CONSTANTS.appName;
+  const {
+    formValidator,
+    handleFormChange,
+    handleFormSubmit,
+    state,
+    togglePassword,
+  } = usePageSignIn();
 
+  const helperTexts = {
+    email: formValidator.current.message(
+      "email",
+      state.formData.email,
+      "required|email",
+    ),
+    password: formValidator.current.message(
+      "password",
+      state.formData.password,
+      "required",
+    ),
+  };
+  console.log(helperTexts);
   return (
     <Stack
       width="100%"
@@ -33,12 +54,13 @@ export const PageLogin = () => {
     >
       <Stack
         component={Paper}
+        variant="shadow"
         flexDirection={isLargeDevice ? "row" : "column"}
         gap={isLargeDevice ? "26px" : "8px"}
         p={isLargeDevice ? 5 : 3}
         elevation={0}
         boxShadow={0}
-        border="1px solid #BCB6B6"
+        // border="1px solid #BCB6B6"
         alignItems="center"
         sx={{ transition: "0.5s all " }}
       >
@@ -57,7 +79,7 @@ export const PageLogin = () => {
             {slogan}
           </Typography>
           <Link
-            to="/register"
+            to="/auth/register/nhg"
             style={{
               textDecoration: "none",
               fontSize: "14px",
@@ -71,6 +93,8 @@ export const PageLogin = () => {
         </Stack>
         <Stack
           gap="14px"
+          component="form"
+          onSubmit={handleFormSubmit}
           sx={{ width: isLargeDevice ? 250 : "100%", transition: "0.5s all" }}
         >
           <Typography
@@ -82,12 +106,26 @@ export const PageLogin = () => {
           >
             Sign In
           </Typography>
-          <InputControl label="User name" placeholder="Jhon@gmail.com" />
           <InputControl
+            name="email"
+            label="Email"
+            placeholder="cdsemail@gmail.com"
+            value={state.formData.email}
+            onChange={handleFormChange}
+            helperText={helperTexts.email}
+            error={Boolean(helperTexts.email)}
+          />
+          <InputControl
+            name="password"
             label="Password"
             type="password"
             placeholder="Enter your password"
-            showPassword={true}
+            showPassword={state.showPassword}
+            value={state.formData.password}
+            onChange={handleFormChange}
+            onClick={togglePassword}
+            helperText={helperTexts.password}
+            error={Boolean(helperTexts.password)}
           />
           <Stack flexDirection="row" justifyContent="space-between">
             <Link
@@ -100,7 +138,7 @@ export const PageLogin = () => {
               Forgot Password?
             </Link>
             <Link
-              to="/register"
+              to="/auth/register/nhg"
               style={{
                 textDecoration: "none",
                 color: "#051A34",
@@ -110,7 +148,7 @@ export const PageLogin = () => {
               Register your NHG?
             </Link>
           </Stack>
-          <Button variant="contained" size="small">
+          <Button variant="contained" size="small" type="submit">
             Sign In
           </Button>
         </Stack>

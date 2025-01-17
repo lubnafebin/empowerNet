@@ -1,9 +1,57 @@
-import { Box, Button, Paper, Stack, Typography, useTheme } from "@mui/material";
+import {
+  Box,
+  Button,
+  Paper,
+  Stack,
+  TextField,
+  Typography,
+  useTheme,
+} from "@mui/material";
 import { InputControl } from "../../../shared";
 import Logo from "../../../assets/logo-dark.svg";
+import { Link, useParams } from "react-router-dom";
+import React from "react";
+import { usePageSignUp } from "../hooks";
 
 export const PageSignUp = () => {
   const { palette } = useTheme();
+  const { accountType } = useParams();
+  const {
+    state,
+    formValidator,
+    handleFormChange,
+    togglePassword,
+    handleFormSubmit,
+  } = usePageSignUp();
+
+  const helperTexts = {
+    name: formValidator.current.message(
+      "name",
+      state.formData.name,
+      "required",
+    ),
+    email: formValidator.current.message(
+      "email",
+      state.formData.email,
+      "required|email",
+    ),
+    password: formValidator.current.message(
+      "password",
+      {
+        password: state.formData.password,
+        confirmPassword: state.formData.confirmPassword,
+      },
+      "required|matchPassword",
+    ),
+    confirmPassword: formValidator.current.message(
+      "confirmPassword",
+      {
+        password: state.formData.password,
+        confirmPassword: state.formData.confirmPassword,
+      },
+      "required|matchPassword",
+    ),
+  };
 
   return (
     <Stack
@@ -18,8 +66,7 @@ export const PageSignUp = () => {
         gap="16px"
         component={Paper}
         elevation={0}
-        boxShadow="none"
-        outline="0.5px solid #BCB6B6"
+        variant="shadow"
         sx={{ transition: "0.5s all" }}
       >
         <Stack>
@@ -33,23 +80,105 @@ export const PageSignUp = () => {
         </Stack>
         <Stack
           gap="14px"
+          component="form"
+          onSubmit={handleFormSubmit}
           sx={{ width: { md: 300, sx: "100%" }, transition: "0.5s all" }}
         >
-          <InputControl label="CDS" placeholder="Enter CDS name" />
-          <InputControl label="Email" placeholder="cdsemail@gmail.com" />
+          {accountType === "nhg" && (
+            <React.Fragment>
+              <InputControl
+                type="dropdown"
+                options={state.cdsList.options}
+                isOptionEqualToValue={(option, current) => {
+                  return option.id === current.id;
+                }}
+                getOptionLabel={(option) => option.name}
+                onChange={(_, value) =>
+                  handleFormChange({ target: { name: "cds", value } })
+                }
+                value={state.formData.cds}
+                renderInput={(props) => (
+                  <TextField label="CDS" {...props} placeholder="Select CDS" />
+                )}
+              />
+              <InputControl
+                type="dropdown"
+                disabled={Boolean(!state.formData.cds)}
+                options={state.wardList.options}
+                isOptionEqualToValue={(option, current) => {
+                  return option.id === current.id;
+                }}
+                getOptionLabel={(option) => option.name}
+                onChange={(_, value) =>
+                  handleFormChange({ target: { name: "ward", value } })
+                }
+                value={state.formData.ward}
+                renderInput={(props) => (
+                  <TextField
+                    label="Ward"
+                    {...props}
+                    placeholder="Select Ward"
+                  />
+                )}
+              />
+            </React.Fragment>
+          )}
           <InputControl
+            name="name"
+            type="text"
+            label={accountType.toUpperCase()}
+            placeholder="Enter CDS name"
+            value={state.formData.name}
+            onChange={handleFormChange}
+            helperText={helperTexts.name}
+            error={Boolean(helperTexts.name)}
+          />
+          <InputControl
+            name="email"
+            label="Email"
+            placeholder="cdsemail@gmail.com"
+            value={state.formData.email}
+            onChange={handleFormChange}
+            helperText={helperTexts.email}
+            error={Boolean(helperTexts.email)}
+          />
+          <InputControl
+            name="password"
             label="Password"
             type="password"
             placeholder="Enter your password"
-            showPassword={true}
+            showPassword={state.showPassword}
+            value={state.formData.password}
+            onChange={handleFormChange}
+            onClick={() => togglePassword({ field: "Password" })}
+            helperText={helperTexts.password}
+            error={Boolean(helperTexts.password)}
           />
           <InputControl
+            name="confirmPassword"
             label="Confirm Password"
             type="password"
             placeholder="Confirm your password"
-            showPassword={true}
+            value={state.formData.confirmPassword}
+            showPassword={state.showConfirmPassword}
+            onChange={handleFormChange}
+            onClick={() => togglePassword({ field: "ConfirmPassword" })}
+            helperText={helperTexts.confirmPassword}
+            error={Boolean(helperTexts.confirmPassword)}
           />
-          <Button variant="contained" size="small">
+          <Link
+            to="/auth/login"
+            style={{
+              textDecoration: "none",
+              fontSize: "14px",
+              color: "#051A34",
+              fontWeight: "600",
+              // display: isLargeDevice ? "block" : "none",
+            }}
+          >
+            Already have an account?
+          </Link>
+          <Button variant="contained" size="small" type="submit">
             Sign Up
           </Button>
         </Stack>

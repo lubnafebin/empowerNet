@@ -4,8 +4,8 @@ import { PageLogin, PageSignUp } from "./containers";
 export const AuthenticationRoutes = () => {
   return (
     <Routes>
-      <Route index element={<PageLogin />} />
-      <Route path="/register/*" element={<PageSignUp />} />
+      <Route path="/login" element={<PageLogin />} />
+      <Route path="/register/:accountType/*" element={<PageSignUp />} />
     </Routes>
   );
 };
