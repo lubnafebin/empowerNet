@@ -5,7 +5,7 @@ import SimpleReactValidator from "simple-react-validator";
 import { useNavigate } from "react-router-dom";
 
 export const usePageLogin = () => {
-  const [_, setForceUpdate] = React.useState(0);
+  const [, setForceUpdate] = React.useState(0);
 
   const [state, setState] = useImmer({
     showPassword: false,
@@ -33,13 +33,13 @@ export const usePageLogin = () => {
         if (data.cdsId) {
           navigate("/cds/wards");
         } else if (data.nhgId) {
-          navigate("nhg/minutes");
+          navigate("nhg/members/list");
         }
       } else {
         throw { response: { data: { message } } };
       }
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
 
@@ -52,7 +52,6 @@ export const usePageLogin = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (formValidator.current.allValid()) {
-      console.log(state.formdata);
       const { email, password } = state.formdata;
       await doLogIn({ email, password });
     } else {

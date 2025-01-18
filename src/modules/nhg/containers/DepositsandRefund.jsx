@@ -1,7 +1,20 @@
-import { Button, Stack } from "@mui/material";
-import { BasicTable, InputControl } from "../../../shared";
+import {
+  Autocomplete,
+  Button,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Stack,
+  TextField,
+} from "@mui/material";
+import { BasicTable, DialogSlide, InputControl } from "../../../shared";
+import { useDepositsAndRefund } from "../hooks/useDepositsAndRefund";
+import { useLocation, useNavigate } from "react-router-dom";
 
 export const DepositsAndRefund = () => {
+  const { state, handleCreate, handleFormChange } = useDepositsAndRefund();
+  const { handleDialogClose, handleOpenCreateDialog } = useDialog();
+
   const columns = [
     { label: "No", field: "no" },
     { label: "Date", field: "date" },
@@ -13,6 +26,7 @@ export const DepositsAndRefund = () => {
     { label: "Refunds", field: "refunds" },
     { label: "Remaining Loan", field: "remainingloan" },
   ];
+
   const rows = [
     {
       no: 1,
@@ -92,13 +106,16 @@ export const DepositsAndRefund = () => {
       remainingloan: 0,
     },
   ];
+
   const totalDeposit = rows.reduce((acc, row) => acc + row.deposit, 0);
   const totalSavings = rows.reduce((acc, row) => acc + row.totalsavings, 0);
   const totalRefunds = rows.reduce((acc, row) => acc + row.refunds, 0);
+
   const totalRemainingLoan = rows.reduce(
     (acc, row) => acc + row.remainingloan,
     0,
   );
+
   rows.push({
     no: "Total",
     date: "",
@@ -111,20 +128,110 @@ export const DepositsAndRefund = () => {
     remainingloan: <strong>{totalRemainingLoan}</strong>,
   });
   return (
-    <BasicTable
-      title="Deposits & Loan Refunds"
-      headerAction={
-        <Stack direction="row" spacing={1}>
-          <InputControl
-            type="search"
-            placeholder="Search here.."
-            sx={{ width: 300 }}
-          />
-          <Button variant="contained">New Entry</Button>
-        </Stack>
-      }
-      columns={columns}
-      rows={rows}
-    />
+    <Stack>
+      <BasicTable
+        title="Deposits & Loan Refunds"
+        headerAction={
+          <Stack direction="row" spacing={1}>
+            <InputControl
+              type="search"
+              placeholder="Search here.."
+              sx={{ width: 300 }}
+            />
+            <Button variant="contained" onClick={handleOpenCreateDialog}>
+              New Entry
+            </Button>
+          </Stack>
+        }
+        columns={columns}
+        rows={rows}
+      />
+      <DialogSlide
+        dialogValue="?create-entry"
+        disableCloseOnBackgroundClick={false}
+      >
+        <DialogTitle>Create New Entry</DialogTitle>
+        <DialogContent sx={{ minWidth: 500, p: 2 }}>
+          <Stack spacing={2}>
+            <Autocomplete
+              value={state.formData.accountHolders || []}
+              onChange={(event, newValue) =>
+                handleFormChange({
+                  target: { name: "accountHolders", value: newValue },
+                })
+              }
+              getOptionLabel={(option) => option.name || ""}
+              options={state.accountHolders}
+              disableClearable
+              getOptionSelected={(option, value) => option.id === value.id} // Make sure option selection is based on unique ID
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Account Holder passName"
+                  // errorpassworrText)}
+                  // helperText={participantHelperText}
+                />
+              )}
+            />
+            <Stack spacing={2} direction="row">
+              <InputControl
+                label="Deposit"
+                name="deposit"
+                value={state.formData.deposit || ""}
+                // helperText={meetingNoHelperText}
+                // error={Boolean(meetingNoHelperText)}
+                onChange={handleFormChange}
+              />
+              <InputControl
+                label="Loan Refund"
+                name="refund"
+                value={state.formData.refund || ""}
+                // helperText={placeHelperText}
+                // error={Boolean(placeHelperText)}
+                onChange={handleFormChange}
+              />
+            </Stack>
+            <InputControl
+              label="Membership Fee"
+              name="memberFee"
+              value={state.formData.memberFee || ""}
+              // helperText={meetingNoHelperText}
+              // error={Boolean(meetingNoHelperText)}
+              onChange={handleFormChange}
+            />
+          </Stack>
+        </DialogContent>
+        <DialogActions>
+          <Button variant="outlined" onClick={handleDialogClose}>
+            Close
+          </Button>
+          <Button variant="contained" onClick={handleCreate}>
+            Create
+          </Button>
+        </DialogActions>
+      </DialogSlide>
+    </Stack>
   );
+};
+const useDialog = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const handleOpenCreateDialog = () => {
+    navigate(location.pathname + "?create-entry");
+  };
+
+  const handleDialogClose = () => {
+    navigate(location.pathname, { replace: true });
+  };
+
+  const handleOpenUpdateDialog = () => {
+    navigate(location.pathname + "?update-meeting");
+  };
+
+  return {
+    handleDialogClose,
+    handleOpenCreateDialog,
+    handleOpenUpdateDialog,
+  };
 };

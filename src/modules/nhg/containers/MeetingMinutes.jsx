@@ -14,8 +14,13 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useMeetingMinutes } from "../hooks";
 
 export const MeetingMinutes = () => {
-  const { state, handleFormChange, formValidator, handleCreate } =
-    useMeetingMinutes();
+  const {
+    state,
+    handleFormChange,
+    formValidator,
+    handleCreate,
+    handleNavigate,
+  } = useMeetingMinutes();
   const { handleDialogClose, handleOpenCreateDialog, handleOpenUpdateDialog } =
     useDialog();
 
@@ -37,7 +42,7 @@ export const MeetingMinutes = () => {
           <IconButton onClick={handleOpenUpdateDialog}>
             <Visibility />
           </IconButton>
-          <IconButton>
+          <IconButton onClick={handleNavigate()}>
             <ArrowForward />
           </IconButton>
         </Stack>
@@ -50,11 +55,12 @@ export const MeetingMinutes = () => {
     state.formData.wardNo,
     "required|numeric",
   );
-  const dateHelperText = formValidator.current.message(
-    "date",
-    state.formData.date,
-    "required|date",
-  );
+  // const dateHelperText = formValidator.current.message(
+  //   "date",
+  //   state.formData.date,
+  //   "",
+  // );
+
   const placeHelperText = formValidator.current.message(
     "place",
     state.formData.place,
@@ -93,12 +99,12 @@ export const MeetingMinutes = () => {
         <DialogContent sx={{ minWidth: 500, p: 2 }}>
           <Stack spacing={2}>
             <Stack direction="row" spacing={2}>
-              <InputControl
+              <TextField
                 type="date"
                 name="date"
-                value={state.formData.date || ""}
-                helperText={dateHelperText}
-                error={Boolean(dateHelperText)}
+                value={state.formData.date}
+                // helperText={dateHelperText}
+                // error={Boolean(dateHelperText)}
                 onChange={handleFormChange}
                 fullWidth
               />
@@ -163,8 +169,8 @@ export const MeetingMinutes = () => {
                 type="date"
                 name="date"
                 value={state.formData.date || ""}
-                helperText={dateHelperText}
-                error={Boolean(dateHelperText)}
+                // helperText={dateHelperText}
+                // error={Boolean(dateHelperText)}
                 onChange={handleFormChange}
               />
               <InputControl

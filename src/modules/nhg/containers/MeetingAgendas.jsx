@@ -13,21 +13,21 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useMeetingAgendas } from "../hooks/useMeetingAgendas";
 
 export const MeetingAgendas = () => {
-  const { state, formValidator, handleFormChange } = useMeetingAgendas();
+  const { state, formValidator, handleFormChange, handleUpdate } =
+    useMeetingAgendas();
 
-  const { handleDialogClose, handleOpenCreateDialog, handleOpenUpdateDialog } =
-    useDialog();
+  const { handleDialogClose, handleOpenUpdateDialog } = useDialog();
 
   const columns = [
     { label: "No", field: "no" },
     { label: "ID", field: "id" },
-    { label: "Agenda", field: "agenda" },
+    { label: "Agenda", field: "name", cell: (row) => row.agenda.name },
     {
       label: "Actions",
       field: "actions",
-      cell: () => (
+      cell: (row) => (
         <Stack direction="row" spacing={1}>
-          <IconButton onClick={handleOpenUpdateDialog}>
+          <IconButton onClick={() => handleOpenUpdateDialog(row)}>
             <Edit />
           </IconButton>
           <IconButton>
@@ -53,58 +53,17 @@ export const MeetingAgendas = () => {
   return (
     <Stack spacing={3}>
       <BasicTable
-        title="Meeting Minutes"
+        title="Meeting Agendas"
         headerAction={
-          <Stack direction="row" spacing={1}>
-            <InputControl
-              type="search"
-              placeholder="Search here.."
-              sx={{ width: 300 }}
-            />
-            <Button variant="contained" onClick={handleOpenCreateDialog}>
-              New Agenda
-            </Button>
-          </Stack>
+          <InputControl
+            type="search"
+            placeholder="Search here.."
+            sx={{ width: 300 }}
+          />
         }
         columns={columns}
         rows={state.agendas}
       />
-      <DialogSlide
-        dialogValue="?create-agenda"
-        disableCloseOnBackgroundClick={false}
-      >
-        <DialogTitle>Create New Agenda</DialogTitle>
-        <DialogContent sx={{ minWidth: 400, p: 2 }}>
-          <Stack spacing={2}>
-            <InputControl
-              label="Name"
-              name="name"
-              value={state.formData.name}
-              helperText={nameHelperText}
-              error={Boolean(nameHelperText)}
-              onChange={handleFormChange}
-            />
-            <TextField
-              label="Note"
-              name="note"
-              value={state.formData.note}
-              helperText={noteHelperText}
-              error={Boolean(noteHelperText)}
-              onChange={handleFormChange}
-              multiline
-              rows={4}
-              fullWidth
-              variant="outlined"
-            />
-          </Stack>
-        </DialogContent>
-        <DialogActions>
-          <Button variant="outlined" color="error" onClick={handleDialogClose}>
-            Close
-          </Button>
-          <Button variant="contained">Create</Button>
-        </DialogActions>
-      </DialogSlide>
       <DialogSlide
         dialogValue="?update-agenda"
         disableCloseOnBackgroundClick={false}
@@ -138,7 +97,9 @@ export const MeetingAgendas = () => {
           <Button variant="outlined" color="error" onClick={handleDialogClose}>
             Close
           </Button>
-          <Button variant="contained">Update</Button>
+          <Button variant="contained" onClick={handleUpdate}>
+            Update
+          </Button>
         </DialogActions>
       </DialogSlide>
     </Stack>
@@ -148,10 +109,6 @@ export const MeetingAgendas = () => {
 const useDialog = () => {
   const navigate = useNavigate();
   const location = useLocation();
-
-  const handleOpenCreateDialog = () => {
-    navigate(location.pathname + "?create-agenda");
-  };
 
   const handleDialogClose = () => {
     navigate(location.pathname, { replace: true });
@@ -163,7 +120,6 @@ const useDialog = () => {
 
   return {
     handleDialogClose,
-    handleOpenCreateDialog,
     handleOpenUpdateDialog,
   };
 };

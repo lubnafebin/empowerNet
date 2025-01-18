@@ -26,7 +26,7 @@ import {
 import { TreeItem2Icon } from "@mui/x-tree-view/TreeItem2Icon";
 import { TreeItem2Provider } from "@mui/x-tree-view/TreeItem2Provider";
 import { TreeItem2DragAndDropOverlay } from "@mui/x-tree-view/TreeItem2DragAndDropOverlay";
-import { Button, Drawer, Stack } from "@mui/material";
+import { Drawer } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
 const CDS_ITEMS = [
@@ -88,6 +88,7 @@ const ADS_ITEMS = [
     fileType: "pin",
   },
 ];
+
 const NHG_ITEMS = [
   {
     id: "1.1",
@@ -110,7 +111,7 @@ const NHG_ITEMS = [
   {
     id: "1.4",
     label: "Meeting Agendas",
-    route: "/nhg/agendas",
+    route: "/nhg/agendas:meetingId",
     fileType: "pin",
   },
   {
@@ -343,16 +344,31 @@ const CustomTreeItem = React.forwardRef(function CustomTreeItem(props, ref) {
 
 export const Sidebar = ({ sidebarOpen }) => {
   const [drawerItems, setDrawerItems] = React.useState([]);
-  const userType = "ads";
   const navigate = useNavigate();
 
+  // Fetch userType from localStorage
+  const getUserType = () => {
+    const userDetails = JSON.parse(localStorage.getItem("authDetails"));
+    if (userDetails) {
+      // If both nhgId and cdsId exist, you can prioritize either one
+      if (userDetails.nhgId) return "nhg"; // Priority to NHG if both exist
+      if (userDetails.cdsId) return "cds";
+      if (userDetails.adsId) return "ads";
+    }
+    return null; // If no valid user type found
+  };
+
   React.useEffect(() => {
+    const userType = getUserType(); // Fetch the userType dynamically
+
     if (userType === "cds") {
       setDrawerItems(CDS_ITEMS);
     } else if (userType === "ads") {
       setDrawerItems(ADS_ITEMS);
     } else if (userType === "nhg") {
       setDrawerItems(NHG_ITEMS);
+    } else {
+      setDrawerItems([]);
     }
   }, []);
 
@@ -372,11 +388,6 @@ export const Sidebar = ({ sidebarOpen }) => {
         }
         slots={{ item: CustomTreeItem }}
       />
-      <Stack>
-        <Button onClick={() => setDrawerItems(CDS_ITEMS)}>CDS</Button>
-        <Button onClick={() => setDrawerItems(ADS_ITEMS)}>ADS</Button>
-        <Button onClick={() => setDrawerItems(NHG_ITEMS)}>NHG</Button>
-      </Stack>
     </Drawer>
   );
 };

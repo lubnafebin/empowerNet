@@ -3,6 +3,7 @@ import SimpleReactValidator from "simple-react-validator";
 import { useImmer } from "use-immer";
 import { createMeeting, getAllMeetings, getNhgMembers } from "../api/nhgApi";
 import { useLocation, useNavigate } from "react-router-dom";
+import moment from "moment";
 
 export const useMeetingMinutes = () => {
   const [, setForceUpdate] = React.useState(0);
@@ -20,6 +21,14 @@ export const useMeetingMinutes = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
+  const handleNavigate = (meetingId) => {
+    if (!meetingId) {
+      console.error("Meeting ID is required to navigate to the agenda page");
+      return;
+    }
+    console.log("Navigating with Meeting ID: ", meetingId); // Debug log
+    navigate(`/agendas/${meetingId}`);
+  };
   const formValidator = React.useRef(
     new SimpleReactValidator({
       autoForceUpdate: { forceUpdate: setForceUpdate },
@@ -32,7 +41,7 @@ export const useMeetingMinutes = () => {
   const handleFormChange = ({ target }) => {
     const { name, value } = target;
     setState((draft) => {
-      draft.formData[name] = value; // Update the participants array
+      draft.formData[name] = value;
     });
   };
 
@@ -86,8 +95,10 @@ export const useMeetingMinutes = () => {
       console.error("Error Creating Meeting", error);
     }
   };
+
   const handleCreate = async (event) => {
     event.preventDefault();
+    console.log("Is Form Valid: ", formValidator.current.allValid());
     if (formValidator.current.allValid()) {
       await createMeetingHandler(state.formData);
     } else {
@@ -95,6 +106,7 @@ export const useMeetingMinutes = () => {
       setForceUpdate((prev) => prev + 1);
     }
   };
+
   useEffect(() => {
     getParticipants();
     fetchMeetingMinutes();
@@ -105,5 +117,6 @@ export const useMeetingMinutes = () => {
     state,
     handleFormChange,
     formValidator,
+    handleNavigate,
   };
 };

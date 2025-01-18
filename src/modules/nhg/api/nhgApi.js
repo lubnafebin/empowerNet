@@ -42,3 +42,23 @@ export const getAllMeetings = async () => {
 export const getMeetingAgendas = async (meetingId) => {
   return await axios.get(`nhg/meeting/${meetingId}/agendas`);
 };
+
+export const updateMeetingAgenda = async (
+  meetingId,
+  meetingAgendaId,
+  agendaData,
+) => {
+  return await axios.put(
+    `nhg/meeting/${meetingId}/agendas/${meetingAgendaId}/update`,
+    agendaData,
+  );
+};
+
+//transaction api
+
+export const getAllTransactions = async (meetingId, transactionTypes) => {
+  const query = transactionTypes
+    .map((type) => `transactionType[]=${encodeURIComponent(type)}`)
+    .join("&");
+  return await axios.get(`nhg/meeting/${meetingId}/transactions?${query}`);
+};

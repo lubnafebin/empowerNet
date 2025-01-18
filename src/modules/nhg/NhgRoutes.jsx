@@ -16,7 +16,7 @@ export const NhgRoutes = () => {
       <Route path="/members/list" element={<MembersList />} />
       <Route path="/roles" element={<Roles />} />
       <Route path="/minutes" element={<MeetingMinutes />} />
-      <Route path="/agendas" element={<MeetingAgendas />} />
+      <Route path="/agendas:meetingId" element={<MeetingAgendas />} />
       <Route path="/deposit" element={<DepositsAndRefund />} />
       <Route path="/membership" element={<MembershipFee />} />
       <Route path="/monthly/reports" element={<PageNhgMonthlyReports />} />

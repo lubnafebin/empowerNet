@@ -1,10 +1,18 @@
 import {
+  Box,
   Button,
+  Checkbox,
   DialogActions,
   DialogContent,
   DialogTitle,
   IconButton,
   Stack,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
   TextField,
 } from "@mui/material";
 import {
@@ -16,6 +24,7 @@ import {
 import { Delete, Edit, Visibility } from "@mui/icons-material";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useRoles } from "../hooks";
+import React from "react";
 
 export const Roles = () => {
   const { deleteRoleHandler } = useRoles();
@@ -101,8 +110,61 @@ export const Roles = () => {
       >
         <DialogTitle>Add New Role</DialogTitle>
         <DialogContent sx={{ minWidth: 500, p: 2 }}>
-          <Stack spacing={2}>
+          <Stack spacing={3}>
             <TextField label="Role" variant="outlined" fullWidth />
+            <Box
+              sx={{
+                backgroundColor: "#f9f9f9", // Light gray background
+                borderRadius: 2, // Rounded corners
+                p: 2, // Padding
+                boxShadow: 1, // Subtle shadow
+              }}
+            >
+              <Box
+                sx={{
+                  display: "grid",
+                  gap: 1,
+                  gridTemplateColumns: "1fr repeat(4, auto)",
+                }}
+              >
+                {/* Header Row */}
+                <Box sx={{ fontWeight: "bold", textAlign: "left" }}>Module</Box>
+                <Box sx={{ fontWeight: "bold", textAlign: "center" }}>
+                  Create
+                </Box>
+                <Box sx={{ fontWeight: "bold", textAlign: "center" }}>Read</Box>
+                <Box sx={{ fontWeight: "bold", textAlign: "center" }}>
+                  Update
+                </Box>
+                <Box sx={{ fontWeight: "bold", textAlign: "center" }}>
+                  Delete
+                </Box>
+
+                {/* Permission Rows */}
+                {["Members", "Savings", "Refunds", "Minutes", "Reports"].map(
+                  (module) => (
+                    <React.Fragment key={module}>
+                      <Box sx={{ textAlign: "left", alignSelf: "center" }}>
+                        {module}
+                      </Box>
+                      {["create", "read", "update", "delete"].map(
+                        (permission) => (
+                          <Box key={permission} sx={{ textAlign: "center" }}>
+                            <Checkbox
+                              name={`${module}-${permission}`}
+                              // onChange={(e) =>
+                              //   handlePermissionChange(module, permission, e.target.checked)
+                              // }
+                              size="small" // Compact size
+                            />
+                          </Box>
+                        ),
+                      )}
+                    </React.Fragment>
+                  ),
+                )}
+              </Box>
+            </Box>
           </Stack>
         </DialogContent>
         <DialogActions>
