@@ -26,16 +26,16 @@ import {
   DeleteOutlineRounded,
   VisibilityOutlined,
 } from "@mui/icons-material";
-import { useMemberList } from "../hooks";
+import { useMinuteList } from "../hooks";
 
-export const MemberList = () => {
+export const MinuteList = () => {
   const {
     state,
     formValidator,
     toggleModel,
     handleFormChange,
     handleFormSubmit,
-  } = useMemberList();
+  } = useMinuteList();
 
   const columns = React.useMemo(
     () => [
@@ -46,113 +46,47 @@ export const MemberList = () => {
         placement: "right",
       },
       {
-        header: "Profile",
+        header: "Date",
+        accessorKey: "date",
+        enableSorting: true,
+        placement: "right",
+      },
+      {
+        header: "Place",
+        accessorKey: "place",
+        enableSorting: true,
+        placement: "right",
+      },
+      {
+        header: "Total Participants",
         cell: ({
           row: {
-            original: { attachments, user },
+            original: { participants },
           },
         }) => {
-          const url = "http://localhost:5000/" + attachments[2].url;
           return (
-            <Avatar
-              src={url}
-              sx={{
-                width: "24px",
-                height: "24px",
-                fontSize: 14,
-                backgroundColor: "primary.main",
-              }}
-            >
-              {user.name[0]}
-            </Avatar>
+            <Typography fontWeight={400} fontSize={14}>
+              {participants.length}
+            </Typography>
           );
         },
         enableSorting: true,
         placement: "right",
+        meta: { align:'center' },
       },
       {
-        header: "Name",
-        cell: ({
-          row: {
-            original: { user },
-          },
-        }) => <Typography fontSize="14px">{user.name}</Typography>,
+        header: "Meeting No",
+        accessorKey: "meetingNo",
         enableSorting: true,
-        placement: "right",
+        placement: "center",
+        meta: {  align:'center' },
       },
-      {
-        header: "Email",
-        cell: ({
-          row: {
-            original: { user },
-          },
-        }) => <Typography fontSize="14px">{user.email}</Typography>,
-        enableSorting: true,
-        placement: "right",
-      },
-      {
-        header: "Aadhar No",
-        cell: ({
-          row: {
-            original: { address },
-          },
-        }) => <Typography fontSize="14px">{address.aadharNo}</Typography>,
-        enableSorting: true,
-        placement: "right",
-      },
-      {
-        header: "Contact No",
-        cell: ({
-          row: {
-            original: { address },
-          },
-        }) => <Typography fontSize="14px">{address.contactNo}</Typography>,
-        enableSorting: true,
-        placement: "right",
-      },
-      {
-        header: "Role",
-        cell: ({
-          row: {
-            original: { role },
-          },
-        }) => <Typography fontSize="14px">{role.name}</Typography>,
-        enableSorting: true,
-        placement: "right",
-      },
-      {
-        header: "Status",
-        cell: ({
-          row: {
-            original: { status },
-          },
-        }) => (
-          <Chip
-            label={status.name}
-            color={status.name === "Not Verified" ? "warning" : "success"}
-          />
-        ),
-        enableSorting: true,
-        placement: "right",
-      },
-      // {
-      //   header: "Created At",
-      //   cell: ({
-      //     row: {
-      //       original: { createdAt },
-      //     },
-      //   }) => {
-      //     return dayjs(createdAt).format("ddd DD, MMM YYYY, hh:mm A");
-      //   },
-      //   enableSorting: true,
-      //   placement: "right",
-      // },
       {
         header: "Action",
         accessorKey: "action",
         enableSorting: false,
         placement: "right",
-        meta: { width: 150 },
+        meta: { width: 70 },
         cell: ({
           row: {
             original: { id },
@@ -201,13 +135,13 @@ export const MemberList = () => {
       href: "/",
     },
     {
-      title: "Members",
+      title: "Minutes",
     },
   ];
 
   return (
     <PageLayout
-      title="Members"
+      title="Minutes"
       breadcrumbs={breadcrumbs}
       actionSection={
         <Button
@@ -215,13 +149,13 @@ export const MemberList = () => {
           startIcon={<Add />}
           onClick={() => toggleModel("newWard")}
         >
-          New Member
+          New Minute
         </Button>
       }
     >
       <ReactTable
         columns={columns}
-        data={state.memberList.options}
+        data={state.minuteList.options}
         loading={state.isTableLoading}
         rowClick={() => {}}
       />

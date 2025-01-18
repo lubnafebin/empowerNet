@@ -8,6 +8,7 @@ import {
   RoleProtectedRoute,
 } from "../../shared";
 import { MemberRoutes } from "../members";
+import { MinuteRoutes } from "../minutes";
 
 export const AdminRoutes = () => {
   return (
@@ -25,6 +26,9 @@ export const AdminRoutes = () => {
       <Route element={<RoleProtectedRoute roles={["NHG"]} />}>
         <Route element={<PermissionProtectedRoute permission="members.read" />}>
           <Route path="/members/*" element={<MemberRoutes />} />
+        </Route>
+        <Route element={<PermissionProtectedRoute permission="members.read" />}>
+          <Route path="/minutes/*" element={<MinuteRoutes />} />
         </Route>
       </Route>
 
