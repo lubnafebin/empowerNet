@@ -332,4 +332,32 @@ const drawerItems = [
     selectedIcon: DashboardSelectedIcon,
     permission: "wards.read",
   },
+  {
+    href: "/members",
+    title: "Members",
+    defaultIcon: DashboardDefaultIcon,
+    selectedIcon: DashboardSelectedIcon,
+    permission: "members.read",
+  },
+  {
+    href: "/roles",
+    title: "Roles",
+    defaultIcon: DashboardDefaultIcon,
+    selectedIcon: DashboardSelectedIcon,
+    permission: "roles.read",
+  },
+  {
+    href: "/minutes",
+    title: "Minutes",
+    defaultIcon: DashboardDefaultIcon,
+    selectedIcon: DashboardSelectedIcon,
+    permission: "minutes.read",
+  },
+  {
+    href: "/reports",
+    title: "Report",
+    defaultIcon: DashboardDefaultIcon,
+    selectedIcon: DashboardSelectedIcon,
+    permission: "report.read",
+  },
 ];

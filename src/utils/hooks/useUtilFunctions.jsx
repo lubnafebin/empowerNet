@@ -26,7 +26,7 @@ export const useUtilFunctions = () => {
   };
 
   const checkPermission = (permissionString) => {
-    // if (permissionString === 'dashboard.read') return true;
+    if (permissionString === "dashboard.read") return true;
     // const permissions = getPermissions();
     // const permissionArray = permissionString.split('.');
     // const moduleId = moduleIds[permissionArray[0]];
