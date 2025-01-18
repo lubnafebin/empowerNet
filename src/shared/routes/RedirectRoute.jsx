@@ -1,24 +1,20 @@
-import { Navigate, Outlet, useLocation } from 'react-router-dom';
-import { useAppStateContext } from '../hooks';
+import { Navigate, Outlet, useLocation } from "react-router-dom";
+import { useAppStateContext } from "../hooks";
 
 export const RedirectRoute = () => {
   const location = useLocation();
-  const {
-    appState: { authentication },
-  } = useAppStateContext();
+  const { appState } = useAppStateContext();
 
   const isAuthenticated = Boolean(
-    authentication.token && authentication.user.userType,
+    appState.authentication.accessToken && appState.authentication?.id,
   );
-
-  const isClientLogin = authentication.user.userType === 3;
+  const isCdsLogin = appState.authentication.role?.name === "CDS";
+  const isNHgLogin = appState.authentication.role?.name === "NHG";
 
   const path = location.pathname;
-  const navigateTo = isClientLogin ? '/client' : '/';
-
-  return (path === '/auth/login' && isAuthenticated) ||
-    (isClientLogin && path === '/') ? (
-    <Navigate to={navigateTo} replace />
+  return (path === "/auth/login" && isAuthenticated) ||
+    (isCdsLogin && path === "/" && isNHgLogin) ? (
+    <Navigate to="/" replace />
   ) : (
     <Outlet />
   );

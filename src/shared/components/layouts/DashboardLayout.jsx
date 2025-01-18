@@ -9,7 +9,7 @@ export const DashboardLayout = () => {
 
   return (
     <Box display="flex">
-      <Sidebar sidebarOpen={sidebarOpen} toggleSidebar={toggleSidebar} />
+    <Sidebar sidebarOpen={sidebarOpen} toggleSidebar={toggleSidebar} />
       <Container
         maxWidth="2xl"
         sx={{

@@ -1,5 +1,5 @@
-import React from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import React from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import {
   Button,
   DialogActions,
@@ -7,12 +7,13 @@ import {
   DialogTitle,
   Stack,
   Typography,
-} from '@mui/material';
-import { useAlertContext } from '../../hooks';
-import { GeneralDialog } from './GeneralDialog';
+} from "@mui/material";
+import { useAlertContext } from "../../hooks";
+import { GeneralDialog } from "./GeneralDialog";
+import { initialAlertState } from "../../context";
 
 export const AlertComponent = () => {
-  const { alert } = useAlertContext();
+  const { alert, setAlert } = useAlertContext();
   const { pathname } = useLocation();
   const navigate = useNavigate();
 
@@ -28,10 +29,10 @@ export const AlertComponent = () => {
       dialogValue={alert.dialogValue}
       disableCloseOnBackgroundClick={false}
     >
-      <Stack sx={{ width: '400px', m: 1 }}>
+      <Stack sx={{ width: "400px", m: 1 }}>
         <DialogTitle>
           <Typography
-            sx={{ fontWeight: 600, fontSize: '24px', lineHeight: '29.05px' }}
+            sx={{ fontWeight: 600, fontSize: "24px", lineHeight: "29.05px" }}
           >
             {alert?.title}
           </Typography>
@@ -39,9 +40,9 @@ export const AlertComponent = () => {
         <DialogContent>
           <Typography
             sx={{
-              fontWeight: 500,
-              fontSize: '16px',
-              lineHeight: '19.36px',
+              fontWeight: 400,
+              fontSize: "16px",
+              lineHeight: "19.36px",
             }}
           >
             {alert?.description}
@@ -54,7 +55,10 @@ export const AlertComponent = () => {
             <Button
               variant="outlined"
               size="small"
-              onClick={() => navigate(pathname, { replace: true })}
+              onClick={() => {
+                navigate(pathname, { replace: true });
+                setAlert(initialAlertState);
+              }}
             >
               Close
             </Button>

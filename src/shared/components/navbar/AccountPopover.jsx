@@ -1,4 +1,4 @@
-import { ArrowDropDown, Logout, ManageAccounts } from '@mui/icons-material';
+import { ArrowDropDown, Logout, ManageAccounts } from "@mui/icons-material";
 import {
   Avatar,
   Divider,
@@ -10,12 +10,12 @@ import {
   Tooltip,
   Typography,
   useTheme,
-} from '@mui/material';
-import React from 'react';
-import { useUtilFunctions } from '../../../utils';
-import { UserProfileCard } from '../cards';
-import { useLocation, useNavigate } from 'react-router-dom';
-import PropTypes from 'prop-types';
+} from "@mui/material";
+import React from "react";
+import { useUtilFunctions } from "../../../utils";
+import { UserProfileCard } from "../cards";
+import { useLocation, useNavigate } from "react-router-dom";
+import PropTypes from "prop-types";
 
 export const AccountPopover = ({ showAvatarOnly }) => {
   const [anchorElUser, setAnchorElUser] = React.useState(null);
@@ -23,7 +23,7 @@ export const AccountPopover = ({ showAvatarOnly }) => {
   const theme = useTheme();
   const location = useLocation();
   const navigate = useNavigate();
-  const isProfilePage = location.pathname.includes('/profile/details');
+  const isProfilePage = location.pathname.includes("/profile/details");
 
   const handleOpenUserMenu = (event) => {
     setAnchorElUser(event.currentTarget);
@@ -34,7 +34,6 @@ export const AccountPopover = ({ showAvatarOnly }) => {
   };
 
   const user = getLoggedInUser();
-
   const handleRedirection = () => {
     const isClient = user.userType === 3;
 
@@ -53,40 +52,40 @@ export const AccountPopover = ({ showAvatarOnly }) => {
           direction="row"
           onClick={handleOpenUserMenu}
           sx={{
-            borderRadius: '6px',
+            borderRadius: "6px",
             gap: 1,
-            p: showAvatarOnly ? 0 : 'auto',
+            p: showAvatarOnly ? 0 : "auto",
           }}
           component={MenuItem}
         >
           <Avatar
             sx={{
-              backgroundColor: 'primary.main',
+              backgroundColor: "primary.main",
               width: 24,
               height: 24,
               fontSize: 12,
             }}
           >
-            {user?.firstName[0]}
+            {user.name.charAt(0).toUpperCase()}
           </Avatar>
 
           {!showAvatarOnly && (
             <React.Fragment>
               <ListItemText
-                title={user?.designation ?? user?.emailAddress}
-                primary={user?.designation ?? user?.emailAddress}
+                title={user.role.name}
+                primary={user.role.name}
                 primaryTypographyProps={{
                   style: {
                     color: theme.palette.text.secondary,
-                    whiteSpace: 'nowrap',
-                    textOverflow: 'ellipsis',
+                    whiteSpace: "nowrap",
+                    textOverflow: "ellipsis",
                     maxWidth: 190,
                     fontSize: 14,
-                    overflow: 'hidden',
+                    overflow: "hidden",
                   },
                 }}
               />
-              <ArrowDropDown sx={{ color: 'GrayText' }} fontSize="small" />
+              <ArrowDropDown sx={{ color: "GrayText" }} fontSize="small" />
             </React.Fragment>
           )}
         </Stack>
@@ -97,20 +96,20 @@ export const AccountPopover = ({ showAvatarOnly }) => {
         elevation={3}
         anchorEl={anchorElUser}
         anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'right',
+          vertical: "bottom",
+          horizontal: "right",
         }}
         keepMounted
         transformOrigin={{
-          vertical: 'top',
-          horizontal: 'right',
+          vertical: "top",
+          horizontal: "right",
         }}
         open={Boolean(anchorElUser)}
         onClose={handleCloseUserMenu}
         slotProps={{
           paper: {
             sx: {
-              overflow: 'visible',
+              overflow: "visible",
               mt: 1.5,
             },
           },

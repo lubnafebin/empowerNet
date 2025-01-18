@@ -44,7 +44,7 @@ export const PageLogin = () => {
       "required",
     ),
   };
-  console.log(helperTexts);
+
   return (
     <Stack
       width="100%"

@@ -6,16 +6,14 @@ export const defaultAppState = {
   authentication: {
     accessToken: null,
     refreshToken: null,
-    user: {
+    id: null,
+    name: "",
+    email: "",
+    profileId: null,
+    role: {
       id: null,
       name: "",
-      email: "",
-      profileId: null,
-      role: {
-        id: null,
-        name: "",
-        permissionId: null,
-      },
+      permissionId: null,
     },
   },
 };

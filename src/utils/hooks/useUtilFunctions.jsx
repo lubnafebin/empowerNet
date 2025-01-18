@@ -14,7 +14,7 @@ export const useUtilFunctions = () => {
 
   const isAuthenticated = () => {
     const { authentication } = appState;
-    return authentication.token && authentication.refreshToken;
+    return authentication.accessToken && authentication.refreshToken;
   };
 
   const getBootData = ({ field = "all" }) => {
@@ -36,6 +36,7 @@ export const useUtilFunctions = () => {
     //     permission.moduleId === moduleId && permission[permissionName],
     // );
     // return isPermitted;
+    return true;
   };
 
   return {
@@ -47,8 +48,7 @@ export const useUtilFunctions = () => {
       navigate("/auth/login");
     },
     getLoggedInUser: () => {
-      const { user } = appState.authentication;
-      return user;
+      return appState.authentication;
     },
     isAuthenticated,
     getPermissions,

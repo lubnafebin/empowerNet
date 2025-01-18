@@ -1,5 +1,6 @@
 import axios from "axios";
 import { BASE_URL } from "../../configs";
+import { getAuthDetailsServices } from "../services";
 // import { clearAppLocalStorage } from '../services';
 
 export const API = axios.create({
@@ -28,15 +29,15 @@ export const AUTH_API = axios.create({
 
 API.interceptors.request.use(
   (config) => {
-    // const authDetails = getAuthDetailsServices();
+    const authDetails = getAuthDetailsServices();
 
-    // if (isAuthenticated(authDetails?.token)) {
-    //   config.headers['Authorization'] = 'Bearer ' + authDetails.token;
-    // }
+    if (authDetails?.accessToken) {
+      config.headers["Authorization"] = "Bearer " + authDetails.accessToken;
+    }
 
-    // if (authDetails?.user?.role?.value?.trim()) {
-    //   config.headers['Current-Role'] = authDetails.user.role.value;
-    // }
+    if (authDetails?.role?.id) {
+      config.headers["Current-Role"] = authDetails.role.id;
+    }
 
     return config;
   },

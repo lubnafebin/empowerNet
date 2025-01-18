@@ -3,14 +3,12 @@ import {
   ListItemAvatar,
   ListItemButton,
   ListItemText,
-} from '@mui/material';
-import { useAppStateContext } from '../../hooks';
+} from "@mui/material";
+import { useUtilFunctions } from "../../../utils";
 
 export const UserProfileCard = () => {
-  const {
-    appState: { authentication },
-  } = useAppStateContext();
-  const { firstName, lastName, emailAddress } = authentication.user;
+  const { getLoggedInUser } = useUtilFunctions();
+  const { name, email } = getLoggedInUser();
   return (
     <ListItemButton
       disableRipple
@@ -30,33 +28,33 @@ export const UserProfileCard = () => {
           sx={{
             width: 36,
             height: 36,
-            backgroundColor: 'primary.main',
+            backgroundColor: "primary.main",
           }}
         >
-          {firstName[0]?.toUpperCase()}
+          {name.charAt(0).toUpperCase()}
         </Avatar>
       </ListItemAvatar>
       <ListItemText
-        primary={firstName + ' ' + lastName}
-        secondary={emailAddress}
+        primary={name}
+        secondary={email}
         primaryTypographyProps={{
           fontSize: 14,
           fontWeight: 500,
           lineHeight: 1.2,
           width: 220,
-          textOverflow: 'ellipsis',
-          overflow: 'hidden',
-          whiteSpace: 'nowrap',
+          textOverflow: "ellipsis",
+          overflow: "hidden",
+          whiteSpace: "nowrap",
         }}
         secondaryTypographyProps={{
           fontSize: 13,
           lineHeight: 1.2,
-          color: 'text.secondary',
+          color: "text.secondary",
           fontWeight: 400,
           width: 220,
-          textOverflow: 'ellipsis',
-          overflow: 'hidden',
-          whiteSpace: 'nowrap',
+          textOverflow: "ellipsis",
+          overflow: "hidden",
+          whiteSpace: "nowrap",
         }}
       />
     </ListItemButton>

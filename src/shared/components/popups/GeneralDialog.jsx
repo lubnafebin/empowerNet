@@ -1,6 +1,6 @@
-import Dialog from '@mui/material/Dialog';
-import PropTypes from 'prop-types';
-import { useLocation, useNavigate } from 'react-router-dom';
+import Dialog from "@mui/material/Dialog";
+import PropTypes from "prop-types";
+import { useLocation, useNavigate } from "react-router-dom";
 
 export const GeneralDialog = ({
   children,
@@ -25,6 +25,11 @@ export const GeneralDialog = ({
       aria-describedby="alert-dialog-slide-description"
       maxWidth="xl"
       sx={sx}
+      PaperProps={{
+        sx: {
+          minWidth: { xs: 300, md: 400 },
+        },
+      }}
     >
       {children}
     </Dialog>

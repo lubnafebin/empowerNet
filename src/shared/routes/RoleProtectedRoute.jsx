@@ -3,14 +3,7 @@ import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { useAppStateContext } from "../hooks";
 import { PageNotFound, PageUnAuthorized } from "../components";
 
-const baseRoutes = [
-  "profitune",
-  "questionnaire",
-  "coach",
-  "clients",
-  "client",
-  "settings",
-];
+const baseRoutes = ["cds", "nhg"];
 export const RoleProtectedRoute = ({ roles = [] }) => {
   const location = useLocation();
 
@@ -19,13 +12,9 @@ export const RoleProtectedRoute = ({ roles = [] }) => {
   } = useAppStateContext();
 
   const isAuthenticated = Boolean(
-    authentication.token && authentication.user.userType,
+    authentication.accessToken && authentication.id,
   );
-
-  const isPermitted = true;
-  // roles.some(
-  //   (role) => userRoles[role] === authentication.user.userType,
-  // );
+  const isPermitted = roles.some((role) => authentication.role.name === role);
 
   if (!isAuthenticated) {
     return <Navigate to="/auth/login" state={{ from: location }} replace />;

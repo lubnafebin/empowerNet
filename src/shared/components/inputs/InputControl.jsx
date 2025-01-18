@@ -160,28 +160,29 @@ export const InputControl = React.forwardRef(function InputControl(
       break;
     case "search":
       inputElement = (
-        <OutlinedInput
-          value={value}
-          {...rest}
-          startAdornment={
-            <InputAdornment sx={{ p: 0, m: 0 }} position="start">
-              <SearchIcon size="small" />
-            </InputAdornment>
-          }
-          endAdornment={
-            value &&
-            onClear && (
-              <InputAdornment
-                sx={{ cursor: "pointer" }}
-                onClick={onClear}
-                position="end"
-              >
-                <CloseIcon size="large" />
+        <FormControl fullWidth={rest.fullWidth}>
+          <OutlinedInput
+            value={value}
+            {...rest}
+            startAdornment={
+              <InputAdornment sx={{ p: 0, m: 0 }} position="start">
+                <SearchIcon size="small" />
               </InputAdornment>
-            )
-          }
-          fullWidth
-        />
+            }
+            endAdornment={
+              value &&
+              onClear && (
+                <InputAdornment
+                  sx={{ cursor: "pointer" }}
+                  onClick={onClear}
+                  position="end"
+                >
+                  <CloseIcon size="large" />
+                </InputAdornment>
+              )
+            }
+          />
+        </FormControl>
       );
       break;
     default:

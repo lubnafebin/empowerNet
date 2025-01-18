@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import {
   Box,
   IconButton,
@@ -50,7 +51,7 @@ export const Sidebar = ({ sidebarOpen, toggleSidebar }) => {
   const smallDevice = useMediaQuery("(max-width: 425px)");
   const Drawer = largeDevice ? CustomDrawer : MuiDrawer;
 
-  const { checkPermission, getLoggedInUser } = useUtilFunctions();
+  const { checkPermission } = useUtilFunctions();
 
   const handleCollapseToggle = (title, children, href) => {
     if (!children) navigate(href);
@@ -62,13 +63,10 @@ export const Sidebar = ({ sidebarOpen, toggleSidebar }) => {
   };
 
   React.useLayoutEffect(() => {
-    const user = getLoggedInUser();
-    if (user.userType < 3) {
-      const filteredItems = drawerItems.filter(({ permission }) =>
-        checkPermission(permission),
-      );
-      setNavigationList(filteredItems);
-    }
+    const filteredItems = drawerItems.filter(({ permission }) =>
+      checkPermission(permission),
+    );
+    setNavigationList(filteredItems);
   }, []);
 
   return (
@@ -78,7 +76,7 @@ export const Sidebar = ({ sidebarOpen, toggleSidebar }) => {
       onClose={largeDevice ? undefined : toggleSidebar}
       PaperProps={{
         sx: {
-          p: 1,
+          px: 1,
           border: theme.palette.mode === "dark" ? "none" : "",
           display: "flex",
           flexDirection: "column",
@@ -88,13 +86,28 @@ export const Sidebar = ({ sidebarOpen, toggleSidebar }) => {
       }}
     >
       <DrawerHeader>
-        <Box
-          component="img"
-          src={theme.palette.mode === "dark" ? LogoDark : LogoLight}
-          width="140px"
+        <Stack
+          flexDirection="row"
+          gap="8px"
           display={sidebarOpen ? "flex" : "none"}
           transition="0.5s all ease-in-out"
-        />
+        >
+          <Box
+            component="img"
+            src={theme.palette.mode === "dark" ? LogoDark : LogoLight}
+            width="24px"
+            height="24px"
+          />
+          <Typography
+            fontWeight={500}
+            fontSize="16px"
+            color="text.primary"
+            fontFamily="sans-serif"
+          >
+            EmpowerNet
+          </Typography>
+        </Stack>
+
         <Tooltip
           title={sidebarOpen ? "Close Sidebar" : "Open Sidebar"}
           arrow
@@ -146,7 +159,7 @@ export const Sidebar = ({ sidebarOpen, toggleSidebar }) => {
                     dense
                     sx={{
                       display: "flex",
-                      //  color: '#ffffff'
+                      // color: "#ffffff",
                     }}
                     onClick={() => handleCollapseToggle(title, children, href)}
                   >
@@ -156,16 +169,16 @@ export const Sidebar = ({ sidebarOpen, toggleSidebar }) => {
                       sx={{
                         px: 1.5,
                         // justifyContent: sidebarOpen ? 'initial' : 'center',
-                        "&.Mui-selected": {
-                          // backgroundColor: 'primary.main',
-                          color:
-                            theme.palette.mode === "dark"
-                              ? "#000"
-                              : "primary.main",
-                        },
-                        "&.Mui-selected:hover": {
-                          // backgroundColor: 'primary.main',
-                        },
+                        // "&.Mui-selected": {
+                        // backgroundColor: 'primary.main',
+                        // color:
+                        //   theme.palette.mode === "dark"
+                        //     ? "#000"
+                        //     : "primary.main",
+                        // },
+                        // "&.Mui-selected:hover": {
+                        //   backgroundColor: 'primary.main',
+                        // },
                       }}
                     >
                       <Tooltip
@@ -311,5 +324,12 @@ const drawerItems = [
     defaultIcon: DashboardDefaultIcon,
     selectedIcon: DashboardSelectedIcon,
     permission: "dashboard.read",
+  },
+  {
+    href: "/wards",
+    title: "Wards",
+    defaultIcon: DashboardDefaultIcon,
+    selectedIcon: DashboardSelectedIcon,
+    permission: "wards.read",
   },
 ];

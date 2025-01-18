@@ -5,8 +5,8 @@ import { AppStateContext, defaultAppState } from "../shared/context";
 import React from "react";
 import {
   getAuthDetailsServices,
-  isAuthenticated,
   toggleThemeService,
+  useUtilFunctions,
 } from "../utils";
 import { useMediaQuery, useTheme } from "@mui/material";
 
@@ -17,6 +17,7 @@ export const AppStateContextProvider = ({ children }) => {
     ...defaultAppState,
     sidebarOpen: largeDevice ? true : false,
   });
+  const { isAuthenticated } = useUtilFunctions();
 
   React.useLayoutEffect(() => {
     const theme = toggleThemeService({ type: "get" });

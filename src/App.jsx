@@ -8,7 +8,7 @@ import {
   useAppStateContext,
 } from "./shared";
 import { Route, Routes } from "react-router-dom";
-import { AuthenticationRoutes } from "./modules";
+import { AdminRoutes, AuthenticationRoutes } from "./modules";
 
 export const App = () => {
   const { appState } = useAppStateContext();
@@ -25,8 +25,7 @@ export const App = () => {
             {/* Client side routes */}
             {/* <Route path="/client/*" element={<PublicRoutes />} /> */}
 
-            {/* Admin side routes which includes [profitune, admin] */}
-            {/* <Route path="/*" element={<AdminRoutes />} /> */}
+            <Route path="/*" element={<AdminRoutes />} />
           </Route>
         </Routes>
         <AlertComponent />
