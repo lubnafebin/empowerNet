@@ -8,6 +8,7 @@ import {
   ReactTable,
 } from "../../../shared";
 import {
+  Avatar,
   Box,
   Button,
   CircularProgress,
@@ -15,7 +16,10 @@ import {
   DialogContent,
   Divider,
   IconButton,
+  ListItem,
+  ListItemText,
   Stack,
+  TextField,
   Tooltip,
   Typography,
 } from "@mui/material";
@@ -27,6 +31,7 @@ import {
 } from "@mui/icons-material";
 import { useTransactions } from "../hooks";
 import { useLocation, useNavigate } from "react-router-dom";
+import { BASE_URL } from "../../../configs";
 
 export const Transactions = () => {
   const navigate = useNavigate();
@@ -37,6 +42,7 @@ export const Transactions = () => {
     toggleModel,
     handleFormChange,
     handleFormSubmit,
+    resetFormState,
   } = useTransactions();
 
   const columns = React.useMemo(
@@ -45,7 +51,6 @@ export const Transactions = () => {
         header: "ID",
         accessorKey: "id",
         enableSorting: true,
-        placement: "right",
       },
       {
         header: "Account Holder",
@@ -55,20 +60,17 @@ export const Transactions = () => {
           },
         }) => <Typography>{accountHolder.name}</Typography>,
         enableSorting: true,
-        placement: "right",
       },
       {
         header: "Date",
         accessorKey: "transactionDate",
         enableSorting: true,
-        placement: "right",
         meta: { stackStyle: { minWidth: 100 } },
       },
       {
         header: "Time",
         accessorKey: "transactionTime",
         enableSorting: true,
-        placement: "right",
       },
       {
         header: "Recorder By",
@@ -78,19 +80,29 @@ export const Transactions = () => {
           },
         }) => <Typography fontWeight={14}>{createdBy?.name ?? "-"}</Typography>,
         enableSorting: true,
-        placement: "right",
       },
       {
         header: "Deposit",
         accessorKey: "deposit",
         enableSorting: true,
-        placement: "right",
       },
       {
         header: "Refund",
-        accessorKey: "refund",
+        cell: ({
+          row: {
+            original: { refund },
+          },
+        }) => (
+          <Typography fontSize={16} fontWeight={500}>
+            {refund ?? "0"}
+          </Typography>
+        ),
         enableSorting: true,
-        placement: "refund",
+        meta: {
+          rowCellStyle: {
+            align: "center",
+          },
+        },
       },
       {
         header: "Member Fee",
@@ -99,77 +111,79 @@ export const Transactions = () => {
             original: { memberFee },
           },
         }) => (
-          <Typography fontSize={14}>
+          <Typography fontSize={16} fontWeight={500}>
             {memberFee ?? "0"}
           </Typography>
         ),
         enableSorting: true,
-        placement: "right",
+        meta: {
+          rowCellStyle: {
+            align: "center",
+          },
+        },
       },
       {
         header: "Total Savings",
-        accessorKey: "totalSavings",
+        cell: ({
+          row: {
+            original: { totalSavings },
+          },
+        }) => (
+          <Typography fontSize={16} fontWeight={500} color="success.light">
+            {totalSavings}
+          </Typography>
+        ),
         enableSorting: true,
-        placement: "right",
       },
       {
         header: "Total Refunds",
-        accessorKey: "totalRefund",
-        enableSorting: true,
-        placement: "right",
-      },
-      {
-        header: "Action",
-        accessorKey: "action",
-        enableSorting: false,
-        placement: "right",
         cell: ({
           row: {
-            original: { id },
+            original: { totalRefund },
           },
         }) => (
-          <Stack flexDirection="row">
-            <Tooltip title="Agendas" arrow disableInteractive>
-              <IconButton
-                size="small"
-                onClick={() => navigate(`${id}/agendas`)}
-              >
-                <AssignmentOutlined fontSize="small" />
-              </IconButton>
-            </Tooltip>
-            <Tooltip title="Transactions" arrow disableInteractive>
-              <IconButton
-                size="small"
-                onClick={() => navigate(`${id}/transactions`)}
-              >
-                <CurrencyRupeeRounded fontSize="small" />
-              </IconButton>
-            </Tooltip>
-            <Tooltip title="Delete Meeting" arrow disableInteractive>
-              <IconButton
-                size="small"
-                onClick={() => toggleModel({ type: "deleteWard", id })}
-              >
-                <DeleteOutlineRounded fontSize="small" />
-              </IconButton>
-            </Tooltip>
-          </Stack>
+          <Typography fontSize={16} fontWeight={500} color="success.light">
+            {totalRefund}
+          </Typography>
         ),
+        enableSorting: true,
       },
     ],
     [],
   );
 
   const helperText = {
-    name: formValidator.current.message(
+    memberId: formValidator.current.message(
       "name",
-      state.formData.name,
+      state.formData.memberId,
       "required",
     ),
-    wardNo: formValidator.current.message(
-      "wardNo",
-      state.formData.wardNo,
-      "required",
+    deposit: formValidator.current.message(
+      "deposit",
+      {
+        deposit: state.formData.deposit,
+        refund: state.formData.refund,
+        memberFee: state.formData.memberFee,
+      },
+      "minOneField",
+    ),
+    refund: formValidator.current.message(
+      "refund",
+      {
+        deposit: state.formData.deposit,
+        refund: state.formData.refund,
+        memberFee: state.formData.memberFee,
+      },
+      "minOneField",
+    ),
+    memberFee: formValidator.current.message(
+      "memberFee",
+      {
+        deposit: state.formData.deposit,
+        refund: state.formData.refund,
+        memberFee: state.formData.memberFee,
+      },
+      "minOneField",
     ),
   };
 
@@ -189,7 +203,7 @@ export const Transactions = () => {
 
   return (
     <PageLayout
-      title="Transactions"
+      title={"Transactions on " + location.state?.minuteDate}
       breadcrumbs={breadcrumbs}
       actionSection={
         <Button
@@ -197,7 +211,7 @@ export const Transactions = () => {
           startIcon={<Add />}
           onClick={() => toggleModel("newWard")}
         >
-          New Minute
+          New Transaction
         </Button>
       }
     >
@@ -207,9 +221,13 @@ export const Transactions = () => {
         loading={state.isTableLoading}
       />
 
-      <GeneralDialog dialogValue={state.selectedWardId ? "?ward" : "?new-ward"}>
+      <GeneralDialog
+        dialogValue={state.selectedWardId ? "?transaction" : "?new-transaction"}
+        disableCloseOnBackgroundClick={false}
+      >
         <DialogHeader
-          title={state.selectedWardId ? state.formData.name : "New Ward"}
+          title={state.selectedWardId ? state.formData.name : "New Transaction"}
+          resetCache={resetFormState}
         />
         <Divider variant="fullWidth" orientation="horizontal" />
         {state.isFormLoading && state.selectedWardId ? (
@@ -224,29 +242,89 @@ export const Transactions = () => {
           <Box
             component="form"
             onSubmit={handleFormSubmit}
-            sx={{ width: { md: 400, xs: "100%" } }}
+            sx={{ width: { md: 500, xs: "100%" } }}
           >
             <DialogContent>
               <Stack gap="14px">
                 <InputControl
-                  required
+                  type="dropdown"
                   size="small"
-                  label="Ward No"
-                  value={state.formData.wardNo}
-                  name="wardNo"
-                  onChange={handleFormChange}
-                  error={Boolean(helperText.wardNo)}
-                  helperText={helperText.wardNo}
+                  options={state.participants.options}
+                  isOptionEqualToValue={(option, current) => {
+                    return option.id === current.id;
+                  }}
+                  getOptionLabel={(option) => option.member.user.name}
+                  onChange={(_, value) =>
+                    handleFormChange({
+                      target: { name: "memberId", value },
+                    })
+                  }
+                  value={state.formData.memberId}
+                  renderOption={(props, option) => {
+                    // eslint-disable-next-line react/prop-types
+                    const { key, ...optionProps } = props;
+                    return (
+                      <ListItem
+                        key={key}
+                        {...optionProps}
+                        sx={{ gap: "8px", display: "flex" }}
+                      >
+                        <Avatar
+                          src={BASE_URL + option.member.user.profile.url}
+                          alt="avatar"
+                          sx={{ width: 36, height: 36, fontSize: 14 }}
+                        >
+                          {option.member.user.name[0]}
+                        </Avatar>
+                        <ListItemText
+                          primary={option.member.user.name}
+                          secondary={option.member.user.email}
+                        />
+                      </ListItem>
+                    );
+                  }}
+                  renderInput={(props) => (
+                    <TextField
+                      required
+                      label="Account Holder Name"
+                      {...props}
+                      placeholder="Select account holder"
+                      error={Boolean(helperText.memberId)}
+                      helperText={helperText.memberId}
+                    />
+                  )}
                 />
+                <Stack flexDirection={{ xs: "column", md: "row" }} gap="14px">
+                  <InputControl
+                    size="small"
+                    type="number"
+                    label="Deposit Amount"
+                    value={state.formData.deposit}
+                    name="deposit"
+                    onChange={handleFormChange}
+                    error={Boolean(helperText.deposit)}
+                    helperText={helperText.deposit}
+                  />
+                  <InputControl
+                    size="small"
+                    type="number"
+                    label="Refund Amount"
+                    value={state.formData.refund}
+                    name="refund"
+                    onChange={handleFormChange}
+                    error={Boolean(helperText.refund)}
+                    helperText={helperText.refund}
+                  />
+                </Stack>
                 <InputControl
-                  required
                   size="small"
-                  label="Ward Name"
-                  value={state.formData.name}
-                  name="name"
-                  error={Boolean(helperText.name)}
-                  helperText={helperText.name}
+                  type="number"
+                  label="Membership Fee"
+                  value={state.formData.memberFee}
+                  name="memberFee"
                   onChange={handleFormChange}
+                  error={Boolean(helperText.memberFee)}
+                  helperText={helperText.memberFee}
                 />
               </Stack>
             </DialogContent>

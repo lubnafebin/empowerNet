@@ -2,7 +2,9 @@ import React from "react";
 import { AlertRowAction, useAlertContext } from "../../../shared";
 import { enqueueSnackbar } from "notistack";
 import {
+  createNewTransactionApi,
   deleteTransactionApi,
+  getMeetingParticipantsApi,
   getMeetingTransactionListApi,
   getTransactionDetailsApi,
   updateTransactionApi,
@@ -11,6 +13,7 @@ import SimpleReactValidator from "simple-react-validator";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useImmer } from "use-immer";
 import { utilFunctions } from "../../../utils";
+import dayjs from "dayjs";
 
 export const useTransactions = () => {
   const [_, setForceUpdate] = React.useState(0);
@@ -19,10 +22,13 @@ export const useTransactions = () => {
     isFormSubmitting: false,
     isTableLoading: true,
     transactions: { options: [] },
+    participants: { options: [] },
     selectedTransactionId: null,
     formData: {
-      name: "",
-      TransactionNo: "",
+      memberId: null,
+      deposit: "",
+      refund: "",
+      memberFee: "",
     },
   });
   const { meetingId } = useParams();
@@ -34,6 +40,14 @@ export const useTransactions = () => {
     new SimpleReactValidator({
       autoForceUpdate: { forceUpdate: setForceUpdate },
       element: (message) => message,
+      validators: {
+        minOneField: {
+          message: "At least one amount is required",
+          rule: ({ deposit, refund, memberFee }) => {
+            return deposit !== "" || refund !== "" || memberFee !== "";
+          },
+        },
+      },
     }),
   );
 
@@ -57,7 +71,27 @@ export const useTransactions = () => {
     }
   };
 
-  const getAgendaList = async (meetingId) => {
+  const getMeetingParticipants = async (meetingId) => {
+    triggerTableLoading(true);
+    try {
+      const response = await getMeetingParticipantsApi(meetingId);
+
+      const { success, message, data } = response;
+      if (success) {
+        setState((draft) => {
+          draft.participants.options = data;
+        });
+      } else {
+        throw { response: { data: { message } } };
+      }
+    } catch (exception) {
+      utilFunctions.displayError(exception);
+    } finally {
+      triggerTableLoading(false);
+    }
+  };
+
+  const getMeetingTransactionList = async (meetingId) => {
     triggerTableLoading(true);
     try {
       const response = await getMeetingTransactionListApi(meetingId);
@@ -77,16 +111,15 @@ export const useTransactions = () => {
     }
   };
 
-  const createNewTransaction = async (formData) => {
+  const createNewTransaction = async ({ params, meetingId }) => {
     triggerSubmitButtonLoading(true);
     try {
-      const response = {};
-      // await createTransactionApi(formData);
+      const response = await createNewTransactionApi({ params, meetingId });
       const { success, message } = response;
       if (success) {
         enqueueSnackbar({ message, variant: "success" });
-        getAgendaList();
-        navigate(location.pathname, { replace: true });
+        getMeetingTransactionList(meetingId);
+        navigate(location.pathname, { replace: true, state: location.state });
       } else {
         throw { response: { data: { message } } };
       }
@@ -108,8 +141,8 @@ export const useTransactions = () => {
       const { success, message } = response;
       if (success) {
         enqueueSnackbar({ message, variant: "success" });
-        getAgendaList();
-        navigate(location.pathname, { replace: true });
+        getMeetingTransactionList(meetingId);
+        navigate(location.pathname, { replace: true, state: location.state });
       } else {
         throw { response: { data: { message } } };
       }
@@ -128,7 +161,7 @@ export const useTransactions = () => {
       const { success, message } = response;
       if (success) {
         enqueueSnackbar({ message, variant: "success" });
-        getAgendaList();
+        getMeetingTransactionList(meetingId);
       } else {
         throw { response: { data: { message } } };
       }
@@ -180,13 +213,13 @@ export const useTransactions = () => {
         });
         break;
       default:
-        navigate("?new-transaction");
+        navigate("?new-transaction", { state: location.state });
         break;
     }
   };
 
   const handleTransactionSelection = async (id) => {
-    navigate("?transaction");
+    navigate("?transaction", { state: location.state });
     setState((draft) => {
       draft.selectedTransactionId = id;
     });
@@ -204,9 +237,25 @@ export const useTransactions = () => {
     event.preventDefault();
     if (formValidator.current.allValid()) {
       switch (location.search) {
-        case "?new-transaction":
-          await createNewTransaction(state.formData);
+        case "?new-transaction": {
+          const params = {
+            transactionDate: dayjs(location.state?.minuteDate).format(
+              "YYYY-MM-DD",
+            ),
+            memberId: state.formData.memberId?.member?.id,
+          };
+          if (state.formData.deposit) {
+            params["deposit"] = parseInt(state.formData.deposit);
+          }
+          if (state.formData.refund) {
+            params["refund"] = parseInt(state.formData.refund);
+          }
+          if (state.formData.memberFee) {
+            params["memberFee"] = parseInt(state.formData.memberFee);
+          }
+          await createNewTransaction({ params, meetingId });
           break;
+        }
         case "?transaction":
           await updateTransaction({
             formData: {
@@ -225,25 +274,21 @@ export const useTransactions = () => {
     }
   };
 
-  // Reset form data
-  React.useEffect(() => {
-    if (
-      location.search === "" &&
-      (state.formData.name !== "" ||
-        state.formData.transactionNo !== "" ||
-        formValidator.current.errorMessages)
-    ) {
-      formValidator.current.hideMessages();
-      setState((draft) => {
-        draft.formData = { name: "", transactionNo: "" };
-        draft.selectedTransactionId = null;
-      });
-      setForceUpdate(0);
-    }
-  }, [location.search]);
+  const resetFormState = () => {
+    formValidator.current.hideMessages();
+    setState((draft) => {
+      draft.formData.memberId = null;
+      draft.formData.deposit = "";
+      draft.formData.refund = "";
+      draft.formData.memberFee = "";
+      draft.selectedTransactionId = null;
+    });
+    setForceUpdate(0);
+  };
 
   React.useEffect(() => {
-    getAgendaList(meetingId);
+    getMeetingTransactionList(meetingId);
+    getMeetingParticipants(meetingId);
   }, []);
 
   return {
@@ -252,5 +297,6 @@ export const useTransactions = () => {
     handleFormSubmit,
     toggleModel,
     handleFormChange,
+    resetFormState,
   };
 };

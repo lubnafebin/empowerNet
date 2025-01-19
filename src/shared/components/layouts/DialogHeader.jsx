@@ -20,7 +20,10 @@ export const DialogHeader = ({ title, resetCache = null }) => {
         <IconButton
           size="small"
           onClick={() => {
-            navigate(location.pathname, { replace: true });
+            navigate(location.pathname, {
+              replace: true,
+              state: location.state,
+            });
             resetCache && resetCache();
           }}
         >
