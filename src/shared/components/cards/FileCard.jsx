@@ -20,8 +20,8 @@ export const FileCard = ({
       sx={{
         borderRadius: 2,
         backgroundColor: theme.palette.neutral[200],
-        // border: 1,
-        // borderStyle: isFileUploaded ? 'none' : 'dashed',
+        border: 1,
+        borderStyle: isFileUploaded ? 'none' : 'dashed',
       }}
     >
       {icon}

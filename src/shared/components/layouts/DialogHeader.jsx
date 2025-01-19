@@ -3,7 +3,7 @@ import { DialogTitle, IconButton, Stack, Typography } from "@mui/material";
 import { useLocation, useNavigate } from "react-router-dom";
 import PropTypes from "prop-types";
 
-export const DialogHeader = ({ title }) => {
+export const DialogHeader = ({ title, resetCache = null }) => {
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -19,7 +19,10 @@ export const DialogHeader = ({ title }) => {
         </Typography>
         <IconButton
           size="small"
-          onClick={() => navigate(location.pathname, { replace: true })}
+          onClick={() => {
+            navigate(location.pathname, { replace: true });
+            resetCache && resetCache();
+          }}
         >
           <Close fontSize="small" />
         </IconButton>
@@ -30,4 +33,5 @@ export const DialogHeader = ({ title }) => {
 
 DialogHeader.propTypes = {
   title: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
+  resetCache: PropTypes.func,
 };

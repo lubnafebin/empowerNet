@@ -1,6 +1,9 @@
 import { API } from "../../../utils";
+const contentTypeFormData = {
+  headers: { "Content-Type": "multipart/form-data" },
+};
 
-export const getWardDetailsApi = async (wardId) => {
+export const getMemberDetailsApi = async (wardId) => {
   const response = await API.get(`cds/ward/${wardId}`);
   return response.data;
 };
@@ -10,17 +13,21 @@ export const getMemberListApi = async () => {
   return response.data;
 };
 
-export const createWardApi = async (params) => {
-  const response = await API.post("cds/ward/create", params);
+export const createMemberApi = async (params) => {
+  const response = await API.post(
+    "nhg/member/create",
+    params,
+    contentTypeFormData,
+  );
   return response.data;
 };
 
-export const updateWardApi = async ({ params, wardId }) => {
+export const updateMemberApi = async ({ params, wardId }) => {
   const response = await API.put(`cds/ward/${wardId}/update`, params);
   return response.data;
 };
 
-export const deleteWardApi = async ({ wardId }) => {
+export const deleteMemberApi = async ({ wardId }) => {
   const response = await API.delete(`cds/ward/${wardId}/delete`);
   return response.data;
 };

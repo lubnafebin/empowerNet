@@ -2,17 +2,38 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { useImmer } from "use-immer";
 import {
-  createWardApi,
-  deleteWardApi,
+  createMemberApi,
+  deleteMemberApi,
+  getMemberDetailsApi,
   getMemberListApi,
-  getWardDetailsApi,
-  updateWardApi,
+  updateMemberApi,
 } from "../apis";
 import { enqueueSnackbar } from "notistack";
 import React from "react";
 import SimpleReactValidator from "simple-react-validator";
 import { AlertRowAction, useAlertContext } from "../../../shared";
-import { utilFunctions } from "../../../utils";
+import { getDistrictsByStateIdApi, utilFunctions } from "../../../utils";
+
+const initialFormState = {
+  isFormLoading: true,
+  isFormSubmitting: false,
+  memberList: { options: [], loading: true },
+  district: { options: [], loading: true },
+  selectedMemberId: null,
+  formData: {
+    name: "",
+    email: "",
+    aadharNo: "",
+    contactNo: "",
+    addressLine2: "",
+    addressLine1: "",
+    districtId: null,
+    postcode: "",
+    profile: null,
+    aadharAttachment: null,
+    signatureAttachment: null,
+  },
+};
 
 export const useMemberList = () => {
   const [_, setForceUpdate] = React.useState(0);
@@ -20,10 +41,20 @@ export const useMemberList = () => {
     isFormLoading: true,
     isFormSubmitting: false,
     memberList: { options: [], loading: true },
-    selectedWardId: null,
+    district: { options: [], loading: true },
+    selectedMemberId: null,
     formData: {
       name: "",
-      wardNo: "",
+      email: "",
+      aadharNo: "",
+      contactNo: "",
+      addressLine2: "",
+      addressLine1: "",
+      districtId: null,
+      postcode: "",
+      profile: null,
+      aadharAttachment: null,
+      signatureAttachment: null,
     },
   });
   const { setAlert } = useAlertContext();
@@ -37,10 +68,30 @@ export const useMemberList = () => {
     }),
   );
 
-  const getWardDetails = async (wardId) => {
+  const getDistrictsList = async () => {
+    triggerTableLoading(true);
+    try {
+      const response = await getDistrictsByStateIdApi({});
+      const { success, message, data } = response;
+
+      if (success) {
+        setState((draft) => {
+          draft.district.options = data;
+        });
+      } else {
+        throw { response: { data: { message } } };
+      }
+    } catch (exception) {
+      utilFunctions.displayError(exception);
+    } finally {
+      triggerTableLoading(false);
+    }
+  };
+
+  const getMemberDetails = async (wardId) => {
     triggerFormLoading(true);
     try {
-      const response = await getWardDetailsApi(wardId);
+      const response = await getMemberDetailsApi(wardId);
 
       const { success, message, data } = response;
       if (success) {
@@ -77,10 +128,10 @@ export const useMemberList = () => {
     }
   };
 
-  const createNewWard = async (formData) => {
+  const createNewMember = async (formData) => {
     triggerSubmitButtonLoading(true);
     try {
-      const response = await createWardApi(formData);
+      const response = await createMemberApi(formData);
 
       const { success, message } = response;
       if (success) {
@@ -97,10 +148,10 @@ export const useMemberList = () => {
     }
   };
 
-  const updateWard = async ({ formData, wardId }) => {
+  const updateMember = async ({ formData, wardId }) => {
     triggerSubmitButtonLoading(true);
     try {
-      const response = await updateWardApi({ params: formData, wardId });
+      const response = await updateMemberApi({ params: formData, wardId });
 
       const { success, message } = response;
       if (success) {
@@ -117,10 +168,10 @@ export const useMemberList = () => {
     }
   };
 
-  const deleteWard = async (wardId) => {
+  const deleteMember = async (wardId) => {
     triggerTableLoading(true);
     try {
-      const response = await deleteWardApi({ wardId });
+      const response = await deleteMemberApi({ wardId });
 
       const { success, message } = response;
       if (success) {
@@ -154,63 +205,75 @@ export const useMemberList = () => {
     });
   };
 
+  const handleResetFormData = () => {
+    setState((draft) => {
+      draft.formData = initialFormState.formData;
+    });
+  };
   const toggleModel = async ({ type, id }) => {
     switch (type) {
-      case "wardDetails":
-        handleWardSelection(id);
+      case "memberDetails":
+        handleMemberSelection(id);
         break;
-      case "manageAds":
-        break;
-      case "deleteWard":
+      case "deleteMember":
         setAlert((draft) => {
           draft.open = true;
           draft.dialogValue = "?delete";
-          draft.title = "Delete Ward";
+          draft.title = "Delete Member";
           draft.description =
-            "Are you sure? Do you want to delete the ward. Once you delete the ward there is no going back.";
+            "Are you sure? Do you want to delete the member. Once you delete the member there is no going back.";
           draft.rowAction = (
             <AlertRowAction
-              onClick={async () => await deleteWard(id)}
+              onClick={async () => await deleteMember(id)}
               label="Delete"
             />
           );
         });
         break;
       default:
-        navigate("?new-ward");
+        navigate("?new-member");
         break;
     }
   };
 
-  const handleWardSelection = async (id) => {
+  const handleMemberSelection = async (id) => {
     navigate("?ward");
     setState((draft) => {
-      draft.selectedWardId = id;
+      draft.selectedMemberId = id;
     });
-    await getWardDetails(id);
+    await getMemberDetails(id);
   };
 
   const handleFormChange = (event) => {
     const { name, value } = event.target;
     setState((draft) => {
-      draft.formData[name] = value;
+      if (
+        ["signatureAttachment", "aadharAttachment", "profile"].includes(name)
+      ) {
+        draft.formData[name] = value.target.files[0];
+      } else {
+        draft.formData[name] = value;
+      }
     });
   };
 
   const handleFormSubmit = async (event) => {
     event.preventDefault();
     if (formValidator.current.allValid()) {
+      const formData = new FormData();
+      Object.entries(state.formData).forEach(([key, value]) => {
+        const newValue = key === "districtId" ? value.id : value;
+        formData.append(key, newValue);
+      });
+
       switch (location.search) {
-        case "?new-ward":
-          await createNewWard(state.formData);
+        case "?new-member":
+          await createNewMember(formData);
           break;
-        case "?ward":
-          await updateWard({
-            formData: {
-              name: state.formData.name,
-              wardNo: state.formData.wardNo,
-            },
-            wardId: state.selectedWardId,
+        case "?member":
+          await updateMember({
+            formData,
+            wardId: state.selectedMemberId,
           });
           break;
         default:
@@ -225,22 +288,18 @@ export const useMemberList = () => {
   // Reset form data
   React.useEffect(() => {
     if (
-      location.search === "" &&
-      (state.formData.name !== "" ||
-        state.formData.wardNo !== "" ||
-        formValidator.current.errorMessages)
+      (location.search === "" && state.formData.name) ||
+      formValidator.current.errorMessages
     ) {
-      formValidator.current.hideMessages();
-      setState((draft) => {
-        draft.formData = { name: "", wardNo: "" };
-        draft.selectedWardId = null;
-      });
-      setForceUpdate(0);
+      // formValidator.current.hideMessages();
+      // setState(initialFormState);
+      // setForceUpdate(0);
     }
   }, [location.search]);
 
   React.useEffect(() => {
     getMemberList();
+    getDistrictsList();
   }, []);
 
   return {
@@ -249,5 +308,6 @@ export const useMemberList = () => {
     handleFormSubmit,
     toggleModel,
     handleFormChange,
+    handleResetFormData,
   };
 };

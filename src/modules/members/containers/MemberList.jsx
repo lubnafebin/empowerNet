@@ -1,12 +1,18 @@
 import React from "react";
 import {
   DialogHeader,
+  FileCard,
   GeneralDialog,
   InputControl,
   LoadingButton,
   PageLayout,
   ReactTable,
+  VisuallyHiddenInput,
 } from "../../../shared";
+import SignatureIcon from "../../../assets/signature-icon-lite.svg";
+import SignatureDarkIcon from "../../../assets/signature-icon-dark.svg";
+import AadharIcon from "../../../assets/aadhar-icon-lite.svg";
+import AadharDarkIcon from "../../../assets/aadhar-icon-dark.svg";
 import {
   Avatar,
   Box,
@@ -16,14 +22,18 @@ import {
   DialogActions,
   DialogContent,
   Divider,
+  FormHelperText,
   IconButton,
   Stack,
+  TextField,
   Tooltip,
   Typography,
+  useTheme,
 } from "@mui/material";
 import {
   Add,
   DeleteOutlineRounded,
+  PictureAsPdf,
   VisibilityOutlined,
 } from "@mui/icons-material";
 import { useMemberList } from "../hooks";
@@ -35,7 +45,9 @@ export const MemberList = () => {
     toggleModel,
     handleFormChange,
     handleFormSubmit,
+    handleResetFormData,
   } = useMemberList();
+  const theme = useTheme();
 
   const columns = React.useMemo(
     () => [
@@ -159,7 +171,7 @@ export const MemberList = () => {
           },
         }) => (
           <Stack flexDirection="row">
-            <Tooltip title="Ward Details" arrow disableInteractive>
+            <Tooltip title="Member Details" arrow disableInteractive>
               <IconButton
                 size="small"
                 onClick={() => toggleModel({ type: "wardDetails", id })}
@@ -167,10 +179,10 @@ export const MemberList = () => {
                 <VisibilityOutlined fontSize="small" />
               </IconButton>
             </Tooltip>
-            <Tooltip title="Delete Ward" arrow disableInteractive>
+            <Tooltip title="Delete Member" arrow disableInteractive>
               <IconButton
                 size="small"
-                onClick={() => toggleModel({ type: "deleteWard", id })}
+                onClick={() => toggleModel({ type: "deleteMember", id })}
               >
                 <DeleteOutlineRounded fontSize="small" />
               </IconButton>
@@ -188,9 +200,49 @@ export const MemberList = () => {
       state.formData.name,
       "required",
     ),
-    wardNo: formValidator.current.message(
-      "wardNo",
-      state.formData.wardNo,
+    email: formValidator.current.message(
+      "email",
+      state.formData.email,
+      "required|email",
+    ),
+    aadharNo: formValidator.current.message(
+      "aadharNo",
+      state.formData.aadharNo,
+      "required|min:12|max:12",
+    ),
+    contactNo: formValidator.current.message(
+      "contactNo",
+      state.formData.contactNo,
+      "required|min:10|max:10",
+    ),
+    addressLine1: formValidator.current.message(
+      "addressLine1",
+      state.formData.addressLine1,
+      "required",
+    ),
+    addressLine2: formValidator.current.message(
+      "addressLine2",
+      state.formData.addressLine2,
+      "required",
+    ),
+    postcode: formValidator.current.message(
+      "postcode",
+      state.formData.postcode,
+      "required|min:6",
+    ),
+    districtId: formValidator.current.message(
+      "districtId",
+      state.formData.districtId,
+      "required",
+    ),
+    aadharAttachment: formValidator.current.message(
+      "aadharAttachment",
+      state.formData.aadharAttachment,
+      "required",
+    ),
+    signatureAttachment: formValidator.current.message(
+      "aadharAttachment",
+      state.formData.signatureAttachment,
       "required",
     ),
   };
@@ -213,7 +265,7 @@ export const MemberList = () => {
         <Button
           variant="contained"
           startIcon={<Add />}
-          onClick={() => toggleModel("newWard")}
+          onClick={() => toggleModel("newMember")}
         >
           New Member
         </Button>
@@ -226,14 +278,18 @@ export const MemberList = () => {
         rowClick={() => {}}
       />
 
-      <GeneralDialog dialogValue={state.selectedWardId ? "?ward" : "?new-ward"}>
+      <GeneralDialog
+        disableCloseOnBackgroundClick={false}
+        dialogValue={state.selectedMemberId ? "?member" : "?new-member"}
+      >
         <DialogHeader
-          title={state.selectedWardId ? state.formData.name : "New Ward"}
+          title={state.selectedMemberId ? state.formData.name : "New Member"}
+          resetCache={handleResetFormData}
         />
         <Divider variant="fullWidth" orientation="horizontal" />
-        {state.isFormLoading && state.selectedWardId ? (
+        {state.isFormLoading && state.selectedMemberId ? (
           <Stack
-            sx={{ width: { md: 400, xs: "100%" }, height: 190 }}
+            sx={{ width: { md: 600, xs: "100%" }, height: 190 }}
             alignItems="center"
             justifyContent="center"
           >
@@ -243,30 +299,242 @@ export const MemberList = () => {
           <Box
             component="form"
             onSubmit={handleFormSubmit}
-            sx={{ width: { md: 400, xs: "100%" } }}
+            sx={{
+              width: { md: 600, xs: "100%" },
+            }}
           >
-            <DialogContent>
-              <Stack gap="14px">
+            <DialogContent
+              sx={{ maxHeight: "calc(100vh - 200px)", overflowY: "auto" }}
+            >
+              <Stack gap="14px" flexDirection={{ xs: "column", md: "row" }}>
+                <Box component="label">
+                  <VisuallyHiddenInput
+                    type="file"
+                    accept="image/png, image/jpg, image/jpeg"
+                    onChange={(event) =>
+                      handleFormChange({
+                        target: {
+                          name: "profile",
+                          value: event,
+                        },
+                      })
+                    }
+                  />
+                  <Avatar
+                    variant="rounded"
+                    src={
+                      state.formData.profile
+                        ? URL.createObjectURL(state.formData.profile)
+                        : ""
+                    }
+                    alt="profile picture"
+                    sx={{
+                      width: "100px",
+                      height: "100px",
+                      cursor: "pointer",
+                    }}
+                  />
+                </Box>
+                <Stack gap="14px">
+                  <InputControl
+                    required
+                    size="small"
+                    label="Name"
+                    value={state.formData.name}
+                    name="name"
+                    onChange={handleFormChange}
+                    error={Boolean(helperText.name)}
+                    helperText={helperText.name}
+                  />
+                  <Stack flexDirection={{ xs: "column", md: "row" }} gap="14px">
+                    <InputControl
+                      required
+                      size="small"
+                      label="Email"
+                      value={state.formData.email}
+                      name="email"
+                      error={Boolean(helperText.email)}
+                      helperText={helperText.email}
+                      onChange={handleFormChange}
+                    />
+                    <InputControl
+                      required
+                      size="small"
+                      label="Contact No"
+                      value={state.formData.contactNo}
+                      name="contactNo"
+                      error={Boolean(helperText.contactNo)}
+                      helperText={helperText.contactNo}
+                      onChange={handleFormChange}
+                    />
+                  </Stack>
+                </Stack>
+              </Stack>
+              <Stack gap="14px" mt="14px">
                 <InputControl
                   required
                   size="small"
-                  label="Ward No"
-                  value={state.formData.wardNo}
-                  name="wardNo"
+                  label="Aadhar No"
+                  value={state.formData.aadharNo}
+                  name="aadharNo"
                   onChange={handleFormChange}
-                  error={Boolean(helperText.wardNo)}
-                  helperText={helperText.wardNo}
+                  error={Boolean(helperText.aadharNo)}
+                  helperText={helperText.aadharNo}
                 />
-                <InputControl
-                  required
-                  size="small"
-                  label="Ward Name"
-                  value={state.formData.name}
-                  name="name"
-                  error={Boolean(helperText.name)}
-                  helperText={helperText.name}
-                  onChange={handleFormChange}
-                />
+                <Stack flexDirection={{ xs: "column", md: "row" }} gap="14px">
+                  <InputControl
+                    required
+                    size="small"
+                    label="AddressLine1"
+                    value={state.formData.addressLine1}
+                    name="addressLine1"
+                    onChange={handleFormChange}
+                    error={Boolean(helperText.addressLine1)}
+                    helperText={helperText.addressLine1}
+                  />
+                  <InputControl
+                    required
+                    size="small"
+                    label="AddressLine2"
+                    value={state.formData.addressLine2}
+                    name="addressLine2"
+                    onChange={handleFormChange}
+                    error={Boolean(helperText.addressLine2)}
+                    helperText={helperText.addressLine2}
+                  />
+                </Stack>
+                <Stack flexDirection={{ xs: "column", md: "row" }} gap="14px">
+                  <InputControl
+                    type="dropdown"
+                    size="small"
+                    options={state.district.options}
+                    isOptionEqualToValue={(option, current) => {
+                      return option.id === current.id;
+                    }}
+                    getOptionLabel={(option) => option.name}
+                    onChange={(_, value) =>
+                      handleFormChange({
+                        target: { name: "districtId", value },
+                      })
+                    }
+                    value={state.formData.districtId}
+                    renderInput={(props) => (
+                      <TextField
+                        label="District"
+                        {...props}
+                        placeholder="Select your District"
+                      />
+                    )}
+                  />
+                  <InputControl
+                    required
+                    size="small"
+                    label="Zipcode/Postcode"
+                    value={state.formData.postcode}
+                    name="postcode"
+                    onChange={handleFormChange}
+                    error={Boolean(helperText.postcode)}
+                    helperText={helperText.postcode}
+                  />
+                </Stack>
+                <Stack gap="14px">
+                  <Stack>
+                    {state.formData.aadharAttachment ? (
+                      <FileCard
+                        fileName={state.formData.aadharAttachment.name}
+                        icon={<PictureAsPdf fontSize="small" color="error" />}
+                        onDelete={() => {}}
+                        isFileUploaded={true}
+                      />
+                    ) : (
+                      <Box component="label">
+                        <VisuallyHiddenInput
+                          type="file"
+                          accept="application/pdf"
+                          onChange={(event) =>
+                            handleFormChange({
+                              target: {
+                                name: "aadharAttachment",
+                                value: event,
+                              },
+                            })
+                          }
+                        />
+                        <FileCard
+                          fileName=""
+                          icon={
+                            <Box
+                              component="img"
+                              src={
+                                theme.palette.mode === "light"
+                                  ? AadharDarkIcon
+                                  : AadharIcon
+                              }
+                              alt="upload file"
+                            />
+                          }
+                          isFileUploaded={false}
+                          fileNotUploadText="Click to upload the member aadhar"
+                        />
+                      </Box>
+                    )}
+
+                    {helperText.aadharAttachment && (
+                      <FormHelperText sx={{ color: "#C60808" }}>
+                        {helperText.aadharAttachment}
+                      </FormHelperText>
+                    )}
+                  </Stack>
+
+                  <Stack>
+                    {state.formData.signatureAttachment ? (
+                      <FileCard
+                        fileName={state.formData.signatureAttachment.name}
+                        icon={<PictureAsPdf fontSize="small" color="error" />}
+                        onDelete={() => {}}
+                        isFileUploaded={true}
+                      />
+                    ) : (
+                      <Box component="label">
+                        <VisuallyHiddenInput
+                          type="file"
+                          accept="application/pdf"
+                          onChange={(event) =>
+                            handleFormChange({
+                              target: {
+                                name: "signatureAttachment",
+                                value: event,
+                              },
+                            })
+                          }
+                        />
+                        <FileCard
+                          fileName=""
+                          icon={
+                            <Box
+                              component="img"
+                              src={
+                                theme.palette.mode === "light"
+                                  ? SignatureDarkIcon
+                                  : SignatureIcon
+                              }
+                              alt="upload file"
+                            />
+                          }
+                          onDelete={() => {}}
+                          isFileUploaded={false}
+                          fileNotUploadText="Click to upload the member signature"
+                        />
+                      </Box>
+                    )}
+
+                    {helperText.signatureAttachment && (
+                      <FormHelperText sx={{ color: "#C60808" }}>
+                        {helperText.signatureAttachment}
+                      </FormHelperText>
+                    )}
+                  </Stack>
+                </Stack>
               </Stack>
             </DialogContent>
             <Divider />
@@ -277,7 +545,7 @@ export const MemberList = () => {
                 type="submit"
                 variant="contained"
               >
-                {state.selectedWardId ? "Update" : "Create"}
+                {state.selectedMemberId ? "Update" : "Create"}
               </LoadingButton>
             </DialogActions>
           </Box>
