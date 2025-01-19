@@ -169,7 +169,7 @@ export const MinuteList = () => {
           startIcon={<Add />}
           onClick={() => toggleModel("new-minute")}
         >
-          New Minute
+          New Minute 
         </Button>
       }
     >
@@ -205,7 +205,11 @@ export const MinuteList = () => {
                   type="date"
                   name="date"
                   value={state.formData.date}
-                  onChange={handleFormChange}
+                  onChange={(newValue) =>
+                    handleFormChange({
+                      target: { name: "date", value: newValue },
+                    })
+                  }
                   error={Boolean(helperText.date)}
                   helperText={helperText.date}
                 />

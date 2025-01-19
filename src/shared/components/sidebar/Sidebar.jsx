@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import {
   Box,
   IconButton,
@@ -28,18 +27,25 @@ import { version } from "../../../../package.json";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useUtilFunctions } from "../../../utils";
 
-import DashboardDefaultIcon from "../../../assets/dashboard.svg";
-import DashboardSelectedIcon from "../../../assets/dashboard-selected.svg";
-// import ProfituneDefaultIcon from '../../../assets/icons/profitune.svg';
-// import ProfituneSelectedIcon from '../../../assets/icons/profitune-selected.svg';
-// import CoachDashboardDefaultIcon from '../../../assets/icons/coach-dashboard.svg';
-// import CoachDashboardSelectedIcon from '../../../assets/icons/coach-dashboard-selected.svg';
-// import QuestionnaireDefaultIcon from '../../../assets/icons/questionnaire.svg';
-// import QuestionnaireSelectedIcon from '../../../assets/icons/questionnaire-selected.svg';
-// import ClientsDefaultIcon from '../../../assets/icons/groups.svg';
-// import ClientsSelectedIcon from '../../../assets/icons/groups-selected.svg';
-// import SettingsDefaultIcon from '../../../assets/icons/settings.svg';
-// import SettingsSelectedIcon from '../../../assets/icons/settings-selected.svg';
+import DashboardLightModeIcon from "../../../assets/dashboard-icon-dark.svg";
+import DashboardDarkModeIcon from "../../../assets/dashboard-icon-light.svg";
+import DashboardSelectedIcon from "../../../assets/dashboard-icon-selected.svg";
+
+import WardsLightModeIcon from "../../../assets/list-icon-light.svg";
+import WardsDarkModeIcon from "../../../assets/list-icon-dark.svg";
+import WardsSelectedIcon from "../../../assets/list-icon-selected.svg";
+
+import ReportsLightModeIcon from "../../../assets/reports-icon-dark.svg";
+import ReportsDarkModeIcon from "../../../assets/reports-icon-light.svg";
+import ReportsSelectedIcon from "../../../assets/reports-icon-selected.svg";
+
+import MembersLightModeIcon from "../../../assets/members-icon-dark.svg";
+import MembersDarkModeIcon from "../../../assets/members-icon-light.svg";
+import MembersSelectedIcon from "../../../assets/members-icon-selected.svg";
+
+import ListLightModeIcon from "../../../assets/list-icon-light.svg";
+import ListDarkModeIcon from "../../../assets/list-icon-dark.svg";
+import ListSelectedIcon from "../../../assets/list-icon-selected.svg";
 
 export const Sidebar = ({ sidebarOpen, toggleSidebar }) => {
   const theme = useTheme();
@@ -144,7 +150,14 @@ export const Sidebar = ({ sidebarOpen, toggleSidebar }) => {
           }}
         >
           {navigationList.map(
-            ({ title, defaultIcon, selectedIcon, href, children }) => {
+            ({
+              title,
+              lightModeIcon,
+              darkModeIcon,
+              selectedIcon,
+              href,
+              children,
+            }) => {
               const isCollapsed = collapsed[title];
               const ExpandIcon = isCollapsed ? ExpandMore : ExpandLess;
               const isSelected =
@@ -197,7 +210,13 @@ export const Sidebar = ({ sidebarOpen, toggleSidebar }) => {
                         >
                           <Box
                             component="img"
-                            src={isSelected ? selectedIcon : defaultIcon}
+                            src={
+                              isSelected
+                                ? selectedIcon
+                                : theme.palette.mode === "light"
+                                  ? darkModeIcon
+                                  : lightModeIcon
+                            }
                           />
                         </ListItemIcon>
                       </Tooltip>
@@ -223,7 +242,7 @@ export const Sidebar = ({ sidebarOpen, toggleSidebar }) => {
                         }}
                       >
                         {children.map((child) =>
-                          renderChildItem({ ...child, sidebarOpen }),
+                          renderChildItem({ ...child, sidebarOpen, theme }),
                         )}
                       </List>
                     </Collapse>
@@ -263,13 +282,14 @@ Sidebar.propTypes = {
 
 const renderChildItem = ({
   title: childTitle,
-  defaultIcon: childDefaultIcon,
-  selectedIcon: childSelectedIcon,
+  lightModeIcon,
+  darkModeIcon,
+  selectedIcon,
   href: childHref,
   sidebarOpen,
+  theme,
 }) => {
   const isSelected = childHref === "/";
-
   return (
     <ListItem
       key={childTitle}
@@ -302,7 +322,13 @@ const renderChildItem = ({
           >
             <Box
               component="img"
-              src={isSelected ? childSelectedIcon : childDefaultIcon}
+              src={
+                isSelected
+                  ? selectedIcon
+                  : theme.palette.mode === "dark"
+                    ? darkModeIcon
+                    : lightModeIcon
+              }
             />
           </ListItemIcon>
         </Tooltip>
@@ -316,48 +342,54 @@ const renderChildItem = ({
     </ListItem>
   );
 };
-
+// #006BD6
 const drawerItems = [
   {
     href: "/",
     title: "Dashboard",
-    defaultIcon: DashboardDefaultIcon,
+    lightModeIcon: DashboardLightModeIcon,
+    darkModeIcon: DashboardDarkModeIcon,
     selectedIcon: DashboardSelectedIcon,
     permission: "dashboard.GET",
   },
   {
     href: "/wards",
     title: "Wards",
-    defaultIcon: DashboardDefaultIcon,
-    selectedIcon: DashboardSelectedIcon,
+    lightModeIcon: WardsLightModeIcon,
+    darkModeIcon: WardsDarkModeIcon,
+    selectedIcon: WardsSelectedIcon,
     permission: "ward.all.GET",
   },
   {
     href: "/members",
     title: "Members",
-    defaultIcon: DashboardDefaultIcon,
-    selectedIcon: DashboardSelectedIcon,
+    lightModeIcon: MembersLightModeIcon,
+    darkModeIcon: MembersDarkModeIcon,
+    selectedIcon: MembersSelectedIcon,
     permission: "member.all.GET",
   },
   {
     href: "/minutes",
     title: "Minutes",
-    defaultIcon: DashboardDefaultIcon,
-    selectedIcon: DashboardSelectedIcon,
+    lightModeIcon: ListLightModeIcon,
+    darkModeIcon: ListDarkModeIcon,
+    selectedIcon: ListSelectedIcon,
     permission: "meeting.all.GET",
   },
   {
     href: "/roles",
     title: "Roles",
-    defaultIcon: DashboardDefaultIcon,
+    lightModeIcon: DashboardLightModeIcon,
+    darkModeIcon: DashboardDarkModeIcon,
     selectedIcon: DashboardSelectedIcon,
     permission: "roles.GET",
   },
   {
     href: "/reports",
     title: "Report",
-    defaultIcon: DashboardDefaultIcon,
-    selectedIcon: DashboardSelectedIcon,
-    permission: "report.GET",
+    lightModeIcon: ReportsLightModeIcon,
+    darkModeIcon: ReportsDarkModeIcon,
+    selectedIcon: ReportsSelectedIcon,
+    permission: "report.all.GET",
   },
 ];

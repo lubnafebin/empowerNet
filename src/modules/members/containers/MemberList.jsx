@@ -34,9 +34,11 @@ import {
   Add,
   DeleteOutlineRounded,
   PictureAsPdf,
+  Telegram,
   VisibilityOutlined,
 } from "@mui/icons-material";
 import { useMemberList } from "../hooks";
+import dayjs from "dayjs";
 
 export const MemberList = () => {
   const {
@@ -64,7 +66,7 @@ export const MemberList = () => {
             original: { attachments, user },
           },
         }) => {
-          const url = "http://localhost:5000/" + attachments[2].url;
+          const url = "http://localhost:5000/" + attachments[2]?.url;
           return (
             <Avatar
               src={url}
@@ -123,6 +125,18 @@ export const MemberList = () => {
         placement: "right",
       },
       {
+        header: "Created At",
+        cell: ({
+          row: {
+            original: { createdAt },
+          },
+        }) => {
+          return dayjs(createdAt).format("ddd DD, MMM YYYY, hh:mm A");
+        },
+        enableSorting: true,
+        placement: "right",
+      },
+      {
         header: "Role",
         cell: ({
           row: {
@@ -147,18 +161,6 @@ export const MemberList = () => {
         enableSorting: true,
         placement: "right",
       },
-      // {
-      //   header: "Created At",
-      //   cell: ({
-      //     row: {
-      //       original: { createdAt },
-      //     },
-      //   }) => {
-      //     return dayjs(createdAt).format("ddd DD, MMM YYYY, hh:mm A");
-      //   },
-      //   enableSorting: true,
-      //   placement: "right",
-      // },
       {
         header: "Action",
         accessorKey: "action",
@@ -174,7 +176,7 @@ export const MemberList = () => {
             <Tooltip title="Member Details" arrow disableInteractive>
               <IconButton
                 size="small"
-                onClick={() => toggleModel({ type: "wardDetails", id })}
+                onClick={() => toggleModel({ type: "memberDetails", id })}
               >
                 <VisibilityOutlined fontSize="small" />
               </IconButton>
@@ -241,7 +243,7 @@ export const MemberList = () => {
       "required",
     ),
     signatureAttachment: formValidator.current.message(
-      "aadharAttachment",
+      "signatureAttachment",
       state.formData.signatureAttachment,
       "required",
     ),
@@ -262,20 +264,28 @@ export const MemberList = () => {
       title="Members"
       breadcrumbs={breadcrumbs}
       actionSection={
-        <Button
-          variant="contained"
-          startIcon={<Add />}
-          onClick={() => toggleModel("newMember")}
-        >
-          New Member
-        </Button>
+        <Stack flexDirection="row" gap="14px">
+          <Button
+            variant="contained"
+            startIcon={<Telegram />}
+            onClick={() => toggleModel("newMember")}
+          >
+            Request ADS Verification
+          </Button>
+          <Button
+            variant="contained"
+            startIcon={<Add />}
+            onClick={() => toggleModel("newMember")}
+          >
+            New Member
+          </Button>
+        </Stack>
       }
     >
       <ReactTable
         columns={columns}
         data={state.memberList.options}
         loading={state.memberList.loading}
-        rowClick={() => {}}
       />
 
       <GeneralDialog
@@ -323,9 +333,9 @@ export const MemberList = () => {
                   <Avatar
                     variant="rounded"
                     src={
-                      state.formData.profile
+                      state.formData.profile instanceof File
                         ? URL.createObjectURL(state.formData.profile)
-                        : ""
+                        : (state.formData.profile ?? "")
                     }
                     alt="profile picture"
                     sx={{
@@ -423,6 +433,9 @@ export const MemberList = () => {
                         label="District"
                         {...props}
                         placeholder="Select your District"
+                        required
+                        error={Boolean(helperText.aadharNo)}
+                        helperText={helperText.aadharNo}
                       />
                     )}
                   />
@@ -437,14 +450,25 @@ export const MemberList = () => {
                     helperText={helperText.postcode}
                   />
                 </Stack>
+
                 <Stack gap="14px">
                   <Stack>
                     {state.formData.aadharAttachment ? (
                       <FileCard
                         fileName={state.formData.aadharAttachment.name}
                         icon={<PictureAsPdf fontSize="small" color="error" />}
-                        onDelete={() => {}}
+                        onDelete={() =>
+                          handleFormChange({
+                            target: {
+                              name: "aadharAttachment",
+                              value: null,
+                            },
+                          })
+                        }
                         isFileUploaded={true}
+                        onView={() =>
+                          window.open(state.formData.signatureAttachment.url)
+                        }
                       />
                     ) : (
                       <Box component="label">
@@ -491,7 +515,17 @@ export const MemberList = () => {
                       <FileCard
                         fileName={state.formData.signatureAttachment.name}
                         icon={<PictureAsPdf fontSize="small" color="error" />}
-                        onDelete={() => {}}
+                        onView={() =>
+                          window.open(state.formData.signatureAttachment.url)
+                        }
+                        onDelete={() =>
+                          handleFormChange({
+                            target: {
+                              name: "signatureAttachment",
+                              value: null,
+                            },
+                          })
+                        }
                         isFileUploaded={true}
                       />
                     ) : (

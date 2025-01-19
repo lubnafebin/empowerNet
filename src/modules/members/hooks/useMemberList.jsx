@@ -13,6 +13,7 @@ import React from "react";
 import SimpleReactValidator from "simple-react-validator";
 import { AlertRowAction, useAlertContext } from "../../../shared";
 import { getDistrictsByStateIdApi, utilFunctions } from "../../../utils";
+import { BASE_URL } from "../../../configs";
 
 const initialFormState = {
   isFormLoading: true,
@@ -88,15 +89,34 @@ export const useMemberList = () => {
     }
   };
 
-  const getMemberDetails = async (wardId) => {
+  const getMemberDetails = async (memberId) => {
     triggerFormLoading(true);
     try {
-      const response = await getMemberDetailsApi(wardId);
+      const response = await getMemberDetailsApi(memberId);
 
       const { success, message, data } = response;
+
       if (success) {
         setState((draft) => {
-          draft.formData = data;
+          if (data.user.profile?.url) {
+            draft.formData.profile = BASE_URL + data.user.profile.url;
+          }
+          draft.formData.aadharAttachment = {
+            name: data.attachments[0].url.split("/")[1],
+            url: BASE_URL + data.attachments[0].url,
+          };
+          draft.formData.signatureAttachment = {
+            name: data.attachments[1].url.split("/")[1],
+            url: BASE_URL + data.attachments[1].url,
+          };
+          draft.formData.name = data.user.name;
+          draft.formData.email = data.user.email;
+          draft.formData.contactNo = data.address.contactNo;
+          draft.formData.aadharNo = data.address.aadharNo;
+          draft.formData.addressLine1 = data.address.addressLine1;
+          draft.formData.addressLine2 = data.address.addressLine2;
+          draft.formData.districtId = data.address.district;
+          draft.formData.postcode = data.address.postcode;
         });
       } else {
         throw { response: { data: { message } } };
@@ -137,6 +157,7 @@ export const useMemberList = () => {
       if (success) {
         enqueueSnackbar({ message, variant: "success" });
         getMemberList();
+        handleResetFormData();
         navigate(location.pathname, { replace: true });
       } else {
         throw { response: { data: { message } } };
@@ -148,15 +169,16 @@ export const useMemberList = () => {
     }
   };
 
-  const updateMember = async ({ formData, wardId }) => {
+  const updateMember = async ({ formData, memberId }) => {
     triggerSubmitButtonLoading(true);
     try {
-      const response = await updateMemberApi({ params: formData, wardId });
+      const response = await updateMemberApi({ params: formData, memberId });
 
       const { success, message } = response;
       if (success) {
         enqueueSnackbar({ message, variant: "success" });
         getMemberList();
+        handleResetFormData();
         navigate(location.pathname, { replace: true });
       } else {
         throw { response: { data: { message } } };
@@ -208,8 +230,10 @@ export const useMemberList = () => {
   const handleResetFormData = () => {
     setState((draft) => {
       draft.formData = initialFormState.formData;
+      draft.selectedMemberId = initialFormState.selectedMemberId;
     });
   };
+
   const toggleModel = async ({ type, id }) => {
     switch (type) {
       case "memberDetails":
@@ -237,7 +261,7 @@ export const useMemberList = () => {
   };
 
   const handleMemberSelection = async (id) => {
-    navigate("?ward");
+    navigate("?member");
     setState((draft) => {
       draft.selectedMemberId = id;
     });
@@ -250,7 +274,9 @@ export const useMemberList = () => {
       if (
         ["signatureAttachment", "aadharAttachment", "profile"].includes(name)
       ) {
-        draft.formData[name] = value.target.files[0];
+        draft.formData[name] = value?.target?.files
+          ? value.target.files[0]
+          : value;
       } else {
         draft.formData[name] = value;
       }
@@ -261,9 +287,17 @@ export const useMemberList = () => {
     event.preventDefault();
     if (formValidator.current.allValid()) {
       const formData = new FormData();
+
       Object.entries(state.formData).forEach(([key, value]) => {
         const newValue = key === "districtId" ? value.id : value;
-        formData.append(key, newValue);
+
+        if (
+          ["signatureAttachment", "aadharAttachment", "profile"].includes(key)
+        ) {
+          value instanceof File && formData.append(key, newValue);
+        } else {
+          formData.append(key, newValue);
+        }
       });
 
       switch (location.search) {
@@ -273,7 +307,7 @@ export const useMemberList = () => {
         case "?member":
           await updateMember({
             formData,
-            wardId: state.selectedMemberId,
+            memberId: state.selectedMemberId,
           });
           break;
         default:

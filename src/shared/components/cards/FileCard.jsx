@@ -1,6 +1,6 @@
-import { Delete } from '@mui/icons-material';
-import { IconButton, Stack, Typography, useTheme } from '@mui/material';
-import PropTypes from 'prop-types';
+import { Delete, Visibility } from "@mui/icons-material";
+import { IconButton, Stack, Typography, useTheme } from "@mui/material";
+import PropTypes from "prop-types";
 
 export const FileCard = ({
   fileName,
@@ -8,7 +8,8 @@ export const FileCard = ({
   caption,
   isFileUploaded = false,
   onDelete,
-  fileNotUploadText = 'File Not Uploaded',
+  onView = null,
+  fileNotUploadText = "File Not Uploaded",
 }) => {
   const theme = useTheme();
   return (
@@ -21,7 +22,7 @@ export const FileCard = ({
         borderRadius: 2,
         backgroundColor: theme.palette.neutral[200],
         border: 1,
-        borderStyle: isFileUploaded ? 'none' : 'dashed',
+        borderStyle: isFileUploaded ? "none" : "dashed",
       }}
     >
       {icon}
@@ -31,9 +32,9 @@ export const FileCard = ({
             variant="subtitle2"
             sx={{
               width: `calc(100% - 10px)`,
-              textOverflow: 'ellipsis',
-              overflow: 'hidden',
-              whiteSpace: 'nowrap',
+              textOverflow: "ellipsis",
+              overflow: "hidden",
+              whiteSpace: "nowrap",
             }}
             title={fileName}
           >
@@ -45,9 +46,9 @@ export const FileCard = ({
               color="text.secondary"
               sx={{
                 width: `calc(100% - 10px)`,
-                textOverflow: 'ellipsis',
-                overflow: 'hidden',
-                whiteSpace: 'nowrap',
+                textOverflow: "ellipsis",
+                overflow: "hidden",
+                whiteSpace: "nowrap",
               }}
               title={caption}
             >
@@ -63,12 +64,22 @@ export const FileCard = ({
       )}
       {isFileUploaded && onDelete && (
         <IconButton
-          sx={{ ml: 'auto' }}
+          sx={{ ml: "auto" }}
           size="small"
           onClick={onDelete}
           aria-label="Delete"
         >
           <Delete fontSize="small" />
+        </IconButton>
+      )}
+      {isFileUploaded && onView && (
+        <IconButton
+          sx={{ ml: "auto" }}
+          size="small"
+          onClick={onView}
+          aria-label="Delete"
+        >
+          <Visibility fontSize="small" />
         </IconButton>
       )}
     </Stack>
@@ -80,6 +91,7 @@ FileCard.propTypes = {
   icon: PropTypes.node.isRequired,
   isFileUploaded: PropTypes.bool,
   onDelete: PropTypes.func,
+  onView: PropTypes.func,
   caption: PropTypes.string,
   fileNotUploadText: PropTypes.string,
 };
