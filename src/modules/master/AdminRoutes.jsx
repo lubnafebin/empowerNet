@@ -18,16 +18,16 @@ export const AdminRoutes = () => {
       </Route>
 
       <Route element={<RoleProtectedRoute roles={["CDS"]} />}>
-        <Route element={<PermissionProtectedRoute permission="user.read" />}>
+        <Route element={<PermissionProtectedRoute permission="ward.all.GET" />}>
           <Route path="/wards/*" element={<WardRoutes />} />
         </Route>
       </Route>
 
       <Route element={<RoleProtectedRoute roles={["NHG"]} />}>
-        <Route element={<PermissionProtectedRoute permission="members.read" />}>
+        <Route element={<PermissionProtectedRoute permission="member.all.GET" />}>
           <Route path="/members/*" element={<MemberRoutes />} />
         </Route>
-        <Route element={<PermissionProtectedRoute permission="members.read" />}>
+        <Route element={<PermissionProtectedRoute permission="meeting.all.GET" />}>
           <Route path="/minutes/*" element={<MinuteRoutes />} />
         </Route>
       </Route>

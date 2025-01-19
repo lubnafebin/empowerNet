@@ -15,6 +15,7 @@ export const defaultAppState = {
       name: "",
       permissionId: null,
     },
+    permission: {},
   },
 };
 

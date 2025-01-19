@@ -1,12 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { defaultAppState, useAppStateContext } from "../../shared";
 import { logoutServices } from "../services";
-import {
-  CheckCircle,
-  ErrorOutline,
-  RadioButtonUnchecked,
-} from "@mui/icons-material";
-import { enqueueSnackbar } from "notistack";
 
 export const useUtilFunctions = () => {
   const navigate = useNavigate();
@@ -17,26 +11,25 @@ export const useUtilFunctions = () => {
     return authentication.accessToken && authentication.refreshToken;
   };
 
-  const getBootData = ({ field = "all" }) => {
-    return field === "all" ? appState.bootData : appState.bootData[field];
-  };
-
   const getPermissions = () => {
-    return appState.authentication.user.userRolePermissions;
+    return appState.authentication.permission;
   };
 
-  const checkPermission = (permissionString) => {
-    if (permissionString === "dashboard.read") return true;
-    // const permissions = getPermissions();
-    // const permissionArray = permissionString.split('.');
-    // const moduleId = moduleIds[permissionArray[0]];
-    // const permissionName = permissionArray[1];
-    // const isPermitted = permissions.some(
-    //   (permission) =>
-    //     permission.moduleId === moduleId && permission[permissionName],
-    // );
-    // return isPermitted;
-    return true;
+  const checkPermission = (permission) => {
+    const permissionJson = getPermissions();
+
+    const keys = permission.split(".");
+    let current = permissionJson;
+
+    for (const key of keys) {
+      if (!current[key]) {
+        return false;
+      }
+
+      current = current[key];
+    }
+
+    return current;
   };
 
   return {
