@@ -1,7 +1,7 @@
 import React from "react";
 import { useImmer } from "use-immer";
 import { useAppStateContext } from "../../../shared";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import SimpleReactValidator from "simple-react-validator";
 import { doSignUpApi } from "../apis";
 import { enqueueSnackbar } from "notistack";
@@ -9,6 +9,7 @@ import {
   getCdsListApi,
   getWardListApi,
   setAuthDetailsServices,
+  utilFunctions,
 } from "../../../utils";
 
 export const usePageSignUp = () => {
@@ -28,6 +29,7 @@ export const usePageSignUp = () => {
     showPassword: false,
     showConfirmPassword: false,
   });
+  const navigate = useNavigate();
   const { setAppState } = useAppStateContext();
   const { accountType } = useParams();
 
@@ -57,17 +59,17 @@ export const usePageSignUp = () => {
       const { success, message, data } = response;
       if (success) {
         setAuthDetailsServices(data);
+        enqueueSnackbar({ message, variant: "success" });
 
         setAppState((draft) => {
           draft.authentication = data;
         });
-        enqueueSnackbar({ message, variant: "success" });
+        navigate("/", { replace: true });
       } else {
         enqueueSnackbar({ message, variant: "error" });
       }
-    } catch (error) {
-      const { message } = error.response.data.data;
-      enqueueSnackbar({ message, variant: "error" });
+    } catch (exception) {
+      utilFunctions.displayError(exception);
     }
   };
 
@@ -83,9 +85,8 @@ export const usePageSignUp = () => {
       } else {
         throw { response: { data: { message } } };
       }
-    } catch (error) {
-      const { message } = error.response.data;
-      enqueueSnackbar({ message, variant: "error" });
+    } catch (exception) {
+      utilFunctions.displayError(exception);
     }
   };
 
@@ -101,9 +102,8 @@ export const usePageSignUp = () => {
       } else {
         throw { response: { data: { message } } };
       }
-    } catch (error) {
-      const { message } = error.response.data;
-      enqueueSnackbar({ message, variant: "error" });
+    } catch (exception) {
+      utilFunctions.displayError(exception);
     }
   };
 

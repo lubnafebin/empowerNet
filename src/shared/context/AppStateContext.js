@@ -10,6 +10,8 @@ export const defaultAppState = {
     name: "",
     email: "",
     profileId: null,
+    nhgId: null,
+    cdsId: null,
     role: {
       id: null,
       name: "",

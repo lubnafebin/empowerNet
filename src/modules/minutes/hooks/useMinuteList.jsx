@@ -2,28 +2,38 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { useImmer } from "use-immer";
 import {
-  createWardApi,
-  deleteWardApi,
+  createMinuteApi,
+  deleteMinuteApi,
   getMinuteListApi,
-  getWardDetailsApi,
-  updateWardApi,
+  getMinuteDetailsApi,
+  updateMinuteApi,
 } from "../apis";
 import { enqueueSnackbar } from "notistack";
 import React from "react";
 import SimpleReactValidator from "simple-react-validator";
 import { AlertRowAction, useAlertContext } from "../../../shared";
+import dayjs from "dayjs";
+import {
+  getAllNhgMembersApi,
+  useUtilFunctions,
+  utilFunctions,
+} from "../../../utils";
 
 export const useMinuteList = () => {
   const [_, setForceUpdate] = React.useState(0);
+  const { getLoggedInUser } = useUtilFunctions();
+  const loggedUser = getLoggedInUser();
+
   const [state, setState] = useImmer({
     isFormLoading: true,
     isFormSubmitting: false,
-    isTableLoading: true,
-    minuteList: { options: [] },
-    selectedWardId: null,
+    minuteList: { options: [], loading: true },
+    membersList: { options: [], loading: false },
+    selectedMinuteId: null,
     formData: {
-      name: "",
-      wardNo: "",
+      date: dayjs(),
+      place: "",
+      participantsIds: [],
     },
   });
   const { setAlert } = useAlertContext();
@@ -37,10 +47,10 @@ export const useMinuteList = () => {
     }),
   );
 
-  const getWardDetails = async (wardId) => {
+  const getMinuteDetails = async (wardId) => {
     triggerFormLoading(true);
     try {
-      const response = await getWardDetailsApi(wardId);
+      const response = await getMinuteDetailsApi(wardId);
 
       const { success, message, data } = response;
       if (success) {
@@ -50,9 +60,8 @@ export const useMinuteList = () => {
       } else {
         throw { response: { data: { message } } };
       }
-    } catch (error) {
-      const { message } = error.response.data;
-      enqueueSnackbar({ message, variant: "error" });
+    } catch (exception) {
+      utilFunctions.displayError(exception);
     } finally {
       triggerFormLoading(false);
     }
@@ -71,60 +80,77 @@ export const useMinuteList = () => {
       } else {
         throw { response: { data: { message } } };
       }
-    } catch (error) {
-      const { message } = error.response.data;
-      enqueueSnackbar({ message, variant: "error" });
+    } catch (exception) {
+      utilFunctions.displayError(exception);
     } finally {
       triggerTableLoading(false);
     }
   };
 
-  const createNewWard = async (formData) => {
-    triggerSubmitButtonLoading(true);
-    try {
-      const response = await createWardApi(formData);
-
-      const { success, message } = response;
-      if (success) {
-        enqueueSnackbar({ message, variant: "success" });
-        getMinuteList();
-        navigate(location.pathname, { replace: true });
-      } else {
-        throw { response: { data: { message } } };
-      }
-    } catch (error) {
-      const { message } = error.response.data;
-      enqueueSnackbar({ message, variant: "error" });
-    } finally {
-      triggerSubmitButtonLoading(false);
-    }
-  };
-
-  const updateWard = async ({ formData, wardId }) => {
-    triggerSubmitButtonLoading(true);
-    try {
-      const response = await updateWardApi({ params: formData, wardId });
-
-      const { success, message } = response;
-      if (success) {
-        enqueueSnackbar({ message, variant: "success" });
-        getMinuteList();
-        navigate(location.pathname, { replace: true });
-      } else {
-        throw { response: { data: { message } } };
-      }
-    } catch (error) {
-      const { message } = error.response.data;
-      enqueueSnackbar({ message, variant: "error" });
-    } finally {
-      triggerSubmitButtonLoading(false);
-    }
-  };
-
-  const deleteWard = async (wardId) => {
+  const getAllNhgMembers = async (nhgId) => {
     triggerTableLoading(true);
     try {
-      const response = await deleteWardApi({ wardId });
+      const response = await getAllNhgMembersApi(nhgId);
+
+      const { success, message, data } = response;
+      if (success) {
+        setState((draft) => {
+          draft.membersList.options = data;
+        });
+      } else {
+        throw { response: { data: { message } } };
+      }
+    } catch (exception) {
+      utilFunctions.displayError(exception);
+    } finally {
+      triggerTableLoading(false);
+    }
+  };
+
+  const createNewMinute = async (formData) => {
+    triggerSubmitButtonLoading(true);
+    try {
+      const response = await createMinuteApi(formData);
+
+      const { success, message } = response;
+      if (success) {
+        enqueueSnackbar({ message, variant: "success" });
+        getMinuteList();
+        navigate(location.pathname, { replace: true });
+      } else {
+        throw { response: { data: { message } } };
+      }
+    } catch (exception) {
+      utilFunctions.displayError(exception);
+    } finally {
+      triggerSubmitButtonLoading(false);
+    }
+  };
+
+  const updateMinute = async ({ formData, wardId }) => {
+    triggerSubmitButtonLoading(true);
+    try {
+      const response = await updateMinuteApi({ params: formData, wardId });
+
+      const { success, message } = response;
+      if (success) {
+        enqueueSnackbar({ message, variant: "success" });
+        getMinuteList();
+        navigate(location.pathname, { replace: true });
+      } else {
+        throw { response: { data: { message } } };
+      }
+    } catch (exception) {
+      utilFunctions.displayError(exception);
+    } finally {
+      triggerSubmitButtonLoading(false);
+    }
+  };
+
+  const deleteMinute = async (wardId) => {
+    triggerTableLoading(true);
+    try {
+      const response = await deleteMinuteApi({ wardId });
 
       const { success, message } = response;
       if (success) {
@@ -133,9 +159,8 @@ export const useMinuteList = () => {
       } else {
         throw { response: { data: { message } } };
       }
-    } catch (error) {
-      const { message } = error.response.data;
-      enqueueSnackbar({ message, variant: "error" });
+    } catch (exception) {
+      utilFunctions.displayError(exception);
     } finally {
       triggerTableLoading(false);
     }
@@ -155,44 +180,45 @@ export const useMinuteList = () => {
 
   const triggerTableLoading = (status) => {
     setState((draft) => {
-      draft.isTableLoading = status;
+      draft.minuteList.loading = status;
     });
   };
 
   const toggleModel = async ({ type, id }) => {
     switch (type) {
       case "wardDetails":
-        handleWardSelection(id);
+        handleMinuteSelection(id);
         break;
       case "manageAds":
         break;
-      case "deleteWard":
+      case "deleteMinute":
         setAlert((draft) => {
           draft.open = true;
           draft.dialogValue = "?delete";
-          draft.title = "Delete Ward";
+          draft.title = "Delete Minute";
           draft.description =
             "Are you sure? Do you want to delete the ward. Once you delete the ward there is no going back.";
           draft.rowAction = (
             <AlertRowAction
-              onClick={async () => await deleteWard(id)}
+              onClick={async () => await deleteMinute(id)}
               label="Delete"
             />
           );
         });
         break;
       default:
-        navigate("?new-ward");
+        navigate("?new-minute");
+        loggedUser?.nhgId && (await getAllNhgMembers(loggedUser.nhgId));
         break;
     }
   };
 
-  const handleWardSelection = async (id) => {
+  const handleMinuteSelection = async (id) => {
     navigate("?ward");
     setState((draft) => {
-      draft.selectedWardId = id;
+      draft.selectedMinuteId = id;
     });
-    await getWardDetails(id);
+    await getMinuteDetails(id);
   };
 
   const handleFormChange = (event) => {
@@ -206,16 +232,24 @@ export const useMinuteList = () => {
     event.preventDefault();
     if (formValidator.current.allValid()) {
       switch (location.search) {
-        case "?new-ward":
-          await createNewWard(state.formData);
+        case "?new-minute": {
+          const params = {
+            place: state.formData.place,
+            date: dayjs(state.formData.date).format("YYYY-MM-DD"),
+            participantsIds: state.formData.participantsIds.map(
+              (participant) => participant.id,
+            ),
+          };
+          await createNewMinute(params);
           break;
+        }
         case "?ward":
-          await updateWard({
+          await updateMinute({
             formData: {
               name: state.formData.name,
               wardNo: state.formData.wardNo,
             },
-            wardId: state.selectedWardId,
+            wardId: state.selectedMinuteId,
           });
           break;
         default:
@@ -237,8 +271,9 @@ export const useMinuteList = () => {
     ) {
       formValidator.current.hideMessages();
       setState((draft) => {
-        draft.formData = { name: "", wardNo: "" };
-        draft.selectedWardId = null;
+        draft.formData.date = dayjs();
+        draft.formData.participantsIds = [];
+        draft.formData.place = "";
       });
       setForceUpdate(0);
     }

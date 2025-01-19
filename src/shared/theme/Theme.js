@@ -89,7 +89,7 @@ export const commonThemeStyle = {
         {
           props: { size: "medium" },
           style: {
-            height: "48px",
+            height: "42px",
           },
         },
       ],
@@ -114,6 +114,13 @@ export const commonThemeStyle = {
             margin: 0,
             minHeight: "auto",
           },
+        },
+      },
+    },
+    MuiTextField: {
+      styleOverrides: {
+        root: {
+          borderRadius: "6px",
         },
       },
     },

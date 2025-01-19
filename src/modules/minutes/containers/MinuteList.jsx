@@ -11,24 +11,32 @@ import {
   Avatar,
   Box,
   Button,
-  Chip,
+  Checkbox,
   CircularProgress,
   DialogActions,
   DialogContent,
   Divider,
   IconButton,
+  ListItem,
+  ListItemAvatar,
+  ListItemText,
   Stack,
+  TextField,
   Tooltip,
   Typography,
 } from "@mui/material";
 import {
   Add,
+  AssignmentOutlined,
+  CurrencyRupeeRounded,
   DeleteOutlineRounded,
-  VisibilityOutlined,
 } from "@mui/icons-material";
 import { useMinuteList } from "../hooks";
+import { useNavigate } from "react-router-dom";
+import { utilFunctions } from "../../../utils";
 
 export const MinuteList = () => {
+  const navigate = useNavigate();
   const {
     state,
     formValidator,
@@ -72,36 +80,48 @@ export const MinuteList = () => {
         },
         enableSorting: true,
         placement: "right",
-        meta: { align:'center' },
+        meta: { align: "center" },
       },
       {
         header: "Meeting No",
         accessorKey: "meetingNo",
         enableSorting: true,
         placement: "center",
-        meta: {  align:'center' },
+        meta: { align: "center" },
       },
       {
         header: "Action",
         accessorKey: "action",
         enableSorting: false,
         placement: "right",
-        meta: { width: 70 },
+        meta: { cellStyle: { width: 70 } },
         cell: ({
           row: {
-            original: { id },
+            original: { id, date },
           },
         }) => (
           <Stack flexDirection="row">
-            <Tooltip title="Ward Details" arrow disableInteractive>
+            <Tooltip title="Agendas" arrow disableInteractive>
               <IconButton
                 size="small"
-                onClick={() => toggleModel({ type: "wardDetails", id })}
+                onClick={() => navigate(`${id}/agendas`)}
               >
-                <VisibilityOutlined fontSize="small" />
+                <AssignmentOutlined fontSize="small" />
               </IconButton>
             </Tooltip>
-            <Tooltip title="Delete Ward" arrow disableInteractive>
+            <Tooltip title="Transactions" arrow disableInteractive>
+              <IconButton
+                size="small"
+                onClick={() =>
+                  navigate(`${id}/transactions`, {
+                    state: { minuteDate: utilFunctions.formatDate(date) },
+                  })
+                }
+              >
+                <CurrencyRupeeRounded fontSize="small" />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Delete Meeting" arrow disableInteractive>
               <IconButton
                 size="small"
                 onClick={() => toggleModel({ type: "deleteWard", id })}
@@ -117,14 +137,14 @@ export const MinuteList = () => {
   );
 
   const helperText = {
-    name: formValidator.current.message(
-      "name",
-      state.formData.name,
+    date: formValidator.current.message(
+      "date",
+      state.formData.date,
       "required",
     ),
-    wardNo: formValidator.current.message(
-      "wardNo",
-      state.formData.wardNo,
+    place: formValidator.current.message(
+      "place",
+      state.formData.place,
       "required",
     ),
   };
@@ -147,7 +167,7 @@ export const MinuteList = () => {
         <Button
           variant="contained"
           startIcon={<Add />}
-          onClick={() => toggleModel("newWard")}
+          onClick={() => toggleModel("new-minute")}
         >
           New Minute
         </Button>
@@ -157,13 +177,10 @@ export const MinuteList = () => {
         columns={columns}
         data={state.minuteList.options}
         loading={state.isTableLoading}
-        rowClick={() => {}}
       />
 
-      <GeneralDialog dialogValue={state.selectedWardId ? "?ward" : "?new-ward"}>
-        <DialogHeader
-          title={state.selectedWardId ? state.formData.name : "New Ward"}
-        />
+      <GeneralDialog dialogValue={"?new-minute"}>
+        <DialogHeader title="New Minute" />
         <Divider variant="fullWidth" orientation="horizontal" />
         {state.isFormLoading && state.selectedWardId ? (
           <Stack
@@ -184,22 +201,73 @@ export const MinuteList = () => {
                 <InputControl
                   required
                   size="small"
-                  label="Ward No"
-                  value={state.formData.wardNo}
-                  name="wardNo"
+                  label="Date"
+                  type="date"
+                  name="date"
+                  value={state.formData.date}
                   onChange={handleFormChange}
-                  error={Boolean(helperText.wardNo)}
-                  helperText={helperText.wardNo}
+                  error={Boolean(helperText.date)}
+                  helperText={helperText.date}
                 />
                 <InputControl
                   required
+                  multiline
+                  minRows={1}
+                  maxRows={2}
                   size="small"
-                  label="Ward Name"
-                  value={state.formData.name}
-                  name="name"
-                  error={Boolean(helperText.name)}
-                  helperText={helperText.name}
+                  label="Place"
+                  value={state.formData.place}
+                  name="place"
+                  error={Boolean(helperText.place)}
+                  helperText={helperText.place}
                   onChange={handleFormChange}
+                />
+                <InputControl
+                  type="dropdown"
+                  multiple
+                  size="small"
+                  options={state.membersList.options}
+                  isOptionEqualToValue={(option, current) => {
+                    return option.id === current.id;
+                  }}
+                  getOptionLabel={(option) => option.user.name}
+                  disableCloseOnSelect
+                  onChange={(_, value) =>
+                    handleFormChange({
+                      target: { name: "participantsIds", value },
+                    })
+                  }
+                  value={state.formData.participantsIds ?? []}
+                  renderOption={(props, option) => {
+                    // eslint-disable-next-line react/prop-types
+                    const { key, ...optionProps } = props;
+                    return (
+                      <ListItem
+                        key={key}
+                        {...optionProps}
+                        sx={{ gap: "8px", display: "flex" }}
+                      >
+                        <Avatar
+                          src={option.user.profile.url}
+                          alt="avatar"
+                          sx={{ width: 36, height: 36, fontSize: 14 }}
+                        >
+                          {option.user.name[0]}
+                        </Avatar>
+                        <ListItemText
+                          primary={option.user.name}
+                          secondary={option.user.email}
+                        />
+                      </ListItem>
+                    );
+                  }}
+                  renderInput={(props) => (
+                    <TextField
+                      label="Participants"
+                      {...props}
+                      placeholder="Select Participants"
+                    />
+                  )}
                 />
               </Stack>
             </DialogContent>

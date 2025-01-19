@@ -1,31 +1,31 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-import { useLocation, useNavigate } from "react-router-dom";
-import { useImmer } from "use-immer";
-import {
-  createWardApi,
-  deleteWardApi,
-  getMemberListApi,
-  getWardDetailsApi,
-  updateWardApi,
-} from "../apis";
-import { enqueueSnackbar } from "notistack";
 import React from "react";
-import SimpleReactValidator from "simple-react-validator";
 import { AlertRowAction, useAlertContext } from "../../../shared";
+import { enqueueSnackbar } from "notistack";
+import {
+  deleteTransactionApi,
+  getMeetingTransactionListApi,
+  getTransactionDetailsApi,
+  updateTransactionApi,
+} from "../apis";
+import SimpleReactValidator from "simple-react-validator";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useImmer } from "use-immer";
 import { utilFunctions } from "../../../utils";
 
-export const useMemberList = () => {
+export const useTransactions = () => {
   const [_, setForceUpdate] = React.useState(0);
   const [state, setState] = useImmer({
     isFormLoading: true,
     isFormSubmitting: false,
-    memberList: { options: [], loading: true },
-    selectedWardId: null,
+    isTableLoading: true,
+    transactions: { options: [] },
+    selectedTransactionId: null,
     formData: {
       name: "",
-      wardNo: "",
+      TransactionNo: "",
     },
   });
+  const { meetingId } = useParams();
   const { setAlert } = useAlertContext();
   const location = useLocation();
   const navigate = useNavigate();
@@ -37,10 +37,10 @@ export const useMemberList = () => {
     }),
   );
 
-  const getWardDetails = async (wardId) => {
+  const getTransactionDetails = async (transactionId) => {
     triggerFormLoading(true);
     try {
-      const response = await getWardDetailsApi(wardId);
+      const response = await getTransactionDetailsApi(transactionId);
 
       const { success, message, data } = response;
       if (success) {
@@ -57,15 +57,15 @@ export const useMemberList = () => {
     }
   };
 
-  const getMemberList = async () => {
+  const getAgendaList = async (meetingId) => {
     triggerTableLoading(true);
     try {
-      const response = await getMemberListApi();
+      const response = await getMeetingTransactionListApi(meetingId);
 
       const { success, message, data } = response;
       if (success) {
         setState((draft) => {
-          draft.memberList.options = data;
+          draft.transactions.options = data;
         });
       } else {
         throw { response: { data: { message } } };
@@ -77,15 +77,15 @@ export const useMemberList = () => {
     }
   };
 
-  const createNewWard = async (formData) => {
+  const createNewTransaction = async (formData) => {
     triggerSubmitButtonLoading(true);
     try {
-      const response = await createWardApi(formData);
-
+      const response = {};
+      // await createTransactionApi(formData);
       const { success, message } = response;
       if (success) {
         enqueueSnackbar({ message, variant: "success" });
-        getMemberList();
+        getAgendaList();
         navigate(location.pathname, { replace: true });
       } else {
         throw { response: { data: { message } } };
@@ -97,15 +97,18 @@ export const useMemberList = () => {
     }
   };
 
-  const updateWard = async ({ formData, wardId }) => {
+  const updateTransaction = async ({ formData, transactionId }) => {
     triggerSubmitButtonLoading(true);
     try {
-      const response = await updateWardApi({ params: formData, wardId });
+      const response = await updateTransactionApi({
+        params: formData,
+        transactionId,
+      });
 
       const { success, message } = response;
       if (success) {
         enqueueSnackbar({ message, variant: "success" });
-        getMemberList();
+        getAgendaList();
         navigate(location.pathname, { replace: true });
       } else {
         throw { response: { data: { message } } };
@@ -117,15 +120,15 @@ export const useMemberList = () => {
     }
   };
 
-  const deleteWard = async (wardId) => {
+  const deleteTransaction = async (transactionId) => {
     triggerTableLoading(true);
     try {
-      const response = await deleteWardApi({ wardId });
+      const response = await deleteTransactionApi({ transactionId });
 
       const { success, message } = response;
       if (success) {
         enqueueSnackbar({ message, variant: "success" });
-        getMemberList();
+        getAgendaList();
       } else {
         throw { response: { data: { message } } };
       }
@@ -150,44 +153,44 @@ export const useMemberList = () => {
 
   const triggerTableLoading = (status) => {
     setState((draft) => {
-      draft.memberList.loading = status;
+      draft.isTableLoading = status;
     });
   };
 
   const toggleModel = async ({ type, id }) => {
     switch (type) {
-      case "wardDetails":
-        handleWardSelection(id);
+      case "transactionDetails":
+        handleTransactionSelection(id);
         break;
       case "manageAds":
         break;
-      case "deleteWard":
+      case "deleteTransaction":
         setAlert((draft) => {
           draft.open = true;
           draft.dialogValue = "?delete";
-          draft.title = "Delete Ward";
+          draft.title = "Delete Transaction";
           draft.description =
-            "Are you sure? Do you want to delete the ward. Once you delete the ward there is no going back.";
+            "Are you sure? Do you want to delete the transaction. Once you delete the transaction there is no going back.";
           draft.rowAction = (
             <AlertRowAction
-              onClick={async () => await deleteWard(id)}
+              onClick={async () => await deleteTransaction(id)}
               label="Delete"
             />
           );
         });
         break;
       default:
-        navigate("?new-ward");
+        navigate("?new-transaction");
         break;
     }
   };
 
-  const handleWardSelection = async (id) => {
-    navigate("?ward");
+  const handleTransactionSelection = async (id) => {
+    navigate("?transaction");
     setState((draft) => {
-      draft.selectedWardId = id;
+      draft.selectedTransactionId = id;
     });
-    await getWardDetails(id);
+    await getTransactionDetails(id);
   };
 
   const handleFormChange = (event) => {
@@ -201,16 +204,16 @@ export const useMemberList = () => {
     event.preventDefault();
     if (formValidator.current.allValid()) {
       switch (location.search) {
-        case "?new-ward":
-          await createNewWard(state.formData);
+        case "?new-transaction":
+          await createNewTransaction(state.formData);
           break;
-        case "?ward":
-          await updateWard({
+        case "?transaction":
+          await updateTransaction({
             formData: {
               name: state.formData.name,
-              wardNo: state.formData.wardNo,
+              transactionNo: state.formData.transactionNo,
             },
-            wardId: state.selectedWardId,
+            transactionId: state.selectedTransactionId,
           });
           break;
         default:
@@ -227,20 +230,20 @@ export const useMemberList = () => {
     if (
       location.search === "" &&
       (state.formData.name !== "" ||
-        state.formData.wardNo !== "" ||
+        state.formData.transactionNo !== "" ||
         formValidator.current.errorMessages)
     ) {
       formValidator.current.hideMessages();
       setState((draft) => {
-        draft.formData = { name: "", wardNo: "" };
-        draft.selectedWardId = null;
+        draft.formData = { name: "", transactionNo: "" };
+        draft.selectedTransactionId = null;
       });
       setForceUpdate(0);
     }
   }, [location.search]);
 
   React.useEffect(() => {
-    getMemberList();
+    getAgendaList(meetingId);
   }, []);
 
   return {

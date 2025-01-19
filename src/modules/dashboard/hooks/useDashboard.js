@@ -4,7 +4,7 @@ import { useImmer } from "use-immer";
 // import ClientIcon from "../../../assets/icons/clients.svg";
 // import ReportIcon from "../../../assets/icons/report.svg";
 // import CoachIcon from "../../../assets/icons/coach.svg";
-import { useUtilFunctions } from "../../../utils";
+import { useUtilFunctions, utilFunctions } from "../../../utils";
 import { getDashboardAnalyticsApi } from "../apis";
 
 export const useDashboard = () => {
@@ -68,13 +68,8 @@ export const useDashboard = () => {
         };
       }
       return response;
-    } catch (error) {
-      const errorMessage = formatError({
-        error,
-        defaultMessage: "Failed to fetch dashboard details",
-      });
-
-      enqueueSnackbar({ message: errorMessage, variant: "error" });
+    } catch (exception) {
+      utilFunctions.displayError(exception);
     } finally {
       triggerContentLoading(false);
     }

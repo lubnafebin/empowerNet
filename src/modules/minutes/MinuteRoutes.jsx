@@ -1,5 +1,5 @@
 import { Route, Routes } from "react-router-dom";
-import { MinuteList } from "./containers";
+import { MeetingAgendas, MinuteList, Transactions } from "./containers";
 import {
   AuthProtectedRoute,
   DashboardLayout,
@@ -17,6 +17,11 @@ export const MinuteRoutes = () => {
         }
       >
         <Route index element={<MinuteList />} />
+        <Route path="/:meetingId/agendas">
+          <Route index element={<MeetingAgendas />} />
+          <Route path=":agendaId/agenda" element={<MeetingAgendas />} />
+        </Route>
+        <Route path="/:meetingId/transactions" element={<Transactions />} />
       </Route>
       <Route path="*" element={<PageNotFound />} />
     </Routes>

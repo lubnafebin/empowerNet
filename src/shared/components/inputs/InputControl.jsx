@@ -1,6 +1,8 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { Visibility, VisibilityOff } from "@mui/icons-material";
+import { CalendarMonth, Visibility, VisibilityOff } from "@mui/icons-material";
+import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import {
   TextField,
   Autocomplete,
@@ -12,6 +14,7 @@ import {
   IconButton,
   OutlinedInput,
   FormHelperText,
+  Button,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import CloseIcon from "@mui/icons-material/Close";
@@ -182,6 +185,26 @@ export const InputControl = React.forwardRef(function InputControl(
               )
             }
           />
+        </FormControl>
+      );
+      break;
+    case "date":
+      inputElement = (
+        <FormControl fullWidth={rest.fullWidth}>
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <DatePicker
+              value={value}
+              {...rest}
+              slots={{
+                openPickerIcon: CalendarMonth, // Use your custom icon here
+              }}
+              slotProps={{
+                openPickerButton: {
+                  size: rest.size,
+                },
+              }}
+            />
+          </LocalizationProvider>
         </FormControl>
       );
       break;

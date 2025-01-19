@@ -3,7 +3,7 @@ import { useImmer } from "use-immer";
 import { useAppStateContext } from "../../../shared";
 import SimpleReactValidator from "simple-react-validator";
 import { doSignInApi } from "../apis";
-import { setAuthDetailsServices } from "../../../utils";
+import { setAuthDetailsServices, utilFunctions } from "../../../utils";
 import { enqueueSnackbar } from "notistack";
 
 export const usePageSignIn = () => {
@@ -32,25 +32,16 @@ export const usePageSignIn = () => {
       const { success, message, data } = response;
       if (success) {
         setAuthDetailsServices(data);
+        enqueueSnackbar({ message, variant: "success" });
 
         setAppState((draft) => {
           draft.authentication = data;
         });
-        enqueueSnackbar({ message, variant: "success" });
       } else {
         enqueueSnackbar({ message, variant: "error" });
       }
-    } catch (error) {
-      const { data } = error.response.data;
-
-      // if (data.error.fieldErrors?.length > 0) {
-      // data.error.fieldErrors.forEach((err) => {
-
-      // });
-
-      // }
-
-      enqueueSnackbar({ message: data.message, variant: "error" });
+    } catch (exception) {
+      utilFunctions.displayError(exception);
     }
   };
 

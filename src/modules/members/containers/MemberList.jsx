@@ -222,7 +222,7 @@ export const MemberList = () => {
       <ReactTable
         columns={columns}
         data={state.memberList.options}
-        loading={state.isTableLoading}
+        loading={state.memberList.loading}
         rowClick={() => {}}
       />
 

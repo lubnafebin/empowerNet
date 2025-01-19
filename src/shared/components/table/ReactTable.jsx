@@ -1,4 +1,4 @@
-import { ArrowDownward } from '@mui/icons-material';
+import { ArrowDownward } from "@mui/icons-material";
 import {
   CircularProgress,
   Paper,
@@ -13,7 +13,7 @@ import {
   Tooltip,
   Typography,
   useTheme,
-} from '@mui/material';
+} from "@mui/material";
 import {
   flexRender,
   getCoreRowModel,
@@ -22,13 +22,15 @@ import {
   getFilteredRowModel,
   useReactTable,
   getExpandedRowModel,
-} from '@tanstack/react-table';
-import propTypes from 'prop-types';
-import { DebouncedSearch } from '../inputs';
-import React from 'react';
-import TablePaginationActions from '@mui/material/TablePagination/TablePaginationActions';
-import { useNavigate } from 'react-router-dom';
-import { EmptyDataPlaceholder } from '../placeholders';
+} from "@tanstack/react-table";
+import propTypes from "prop-types";
+import { DebouncedSearch } from "../inputs";
+import React from "react";
+import TablePaginationActions from "@mui/material/TablePagination/TablePaginationActions";
+import { useNavigate } from "react-router-dom";
+import { EmptyDataPlaceholder } from "../placeholders";
+import { useAppStateContext } from "../../hooks";
+import PropTypes from "prop-types";
 
 export const ReactTable = ({
   columns,
@@ -42,11 +44,14 @@ export const ReactTable = ({
   searchFullWidth = false,
   defaultPageSize = 25,
   loading = false,
-  subRowsKey = 'subRows',
+  subRowsKey = "subRows",
   getSelectedRows = null,
   defaultSelectedRows = null,
 }) => {
-  const [globalFilter, setGlobalFilter] = React.useState('');
+  const {
+    appState: { sidebarOpen },
+  } = useAppStateContext();
+  const [globalFilter, setGlobalFilter] = React.useState("");
   const [expanded, setExpanded] = React.useState({});
   const [rowSelection, setRowSelection] = React.useState({});
 
@@ -85,6 +90,7 @@ export const ReactTable = ({
   const {
     pagination: { pageIndex, pageSize },
   } = getState();
+
   const handlePageChange = (_, page) => {
     setPageIndex(page);
   };
@@ -120,47 +126,48 @@ export const ReactTable = ({
     <Paper
       variant="shadow"
       sx={{
-        overflow: 'hidden',
-        borderRadius: '16px',
+        overflow: "hidden",
+        borderRadius: "16px",
       }}
       // boxShadow: '0px 0px 13px 0px rgba(0,0,0,0.02)',
       // outline: '1px solid rgba(0,0,0,0.03)',
     >
+      {customHeader ? (
+        customHeader
+      ) : (
+        <Stack
+          px="16px"
+          py="14px"
+          flexDirection="row"
+          justifyContent={title ? "space-between" : "start"}
+          display={
+            !disableDefaultSearch && !title && hideHeader ? "none" : "flex"
+          }
+        >
+          {typeof title === "string" ? (
+            <Typography component="h1" variant="h5" fontWeight={500}>
+              {title}
+            </Typography>
+          ) : (
+            title
+          )}
+          {!disableDefaultSearch && (
+            <DebouncedSearch
+              fullWidth={searchFullWidth ?? !title}
+              onChange={handleTableSearch}
+              value={globalFilter}
+            />
+          )}
+        </Stack>
+      )}
       <TableContainer
         sx={{
           // maxHeight: 'calc(100vh - 270px)',
           // overflow: 'auto',
           pb: disablePagination ? 5 : 0,
+          maxWidth: `calc(100vw - ${sidebarOpen ? "308px" : "30px"})`,
         }}
       >
-        {customHeader ? (
-          customHeader
-        ) : (
-          <Stack
-            px="16px"
-            py="14px"
-            flexDirection="row"
-            justifyContent={title ? 'space-between' : 'start'}
-            display={
-              !disableDefaultSearch && !title && hideHeader ? 'none' : 'flex'
-            }
-          >
-            {typeof title === 'string' ? (
-              <Typography component="h1" variant="h5" fontWeight={500}>
-                {title}
-              </Typography>
-            ) : (
-              title
-            )}
-            {!disableDefaultSearch && (
-              <DebouncedSearch
-                fullWidth={searchFullWidth ?? !title}
-                onChange={handleTableSearch}
-                value={globalFilter}
-              />
-            )}
-          </Stack>
-        )}
         <Table stickyHeader aria-label="sticky table">
           <TableHead>
             {getHeaderGroups().map((headerGroup) => (
@@ -169,31 +176,36 @@ export const ReactTable = ({
                   const sortable = header.column.getCanSort();
                   const isSorted = header.column.getIsSorted();
                   const defaultSort = isSorted === false;
-                  const isSortedDesc = isSorted === 'desc';
-                  const isSortedAsc = isSorted === 'asc';
+                  const isSortedDesc = isSorted === "desc";
+                  const isSortedAsc = isSorted === "asc";
                   const columnMetaData = header.column.columnDef.meta;
+                  const cellStyle = columnMetaData?.cellStyle;
+                  const stackStyle = columnMetaData?.stackStyle;
                   return (
                     <TableCell
                       component="th"
                       key={header.id}
                       {...{ onClick: header.column.getToggleSortingHandler() }}
-                      {...columnMetaData}
-                      padding={columnMetaData?.padding ?? 'none'}
+                      {...{
+                        ...cellStyle,
+                        padding: cellStyle?.padding ?? "none",
+                      }}
                       sx={{
-                        cursor: sortable ? 'pointer' : '',
-                        ':hover .MuiSvgIcon-root': {
+                        cursor: sortable ? "pointer" : "",
+                        ":hover .MuiSvgIcon-root": {
                           opacity: 0.5,
                         },
                       }}
                       scope="col"
                       align="right"
+                      padding="none"
                     >
                       <Stack
                         component="span"
-                        justifyContent={columnMetaData?.align}
                         alignItems="center"
                         flexDirection="row"
                         gap={0.5}
+                        {...stackStyle}
                       >
                         {header.isPlaceholder
                           ? null
@@ -206,14 +218,14 @@ export const ReactTable = ({
                             <ArrowDownward
                               fontSize="small"
                               sx={{
-                                height: '16px',
-                                width: '16px',
+                                height: "16px",
+                                width: "16px",
                                 opacity: defaultSort ? 0 : 1,
                                 transform: isSortedAsc
-                                  ? 'rotate(180deg)'
+                                  ? "rotate(180deg)"
                                   : isSortedDesc
-                                    ? 'rotate(0deg)'
-                                    : 'rotate(180deg)',
+                                    ? "rotate(0deg)"
+                                    : "rotate(180deg)",
                               }}
                             />
                           </Tooltip>
@@ -241,28 +253,31 @@ export const ReactTable = ({
                 <TableRow
                   key={row.id}
                   sx={{
-                    cursor: rowClick ? 'pointer' : '',
-                    '&:hover': {
+                    cursor: rowClick ? "pointer" : "",
+                    "&:hover": {
                       backgroundColor: theme.palette.action.hover,
                     },
                   }}
                   onClick={() =>
-                    typeof rowClick === 'function'
+                    typeof rowClick === "function"
                       ? rowClick(row.original)
-                      : typeof rowClick === 'string'
+                      : typeof rowClick === "string"
                         ? navigate(rowClick)
                         : undefined
                   }
                 >
                   {row.getVisibleCells().map((cell) => {
                     const cellMetaData = cell.column.columnDef.meta;
+                    const rowCellStyle = cellMetaData?.rowCellStyle;
                     return (
                       <TableCell
                         component="td"
                         key={cell.id}
-                        {...cellMetaData}
-                        padding={cellMetaData?.padding ?? 'none'}
-                        align={cellMetaData?.align ?? 'left'}
+                        {...{
+                          ...rowCellStyle,
+                          padding: rowCellStyle?.padding ?? "none",
+                          align: rowCellStyle?.align ?? "left",
+                        }}
                       >
                         {flexRender(
                           cell.column.columnDef.cell,
@@ -284,7 +299,7 @@ export const ReactTable = ({
             10,
             25,
             50,
-            { label: 'All', value: data.length },
+            { label: "All", value: data.length },
           ]}
           component="div"
           count={filteredRows}
@@ -292,7 +307,7 @@ export const ReactTable = ({
           page={pageIndex}
           slotProps={{
             select: {
-              inputProps: { 'aria-label': 'rows per page' },
+              inputProps: { "aria-label": "rows per page" },
             },
           }}
           onPageChange={handlePageChange}
@@ -306,7 +321,18 @@ export const ReactTable = ({
 
 ReactTable.propTypes = {
   title: propTypes.oneOfType([propTypes.string, propTypes.node]),
-  columns: propTypes.array.isRequired,
+  columns: propTypes.arrayOf(
+    propTypes.shape({
+      id: PropTypes.string,
+      accessorKey: PropTypes.string,
+      cell: PropTypes.func,
+      meta: PropTypes.shape({
+        cellStyle: PropTypes.object,
+        stackStyle: PropTypes.object,
+        rowCellStyle: PropTypes.object,
+      }),
+    }),
+  ),
   data: propTypes.array.isRequired,
   defaultPageSize: propTypes.number,
   loading: propTypes.bool,

@@ -17,25 +17,27 @@ import {
   IconButton,
   Stack,
   Tooltip,
+  Typography,
 } from "@mui/material";
 import {
   Add,
+  AssignmentOutlined,
+  CurrencyRupeeRounded,
   DeleteOutlineRounded,
-  ManageAccountsOutlined,
-  VisibilityOutlined,
 } from "@mui/icons-material";
-import { useWardList } from "../hooks";
-import dayjs from "dayjs";
-import { utilFunctions } from "../../../utils";
+import { useTransactions } from "../hooks";
+import { useLocation, useNavigate } from "react-router-dom";
 
-export const WardList = () => {
+export const Transactions = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
   const {
     state,
     formValidator,
     toggleModel,
     handleFormChange,
     handleFormSubmit,
-  } = useWardList();
+  } = useTransactions();
 
   const columns = React.useMemo(
     () => [
@@ -46,30 +48,73 @@ export const WardList = () => {
         placement: "right",
       },
       {
-        header: "Ward No",
-        accessorKey: "wardNo",
-        enableSorting: true,
-        placement: "right",
-      },
-      {
-        header: "Name",
-        accessorKey: "name",
-        enableSorting: true,
-        placement: "right",
-      },
-      {
-        header: "Created At",
+        header: "Account Holder",
         cell: ({
           row: {
-            original: { createdAt },
+            original: { accountHolder },
           },
-        }) => utilFunctions.formatDateAndTime(createdAt),
+        }) => <Typography>{accountHolder.name}</Typography>,
         enableSorting: true,
         placement: "right",
       },
       {
-        header: "ADS",
-        accessorKey: "ads",
+        header: "Date",
+        accessorKey: "transactionDate",
+        enableSorting: true,
+        placement: "right",
+        meta: { stackStyle: { minWidth: 100 } },
+      },
+      {
+        header: "Time",
+        accessorKey: "transactionTime",
+        enableSorting: true,
+        placement: "right",
+      },
+      {
+        header: "Recorder By",
+        cell: ({
+          row: {
+            original: { createdBy },
+          },
+        }) => <Typography fontWeight={14}>{createdBy?.name ?? "-"}</Typography>,
+        enableSorting: true,
+        placement: "right",
+      },
+      {
+        header: "Deposit",
+        accessorKey: "deposit",
+        enableSorting: true,
+        placement: "right",
+      },
+      {
+        header: "Refund",
+        accessorKey: "refund",
+        enableSorting: true,
+        placement: "refund",
+      },
+      {
+        header: "Member Fee",
+        cell: ({
+          row: {
+            original: { memberFee },
+          },
+        }) => (
+          <Typography fontSize={14}>
+            {memberFee ?? "0"}
+          </Typography>
+        ),
+        enableSorting: true,
+        placement: "right",
+      },
+      {
+        header: "Total Savings",
+        accessorKey: "totalSavings",
+        enableSorting: true,
+        placement: "right",
+      },
+      {
+        header: "Total Refunds",
+        accessorKey: "totalRefund",
         enableSorting: true,
         placement: "right",
       },
@@ -78,30 +123,29 @@ export const WardList = () => {
         accessorKey: "action",
         enableSorting: false,
         placement: "right",
-        meta: { width: 150 },
         cell: ({
           row: {
             original: { id },
           },
         }) => (
           <Stack flexDirection="row">
-            <Tooltip title="Manage Ads" arrow disableInteractive>
+            <Tooltip title="Agendas" arrow disableInteractive>
               <IconButton
                 size="small"
-                onClick={() => toggleModel({ type: "mangeAds" })}
+                onClick={() => navigate(`${id}/agendas`)}
               >
-                <ManageAccountsOutlined fontSize="small" />
+                <AssignmentOutlined fontSize="small" />
               </IconButton>
             </Tooltip>
-            <Tooltip title="Ward Details" arrow disableInteractive>
+            <Tooltip title="Transactions" arrow disableInteractive>
               <IconButton
                 size="small"
-                onClick={() => toggleModel({ type: "wardDetails", id })}
+                onClick={() => navigate(`${id}/transactions`)}
               >
-                <VisibilityOutlined fontSize="small" />
+                <CurrencyRupeeRounded fontSize="small" />
               </IconButton>
             </Tooltip>
-            <Tooltip title="Delete Ward" arrow disableInteractive>
+            <Tooltip title="Delete Meeting" arrow disableInteractive>
               <IconButton
                 size="small"
                 onClick={() => toggleModel({ type: "deleteWard", id })}
@@ -129,24 +173,38 @@ export const WardList = () => {
     ),
   };
 
+  const breadcrumbs = [
+    {
+      title: "Dashboard",
+      href: "/",
+    },
+    {
+      title: "Minutes",
+      href: `/minutes`,
+    },
+    {
+      title: location.state?.minuteDate ?? "",
+    },
+  ];
+
   return (
     <PageLayout
-      title="Wards"
+      title="Transactions"
+      breadcrumbs={breadcrumbs}
       actionSection={
         <Button
           variant="contained"
           startIcon={<Add />}
           onClick={() => toggleModel("newWard")}
         >
-          New Ward
+          New Minute
         </Button>
       }
     >
       <ReactTable
         columns={columns}
-        data={state.wardList.options}
+        data={state.transactions.options}
         loading={state.isTableLoading}
-        rowClick={() => {}}
       />
 
       <GeneralDialog dialogValue={state.selectedWardId ? "?ward" : "?new-ward"}>

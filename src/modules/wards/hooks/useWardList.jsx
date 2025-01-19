@@ -12,6 +12,7 @@ import { enqueueSnackbar } from "notistack";
 import React from "react";
 import SimpleReactValidator from "simple-react-validator";
 import { AlertRowAction, useAlertContext } from "../../../shared";
+import { utilFunctions } from "../../../utils";
 
 export const useWardList = () => {
   const [_, setForceUpdate] = React.useState(0);
@@ -50,9 +51,8 @@ export const useWardList = () => {
       } else {
         throw { response: { data: { message } } };
       }
-    } catch (error) {
-      const { message } = error.response.data;
-      enqueueSnackbar({ message, variant: "error" });
+    } catch (exception) {
+      utilFunctions.displayError(exception);
     } finally {
       triggerFormLoading(false);
     }
@@ -71,9 +71,8 @@ export const useWardList = () => {
       } else {
         throw { response: { data: { message } } };
       }
-    } catch (error) {
-      const { message } = error.response.data;
-      enqueueSnackbar({ message, variant: "error" });
+    } catch (exception) {
+      utilFunctions.displayError(exception);
     } finally {
       triggerTableLoading(false);
     }
@@ -92,9 +91,8 @@ export const useWardList = () => {
       } else {
         throw { response: { data: { message } } };
       }
-    } catch (error) {
-      const { message } = error.response.data;
-      enqueueSnackbar({ message, variant: "error" });
+    } catch (exception) {
+      utilFunctions.displayError(exception);
     } finally {
       triggerSubmitButtonLoading(false);
     }
@@ -113,9 +111,8 @@ export const useWardList = () => {
       } else {
         throw { response: { data: { message } } };
       }
-    } catch (error) {
-      const { message } = error.response.data;
-      enqueueSnackbar({ message, variant: "error" });
+    } catch (exception) {
+      utilFunctions.displayError(exception);
     } finally {
       triggerSubmitButtonLoading(false);
     }
@@ -133,9 +130,8 @@ export const useWardList = () => {
       } else {
         throw { response: { data: { message } } };
       }
-    } catch (error) {
-      const { message } = error.response.data;
-      enqueueSnackbar({ message, variant: "error" });
+    } catch (exception) {
+      utilFunctions.displayError(exception);
     } finally {
       triggerTableLoading(false);
     }
