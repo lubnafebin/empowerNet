@@ -237,6 +237,11 @@ export const MemberList = () => {
       state.formData.districtId,
       "required",
     ),
+    roleId: formValidator.current.message(
+      "roleId",
+      state.formData.roleId,
+      "required",
+    ),
     aadharAttachment: formValidator.current.message(
       "aadharAttachment",
       state.formData.aadharAttachment,
@@ -381,16 +386,43 @@ export const MemberList = () => {
                 </Stack>
               </Stack>
               <Stack gap="14px" mt="14px">
-                <InputControl
-                  required
-                  size="small"
-                  label="Aadhar No"
-                  value={state.formData.aadharNo}
-                  name="aadharNo"
-                  onChange={handleFormChange}
-                  error={Boolean(helperText.aadharNo)}
-                  helperText={helperText.aadharNo}
-                />
+                <Stack flexDirection={{ xs: "column", md: "row" }} gap="14px">
+                  <InputControl
+                    required
+                    size="small"
+                    label="Aadhar No"
+                    value={state.formData.aadharNo}
+                    name="aadharNo"
+                    onChange={handleFormChange}
+                    error={Boolean(helperText.aadharNo)}
+                    helperText={helperText.aadharNo}
+                  />
+                  <InputControl
+                    type="dropdown"
+                    size="small"
+                    options={state.role.options}
+                    isOptionEqualToValue={(option, current) => {
+                      return option.id === current.id;
+                    }}
+                    getOptionLabel={(option) => option.name}
+                    onChange={(_, value) =>
+                      handleFormChange({
+                        target: { name: "roleId", value },
+                      })
+                    }
+                    value={state.formData.roleId}
+                    renderInput={(props) => (
+                      <TextField
+                        label="Role"
+                        {...props}
+                        placeholder="Select the role"
+                        required
+                        error={Boolean(helperText.role)}
+                        helperText={helperText.role}
+                      />
+                    )}
+                  />
+                </Stack>
                 <Stack flexDirection={{ xs: "column", md: "row" }} gap="14px">
                   <InputControl
                     required

@@ -12,7 +12,11 @@ import { enqueueSnackbar } from "notistack";
 import React from "react";
 import SimpleReactValidator from "simple-react-validator";
 import { AlertRowAction, useAlertContext } from "../../../shared";
-import { getDistrictsByStateIdApi, utilFunctions } from "../../../utils";
+import {
+  getDistrictsByStateIdApi,
+  getRolesApi,
+  utilFunctions,
+} from "../../../utils";
 import { BASE_URL } from "../../../configs";
 
 const initialFormState = {
@@ -43,6 +47,7 @@ export const useMemberList = () => {
     isFormSubmitting: false,
     memberList: { options: [], loading: true },
     district: { options: [], loading: true },
+    role: { options: [], loading: true },
     selectedMemberId: null,
     formData: {
       name: "",
@@ -52,6 +57,7 @@ export const useMemberList = () => {
       addressLine2: "",
       addressLine1: "",
       districtId: null,
+      roleId: null,
       postcode: "",
       profile: null,
       aadharAttachment: null,
@@ -89,6 +95,26 @@ export const useMemberList = () => {
     }
   };
 
+  const getRoleList = async () => {
+    triggerTableLoading(true);
+    try {
+      const response = await getRolesApi();
+      const { success, message, data } = response;
+
+      if (success) {
+        setState((draft) => {
+          draft.role.options = data;
+        });
+      } else {
+        throw { response: { data: { message } } };
+      }
+    } catch (exception) {
+      utilFunctions.displayError(exception);
+    } finally {
+      triggerTableLoading(false);
+    }
+  };
+
   const getMemberDetails = async (memberId) => {
     triggerFormLoading(true);
     try {
@@ -111,6 +137,7 @@ export const useMemberList = () => {
           };
           draft.formData.name = data.user.name;
           draft.formData.email = data.user.email;
+          draft.formData.roleId = data.user.role;
           draft.formData.contactNo = data.address.contactNo;
           draft.formData.aadharNo = data.address.aadharNo;
           draft.formData.addressLine1 = data.address.addressLine1;
@@ -289,7 +316,9 @@ export const useMemberList = () => {
       const formData = new FormData();
 
       Object.entries(state.formData).forEach(([key, value]) => {
-        const newValue = key === "districtId" ? value.id : value;
+        const newValue = ["districtId", "roleId"].includes(key)
+          ? value.id
+          : value;
 
         if (
           ["signatureAttachment", "aadharAttachment", "profile"].includes(key)
@@ -334,6 +363,7 @@ export const useMemberList = () => {
   React.useEffect(() => {
     getMemberList();
     getDistrictsList();
+    getRoleList();
   }, []);
 
   return {

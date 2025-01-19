@@ -19,3 +19,8 @@ export const getAllNhgMembersApi = async (nhgId) => {
   const response = await API.get(`data/${nhgId}/members`);
   return response.data;
 };
+
+export const getRolesApi = async () => {
+  const response = await API.get(`data/roles`);
+  return response.data;
+};
