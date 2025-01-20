@@ -7,6 +7,7 @@ import {
   DialogContent,
   DialogTitle,
   IconButton,
+  Input,
   Stack,
   TextField,
 } from "@mui/material";
@@ -17,12 +18,32 @@ export const MeetingMinutes = () => {
   const {
     state,
     handleFormChange,
+    handleDateChange,
     formValidator,
     handleCreate,
     handleNavigate,
   } = useMeetingMinutes();
+
   const { handleDialogClose, handleOpenCreateDialog, handleOpenUpdateDialog } =
     useDialog();
+
+  const dateHelperText = formValidator.current.message(
+    "date",
+    state.formData.date,
+    "required|date",
+  );
+
+  const placeHelperText = formValidator.current.message(
+    "place",
+    state.formData.place,
+    "required|alpha_space",
+  );
+
+  const participantHelperText = formValidator.current.message(
+    "participants",
+    state.formData.participants,
+    "required",
+  );
 
   const columns = [
     { label: "Id", field: "id" },
@@ -30,47 +51,25 @@ export const MeetingMinutes = () => {
     { label: "Place", field: "place" },
     {
       label: "Total Selected Participants",
-      field: "totalSelectedParticipants",
+      field: "participants",
       cell: (row) => row.participants.length,
     },
     { label: "Current Meeting No", field: "meetingNo" },
     {
       label: "Actions",
       field: "actions",
-      cell: () => (
+      cell: (row) => (
         <Stack direction="row" spacing={1}>
           <IconButton onClick={handleOpenUpdateDialog}>
             <Visibility />
           </IconButton>
-          <IconButton onClick={handleNavigate()}>
+          <IconButton onClick={() => handleNavigate(row.id)}>
             <ArrowForward />
           </IconButton>
         </Stack>
       ),
     },
   ];
-
-  const meetingNoHelperText = formValidator.current.message(
-    "no",
-    state.formData.wardNo,
-    "required|numeric",
-  );
-  // const dateHelperText = formValidator.current.message(
-  //   "date",
-  //   state.formData.date,
-  //   "",
-  // );
-
-  const placeHelperText = formValidator.current.message(
-    "place",
-    state.formData.place,
-    "required|alpha_space",
-  );
-  const participantHelperText = formValidator.current.message(
-    "totalparticipants",
-    state.formData.totalparticipants,
-    "required|numeric",
-  );
 
   return (
     <Stack>
@@ -99,38 +98,32 @@ export const MeetingMinutes = () => {
         <DialogContent sx={{ minWidth: 500, p: 2 }}>
           <Stack spacing={2}>
             <Stack direction="row" spacing={2}>
-              <TextField
+              <Input
                 type="date"
                 name="date"
                 value={state.formData.date}
-                // helperText={dateHelperText}
-                // error={Boolean(dateHelperText)}
-                onChange={handleFormChange}
-                fullWidth
+                helperText={dateHelperText}
+                error={Boolean(dateHelperText)}
+                onChange={handleDateChange}
               />
               <InputControl
-                label="Meeting No"
-                name="meetingNo"
-                value={state.formData.meetingNo || ""}
-                helperText={meetingNoHelperText}
-                error={Boolean(meetingNoHelperText)}
+                label="Place"
+                name="place"
+                value={state.formData.place || ""}
+                helperText={placeHelperText}
+                error={Boolean(placeHelperText)}
                 onChange={handleFormChange}
               />
             </Stack>
-            <InputControl
-              label="Place"
-              name="place"
-              value={state.formData.place || ""}
-              helperText={placeHelperText}
-              error={Boolean(placeHelperText)}
-              onChange={handleFormChange}
-            />
             <Autocomplete
               multiple
               value={state.formData.participants || []}
               onChange={(event, newValue) =>
                 handleFormChange({
-                  target: { name: "participants", value: newValue },
+                  target: {
+                    name: "participants",
+                    value: newValue.map((p) => p.id),
+                  },
                 })
               }
               getOptionLabel={(option) => option.name || ""}
@@ -169,27 +162,19 @@ export const MeetingMinutes = () => {
                 type="date"
                 name="date"
                 value={state.formData.date || ""}
-                // helperText={dateHelperText}
-                // error={Boolean(dateHelperText)}
+                helperText={dateHelperText}
+                error={Boolean(dateHelperText)}
                 onChange={handleFormChange}
               />
               <InputControl
-                label="Meeting No"
-                name="meetingNo"
-                value={state.formData.meetingNo || ""}
-                helperText={meetingNoHelperText}
-                error={Boolean(meetingNoHelperText)}
+                label="Place"
+                name="place"
+                value={state.formData.place || ""}
+                helperText={placeHelperText}
+                error={Boolean(placeHelperText)}
                 onChange={handleFormChange}
               />
             </Stack>
-            <InputControl
-              label="Place"
-              name="place"
-              value={state.formData.place || ""}
-              helperText={placeHelperText}
-              error={Boolean(placeHelperText)}
-              onChange={handleFormChange}
-            />
             <Autocomplete
               multiple
               value={state.formData.participants || []}

@@ -31,7 +31,9 @@ export const deleteRole = async (roleId) => {
 //meeting minutes api
 
 export const createMeeting = async (meetingData) => {
-  return await axios.post("nhg/meeting/create", meetingData);
+  return await axios.post("nhg/meeting/create", {
+    ...meetingData,
+  });
 };
 
 export const getAllMeetings = async () => {

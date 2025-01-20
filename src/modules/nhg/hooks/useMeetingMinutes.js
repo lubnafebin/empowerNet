@@ -11,10 +11,9 @@ export const useMeetingMinutes = () => {
     minutes: [],
     members: [],
     formData: {
-      date: "",
-      meetingNo: "",
+      date: moment().format("YYYY-MM-DD"),
       place: "",
-      participants: [],
+      participants: null,
     },
   });
 
@@ -27,21 +26,40 @@ export const useMeetingMinutes = () => {
       return;
     }
     console.log("Navigating with Meeting ID: ", meetingId); // Debug log
-    navigate(`/agendas/${meetingId}`);
+    navigate(`nhg/meeting/${meetingId}/agendas`);
   };
+
   const formValidator = React.useRef(
     new SimpleReactValidator({
       autoForceUpdate: { forceUpdate: setForceUpdate },
       element: (message) => {
         message;
       },
+      validators: {
+        date: {
+          message: "The :attribute must be a valid date.",
+          rule: (val) => moment(val).isValid(),
+          required: true,
+        },
+      },
     }),
   );
+
+  const handleDateChange = (e) => {
+    const selectedDate = e.target.value;
+    if (selectedDate) {
+      setState((draft) => {
+        // Ensure the date is a string in "YYYY-MM-DD" format
+        draft.formData.date = moment(selectedDate).format("YYYY-MM-DD");
+      });
+    }
+  };
 
   const handleFormChange = ({ target }) => {
     const { name, value } = target;
     setState((draft) => {
-      draft.formData[name] = value;
+      draft.formData[name] =
+        name === "date" ? moment(value).format("YYYY-MM-DD") : value;
     });
   };
 
@@ -98,10 +116,21 @@ export const useMeetingMinutes = () => {
 
   const handleCreate = async (event) => {
     event.preventDefault();
-    console.log("Is Form Valid: ", formValidator.current.allValid());
+    console.log("Is form valid:", formValidator.current.allValid());
     if (formValidator.current.allValid()) {
-      await createMeetingHandler(state.formData);
+      // Prepare the payload
+      const payload = {
+        date: state.formData.date,
+        place: state.formData.place,
+        participantsIds: state.formData.participants.map((p) => p.id),
+      };
+      console.log("Payload being sent to API:", payload);
+      await createMeetingHandler(payload);
     } else {
+      console.log(
+        "Validation Errors:",
+        formValidator.current.getErrorMessages(),
+      );
       formValidator.current.showMessages();
       setForceUpdate((prev) => prev + 1);
     }
@@ -116,6 +145,7 @@ export const useMeetingMinutes = () => {
     handleCreate,
     state,
     handleFormChange,
+    handleDateChange,
     formValidator,
     handleNavigate,
   };
