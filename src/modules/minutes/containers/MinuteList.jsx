@@ -11,14 +11,12 @@ import {
   Avatar,
   Box,
   Button,
-  Checkbox,
   CircularProgress,
   DialogActions,
   DialogContent,
   Divider,
   IconButton,
   ListItem,
-  ListItemAvatar,
   ListItemText,
   Stack,
   TextField,
@@ -169,7 +167,7 @@ export const MinuteList = () => {
           startIcon={<Add />}
           onClick={() => toggleModel("new-minute")}
         >
-          New Minute 
+          New Minute
         </Button>
       }
     >
