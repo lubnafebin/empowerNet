@@ -252,7 +252,7 @@ export const MinuteList = () => {
                         sx={{ gap: "8px", display: "flex" }}
                       >
                         <Avatar
-                          src={option.user.profile.url}
+                          src={option.user.profile?.url}
                           alt="avatar"
                           sx={{ width: 36, height: 36, fontSize: 14 }}
                         >
