@@ -34,6 +34,7 @@ export const InputControl = React.forwardRef(function InputControl(
     rows = 4,
     helperText = "",
     autofill = undefined,
+    optionValues = [],
     ...rest
   },
   ref,
@@ -141,7 +142,7 @@ export const InputControl = React.forwardRef(function InputControl(
             labelId="demo-multiple-name-label"
             id="demo-multiple-name"
             value={value}
-            input={<OutlinedInput label={label} />}
+            input={<OutlinedInput label={label} size={rest?.size} />}
             MenuProps={{
               style: {
                 maxHeight: 250,
@@ -149,7 +150,7 @@ export const InputControl = React.forwardRef(function InputControl(
             }}
             {...rest}
           >
-            {rest.optionValue.map((option, index) => (
+            {optionValues.map((option, index) => (
               <MenuItem key={index} value={option.value}>
                 {option.label}
               </MenuItem>
@@ -193,8 +194,9 @@ export const InputControl = React.forwardRef(function InputControl(
         <FormControl fullWidth={rest.fullWidth}>
           <LocalizationProvider dateAdapter={AdapterDayjs}>
             <DatePicker
-              value={value}
               {...rest}
+              label={label}
+              value={value}
               slots={{
                 openPickerIcon: CalendarMonth, // Use your custom icon here
               }}
@@ -202,8 +204,14 @@ export const InputControl = React.forwardRef(function InputControl(
                 openPickerButton: {
                   size: rest.size,
                 },
+                textField: {
+                  size: rest.size,
+                },
               }}
             />
+            <FormHelperText sx={{ color: "#C60808" }} component="div">
+              {helperText}
+            </FormHelperText>
           </LocalizationProvider>
         </FormControl>
       );
@@ -246,7 +254,7 @@ InputControl.propTypes = {
   inputType: PropTypes.string,
   rows: PropTypes.number,
   helperText: PropTypes.any,
-  optionValue: PropTypes.arrayOf(
+  optionValues: PropTypes.arrayOf(
     PropTypes.shape({
       value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
       label: PropTypes.string,

@@ -6,7 +6,6 @@ export const utilFunctions = {
   formatDate: (date) => dayjs(date).format("ddd DD, MMM YYYY"),
   displayError: (exception) => {
     const { message, error } = exception.response.data.data;
-
     message && enqueueSnackbar({ message, variant: "error" });
 
     error.fieldErrors.forEach((fieldError) => {

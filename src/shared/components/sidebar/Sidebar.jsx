@@ -386,7 +386,7 @@ const drawerItems = [
   },
   {
     href: "/reports",
-    title: "Report",
+    title: "Reports",
     lightModeIcon: ReportsLightModeIcon,
     darkModeIcon: ReportsDarkModeIcon,
     selectedIcon: ReportsSelectedIcon,

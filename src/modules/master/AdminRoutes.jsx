@@ -9,6 +9,7 @@ import {
 } from "../../shared";
 import { MemberRoutes } from "../members";
 import { MinuteRoutes } from "../minutes";
+import { ReportRoutes } from "../reports/ReportRoutes";
 
 export const AdminRoutes = () => {
   return (
@@ -24,11 +25,20 @@ export const AdminRoutes = () => {
       </Route>
 
       <Route element={<RoleProtectedRoute roles={["NHG"]} />}>
-        <Route element={<PermissionProtectedRoute permission="member.all.GET" />}>
+        <Route
+          element={<PermissionProtectedRoute permission="member.all.GET" />}
+        >
           <Route path="/members/*" element={<MemberRoutes />} />
         </Route>
-        <Route element={<PermissionProtectedRoute permission="meeting.all.GET" />}>
+        <Route
+          element={<PermissionProtectedRoute permission="meeting.all.GET" />}
+        >
           <Route path="/minutes/*" element={<MinuteRoutes />} />
+        </Route>
+        <Route
+          element={<PermissionProtectedRoute permission="report.all.GET" />}
+        >
+          <Route path="/reports/*" element={<ReportRoutes />} />
         </Route>
       </Route>
 
