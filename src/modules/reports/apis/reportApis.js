@@ -35,3 +35,20 @@ export const getReportDetailsApi = async (reportId) => {
   const response = await API.get(`nhg/report/${reportId}`);
   return response.data;
 };
+
+export const generateConsolidateReportApi = async (params) => {
+  const response = await API.get("nhg/report/consolidate/generate", {
+    params,
+    responseType: "blob",
+  });
+  return response;
+};
+
+export const uploadConsolidateReportApi = async (formData) => {
+  const response = await API.put(
+    "nhg/report/consolidate/upload",
+    formData,
+    contentTypeFormData,
+  );
+  return response.data;
+};

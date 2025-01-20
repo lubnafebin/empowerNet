@@ -23,6 +23,7 @@ export const FileCard = ({
         backgroundColor: theme.palette.neutral[200],
         border: 1,
         borderStyle: isFileUploaded ? "none" : "dashed",
+        flex: 1,
       }}
     >
       {icon}
