@@ -5,6 +5,7 @@ import { useImmer } from "use-immer";
 import { generateReportApi } from "../apis/reportApis";
 import { enqueueSnackbar } from "notistack";
 import { saveAs } from "file-saver";
+import { useNavigate } from "react-router-dom";
 
 export const useReportList = () => {
   const [_, setForceUpdate] = React.useState(0);
@@ -19,8 +20,20 @@ export const useReportList = () => {
       { value: "refund", label: "Refund" },
       { value: "member fee", label: "Member Fees" },
     ],
+    reportForm: {
+      startDate: null,
+      endDate: null,
+      totalDeposits: "",
+      totalRefunds: "",
+      totalMembershipFees: "",
+      depositReport: null,
+      refundReport: null,
+      membershipFeesReport: null,
+    },
     generateReportButtonLoading: false,
   });
+
+  const navigate = useNavigate();
 
   const formValidator = React.useRef(
     new SimpleReactValidator({
@@ -97,5 +110,39 @@ export const useReportList = () => {
     }
   };
 
-  return { formValidator, state, handleFormSubmit, handleFormChange };
+  const toggleModel = async ({ type, id }) => {
+    switch (type) {
+      // case "wardDetails":
+      //   handleMinuteSelection(id);
+      //   break;
+      // case "manageAds":
+      //   break;
+      // case "deleteMinute":
+      //   setAlert((draft) => {
+      //     draft.open = true;
+      //     draft.dialogValue = "?delete";
+      //     draft.title = "Delete Minute";
+      //     draft.description =
+      //       "Are you sure? Do you want to delete the ward. Once you delete the ward there is no going back.";
+      //     draft.rowAction = (
+      //       <AlertRowAction
+      //         onClick={async () => await deleteMinute(id)}
+      //         label="Delete"
+      //       />
+      //     );
+      //   });
+      //   break;
+      default:
+        navigate("?new-report");
+        break;
+    }
+  };
+
+  return {
+    formValidator,
+    state,
+    handleFormSubmit,
+    handleFormChange,
+    toggleModel,
+  };
 };
