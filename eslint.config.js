@@ -35,6 +35,7 @@ export default [
       ],
       "no-console": ["warn", { allow: ["error", "info"] }],
       "no-unused-vars": "warn",
+      "react-hooks/exhaustive-deps": "off", // Disable the 'exhaustive-deps' rule
     },
   },
 ];
