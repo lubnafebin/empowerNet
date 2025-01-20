@@ -270,7 +270,7 @@ export const Transactions = () => {
                         sx={{ gap: "8px", display: "flex" }}
                       >
                         <Avatar
-                          src={BASE_URL + option.member.user.profile.url}
+                          src={BASE_URL + option.member.user.profile?.url}
                           alt="avatar"
                           sx={{ width: 36, height: 36, fontSize: 14 }}
                         >
