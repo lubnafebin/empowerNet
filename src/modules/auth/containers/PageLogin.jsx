@@ -57,7 +57,7 @@ export const PageLogin = () => {
         variant="shadow"
         flexDirection={isLargeDevice ? "row" : "column"}
         gap={isLargeDevice ? "26px" : "8px"}
-        p={isLargeDevice ? 5 : 3}
+        p={isLargeDevice ? 5 : 2.5}
         elevation={0}
         boxShadow={0}
         // border="1px solid #BCB6B6"
@@ -73,7 +73,7 @@ export const PageLogin = () => {
             sx={{
               fontSize: "14px",
               color: palette.action.active,
-              width: isLargeDevice ? "396px" : "250px",
+              width: isLargeDevice ? "396px" : "240px",
             }}
           >
             {slogan}
@@ -127,10 +127,11 @@ export const PageLogin = () => {
             helperText={helperTexts.password}
             error={Boolean(helperTexts.password)}
           />
-          <Stack flexDirection="row" justifyContent="space-between">
+          <Stack flexDirection="column">
             <Link
               to="/auth/reset-password"
               style={{
+                fontSize: "14px",
                 textDecoration: "none",
                 color: "#051A34",
               }}
@@ -140,6 +141,7 @@ export const PageLogin = () => {
             <Link
               to="/auth/register/nhg"
               style={{
+                fontSize: "14px",
                 textDecoration: "none",
                 color: "#051A34",
                 display: isLargeDevice ? "none" : "block",
