@@ -25,3 +25,13 @@ export const getAllReportsApi = async () => {
   const response = await API.get("nhg/report/all");
   return response.data;
 };
+
+export const deleteReportApi = async (reportId) => {
+  const response = await API.delete(`nhg/report/${reportId}/delete`);
+  return response.data;
+};
+
+export const getReportDetailsApi = async (reportId) => {
+  const response = await API.get(`nhg/report/${reportId}`);
+  return response.data;
+};

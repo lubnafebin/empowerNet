@@ -19,10 +19,14 @@ import {
   Divider,
   FormHelperText,
   FormLabel,
+  IconButton,
   Stack,
+  Tooltip,
   Typography,
 } from "@mui/material";
 import {
+  ArrowForward,
+  DeleteOutlineRounded,
   Description,
   PictureAsPdf,
   PrintOutlined,
@@ -43,6 +47,7 @@ export const ReportList = () => {
     toggleModel,
     handleReportFormChange,
     handleReportFormSubmit,
+    handleDeleteReport,
   } = useReportList();
 
   const columns = React.useMemo(
@@ -141,6 +146,34 @@ export const ReportList = () => {
         },
         enableSorting: true,
         placement: "right",
+      },
+      {
+        header: "Action",
+        cell: ({
+          row: {
+            original: { id, status },
+          },
+        }) => (
+          <Stack
+            flexDirection="row"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <Tooltip title="Report Details" arrow disableInteractive>
+              <IconButton size="small" onClick={() => navigate(`${id}`)}>
+                <ArrowForward fontSize="small" />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Delete" arrow disableInteractive>
+              <IconButton
+                size="small"
+                disabled={status?.name.toLowerCase() !== "draft"}
+                onClick={() => handleDeleteReport(id)}
+              >
+                <DeleteOutlineRounded fontSize="small" />
+              </IconButton>
+            </Tooltip>
+          </Stack>
+        ),
       },
     ],
     [],
@@ -261,7 +294,7 @@ export const ReportList = () => {
       <ReactTable
         columns={columns}
         data={state.reports.options}
-        loading={false}
+        loading={state.reports.loading}
         customHeader={
           <Stack p="14px">
             <Box sx={{ ml: "auto" }}>

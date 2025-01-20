@@ -4,6 +4,7 @@ import SimpleReactValidator from "simple-react-validator";
 import { useImmer } from "use-immer";
 import {
   createNewReportSummaryApi,
+  deleteReportApi,
   generateReportApi,
   getAllReportsApi,
 } from "../apis/reportApis";
@@ -11,6 +12,7 @@ import { enqueueSnackbar } from "notistack";
 import { saveAs } from "file-saver";
 import { useNavigate } from "react-router-dom";
 import { utilFunctions } from "../../../utils";
+import { AlertRowAction, useAlertContext } from "../../../shared";
 
 export const useReportList = () => {
   const [_, setForceUpdate] = React.useState(0);
@@ -40,6 +42,7 @@ export const useReportList = () => {
     generateReportButtonLoading: false,
   });
 
+  const { setAlert } = useAlertContext();
   const navigate = useNavigate();
 
   const formValidator = React.useRef(
@@ -126,6 +129,23 @@ export const useReportList = () => {
       utilFunctions.displayError(exception);
     } finally {
       triggerReportFormButtonLoading(false);
+    }
+  };
+
+  const deleteReport = async (reportId) => {
+    try {
+      const response = await deleteReportApi(reportId);
+
+      const { success, message } = response;
+      if (success) {
+        enqueueSnackbar({ message, variant: "success" });
+        getAllReports();
+        navigate(location.pathname, { replace: true });
+      } else {
+        throw { response: { data: { message } } };
+      }
+    } catch (exception) {
+      utilFunctions.displayError(exception);
     }
   };
 
@@ -239,6 +259,22 @@ export const useReportList = () => {
     }
   };
 
+  const handleDeleteReport = (reportId) => {
+    setAlert((draft) => {
+      draft.open = true;
+      draft.dialogValue = "?delete";
+      draft.title = "Delete Report";
+      draft.description =
+        "Are you sure? Do you want to delete the report. Once you delete the report there is no going back.";
+      draft.rowAction = (
+        <AlertRowAction
+          onClick={async () => await deleteReport(reportId)}
+          label="Delete"
+        />
+      );
+    });
+  };
+
   React.useEffect(() => {
     getAllReports();
   }, []);
@@ -250,5 +286,6 @@ export const useReportList = () => {
     toggleModel,
     handleReportFormSubmit,
     handleReportFormChange,
+    handleDeleteReport,
   };
 };
