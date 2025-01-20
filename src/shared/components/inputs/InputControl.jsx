@@ -14,7 +14,6 @@ import {
   IconButton,
   OutlinedInput,
   FormHelperText,
-  Button,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import CloseIcon from "@mui/icons-material/Close";
@@ -205,7 +204,8 @@ export const InputControl = React.forwardRef(function InputControl(
                   size: rest.size,
                 },
                 textField: {
-                  size: rest.size,
+                  size: rest?.size,
+                  required: rest?.required,
                 },
               }}
             />

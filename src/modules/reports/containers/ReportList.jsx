@@ -12,6 +12,7 @@ import {
 import {
   Box,
   Button,
+  Chip,
   CircularProgress,
   DialogActions,
   DialogContent,
@@ -19,6 +20,7 @@ import {
   FormHelperText,
   FormLabel,
   Stack,
+  Typography,
 } from "@mui/material";
 import {
   Description,
@@ -28,6 +30,8 @@ import {
 } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import { useReportList } from "../hooks";
+import { utilFunctions } from "../../../utils";
+import dayjs from "dayjs";
 
 export const ReportList = () => {
   const navigate = useNavigate();
@@ -37,6 +41,8 @@ export const ReportList = () => {
     handleFormSubmit,
     handleFormChange,
     toggleModel,
+    handleReportFormChange,
+    handleReportFormSubmit,
   } = useReportList();
 
   const columns = React.useMemo(
@@ -49,43 +55,90 @@ export const ReportList = () => {
       },
       {
         header: "Report Duration",
-        accessorKey: "date",
+        cell: ({
+          row: {
+            original: { startDate, endDate },
+          },
+        }) => {
+          return (
+            <Typography>
+              {dayjs(startDate).format("DD MMM YYYY")} to
+              {dayjs(endDate).format("DD MMM YYYY")}
+            </Typography>
+          );
+        },
         enableSorting: true,
-        placement: "right",
+        meta: { cellStyle: { width: 230 } },
       },
       {
         header: "Created At",
-        accessorKey: "createdAt",
+        cell: () => utilFunctions.formatDate(),
         enableSorting: true,
         placement: "right",
       },
       {
-        header: "Deposit",
-        accessorKey: "deposit",
+        header: "Total Deposit",
+        accessorKey: "totalDeposits",
         enableSorting: true,
         placement: "right",
       },
       {
-        header: "Refund",
-        accessorKey: "refund",
+        header: "Total Refund",
+        accessorKey: "totalRefunds",
         enableSorting: true,
         placement: "right",
       },
       {
-        header: "Membership Fees",
-        accessorKey: "memberFee",
+        header: "Total Membership Fees",
+        accessorKey: "totalMembershipFees",
         enableSorting: true,
         placement: "right",
       },
       {
-        header: "Approved By",
-        accessorKey: "approvedBy",
+        header: "Approved By ADS",
+        cell: ({
+          row: {
+            original: { verifiedByAds },
+          },
+        }) => {
+          return (
+            <Typography>
+              {verifiedByAds?.user ? verifiedByAds.user.name : "-"}
+            </Typography>
+          );
+        },
         enableSorting: true,
         placement: "right",
       },
+      {
+        header: "Approved By CDS",
+        cell: ({
+          row: {
+            original: { verifiedByCds },
+          },
+        }) => {
+          return (
+            <Typography>
+              {verifiedByCds?.user ? verifiedByCds.user.name : "-"}
+            </Typography>
+          );
+        },
+        enableSorting: true,
+        placement: "right",
+      },
+
       {
         header: "Status",
-        accessorKey: "status",
+        cell: ({
+          row: {
+            original: { status },
+          },
+        }) => {
+          const statusLabel = status?.name?.toLowerCase();
+
+          const color = statusLabel === "draft" ? "info" : "success";
+          return <Chip label={statusLabel} color={color} />;
+        },
         enableSorting: true,
         placement: "right",
       },
@@ -95,13 +148,43 @@ export const ReportList = () => {
 
   const helperText = {
     startDate: formValidator.current.message(
-      "startDate",
+      "Start date",
       state.reportForm.startDate,
       "required",
     ),
     endDate: formValidator.current.message(
-      "endDate",
+      "End date",
       state.reportForm.endDate,
+      "required",
+    ),
+    totalDeposits: formValidator.current.message(
+      "Total deposits",
+      state.reportForm.totalDeposits,
+      "required",
+    ),
+    totalRefunds: formValidator.current.message(
+      "Total refunds",
+      state.reportForm.totalRefunds,
+      "required",
+    ),
+    totalMembershipFees: formValidator.current.message(
+      "Total membership fees",
+      state.reportForm.totalMembershipFees,
+      "required",
+    ),
+    depositReport: formValidator.current.message(
+      "Deposit Report",
+      state.reportForm.depositReport,
+      "required",
+    ),
+    refundReport: formValidator.current.message(
+      "Refund report",
+      state.reportForm.refundReport,
+      "required",
+    ),
+    membershipFeesReport: formValidator.current.message(
+      "Membership fee report",
+      state.reportForm.membershipFeesReport,
       "required",
     ),
   };
@@ -127,7 +210,7 @@ export const ReportList = () => {
           component="form"
           onSubmit={handleFormSubmit}
         >
-          <Stack width={250}>
+          <Stack width={150}>
             <InputControl
               type="select"
               size="small"
@@ -177,7 +260,7 @@ export const ReportList = () => {
     >
       <ReactTable
         columns={columns}
-        data={[]}
+        data={state.reports.options}
         loading={false}
         customHeader={
           <Stack p="14px">
@@ -192,8 +275,9 @@ export const ReportList = () => {
             </Box>
           </Stack>
         }
-        rowClick={(row) => navigate(`reports/${row.id}`)}
+        rowClick={(row) => navigate(`${row.id}`)}
       />
+
       <GeneralDialog dialogValue={"?new-report"}>
         <DialogHeader title="New Report" />
         <Divider variant="fullWidth" orientation="horizontal" />
@@ -208,7 +292,7 @@ export const ReportList = () => {
         ) : (
           <Box
             component="form"
-            onSubmit={handleFormSubmit}
+            onSubmit={handleReportFormSubmit}
             sx={{ width: { md: 700, xs: "100%" } }}
           >
             <DialogContent>
@@ -218,13 +302,14 @@ export const ReportList = () => {
                     type="date"
                     size="small"
                     fullWidth
+                    required
                     value={state.reportForm.startDate}
                     label="Start Date"
                     name="startDate"
                     error={Boolean(helperText.startDate)}
                     helperText={helperText.startDate}
                     onChange={(newValue) =>
-                      handleFormChange({
+                      handleReportFormChange({
                         target: { name: "startDate", value: newValue },
                       })
                     }
@@ -233,13 +318,14 @@ export const ReportList = () => {
                     type="date"
                     size="small"
                     fullWidth
+                    required
                     value={state.reportForm.endDate}
                     label="End Date"
                     name="endDate"
                     error={Boolean(helperText.endDate)}
                     helperText={helperText.endDate}
                     onChange={(newValue) =>
-                      handleFormChange({
+                      handleReportFormChange({
                         target: { name: "endDate", value: newValue },
                       })
                     }
@@ -247,6 +333,7 @@ export const ReportList = () => {
                 </Stack>
                 <Stack flexDirection={{ xs: "column", md: "row" }} gap="14px">
                   <InputControl
+                    required
                     type="number"
                     size="small"
                     value={state.reportForm.totalDeposits}
@@ -254,9 +341,10 @@ export const ReportList = () => {
                     name="totalDeposits"
                     error={Boolean(helperText.totalDeposits)}
                     helperText={helperText.totalDeposits}
-                    onChange={handleFormChange}
+                    onChange={handleReportFormChange}
                   />
                   <InputControl
+                    required
                     type="number"
                     size="small"
                     value={state.reportForm.totalRefunds}
@@ -264,9 +352,10 @@ export const ReportList = () => {
                     name="totalRefunds"
                     error={Boolean(helperText.totalRefunds)}
                     helperText={helperText.totalRefunds}
-                    onChange={handleFormChange}
+                    onChange={handleReportFormChange}
                   />
                   <InputControl
+                    required
                     type="number"
                     size="small"
                     value={state.formData.totalMembershipFees}
@@ -274,7 +363,7 @@ export const ReportList = () => {
                     name="totalMembershipFees"
                     error={Boolean(helperText.totalMembershipFees)}
                     helperText={helperText.totalMembershipFees}
-                    onChange={handleFormChange}
+                    onChange={handleReportFormChange}
                   />
                 </Stack>
                 <Stack gap="14px">
@@ -282,10 +371,10 @@ export const ReportList = () => {
                   <Stack>
                     {state.reportForm.depositReport ? (
                       <FileCard
-                        fileName={state.reportForm.depositReport}
+                        fileName={state.reportForm.depositReport.name}
                         icon={<PictureAsPdf fontSize="small" color="error" />}
                         onDelete={() =>
-                          handleFormChange({
+                          handleReportFormChange({
                             target: {
                               name: "depositReport",
                               value: null,
@@ -293,9 +382,6 @@ export const ReportList = () => {
                           })
                         }
                         isFileUploaded={true}
-                        onView={() =>
-                          window.open(state.formData.signatureAttachment.url)
-                        }
                       />
                     ) : (
                       <Box component="label">
@@ -303,7 +389,7 @@ export const ReportList = () => {
                           type="file"
                           accept="application/pdf"
                           onChange={(event) =>
-                            handleFormChange({
+                            handleReportFormChange({
                               target: {
                                 name: "depositReport",
                                 value: event,
@@ -320,19 +406,19 @@ export const ReportList = () => {
                       </Box>
                     )}
 
-                    {helperText.aadharAttachment && (
+                    {helperText.depositReport && (
                       <FormHelperText sx={{ color: "#C60808" }}>
-                        {helperText.aadharAttachment}
+                        {helperText.depositReport}
                       </FormHelperText>
                     )}
                   </Stack>
                   <Stack>
                     {state.reportForm.refundReport ? (
                       <FileCard
-                        fileName={state.reportForm.refundReport}
+                        fileName={state.reportForm.refundReport.name}
                         icon={<PictureAsPdf fontSize="small" color="error" />}
                         onDelete={() =>
-                          handleFormChange({
+                          handleReportFormChange({
                             target: {
                               name: "refundReport",
                               value: null,
@@ -340,9 +426,6 @@ export const ReportList = () => {
                           })
                         }
                         isFileUploaded={true}
-                        onView={() =>
-                          window.open(state.formData.signatureAttachment.url)
-                        }
                       />
                     ) : (
                       <Box component="label">
@@ -350,7 +433,7 @@ export const ReportList = () => {
                           type="file"
                           accept="application/pdf"
                           onChange={(event) =>
-                            handleFormChange({
+                            handleReportFormChange({
                               target: {
                                 name: "refundReport",
                                 value: event,
@@ -367,19 +450,19 @@ export const ReportList = () => {
                       </Box>
                     )}
 
-                    {helperText.aadharAttachment && (
+                    {helperText.refundReport && (
                       <FormHelperText sx={{ color: "#C60808" }}>
-                        {helperText.aadharAttachment}
+                        {helperText.refundReport}
                       </FormHelperText>
                     )}
                   </Stack>
                   <Stack>
                     {state.reportForm.membershipFeesReport ? (
                       <FileCard
-                        fileName={state.reportForm.membershipFeesReport}
+                        fileName={state.reportForm.membershipFeesReport.name}
                         icon={<PictureAsPdf fontSize="small" color="error" />}
                         onDelete={() =>
-                          handleFormChange({
+                          handleReportFormChange({
                             target: {
                               name: "membershipFeesReport",
                               value: null,
@@ -387,9 +470,6 @@ export const ReportList = () => {
                           })
                         }
                         isFileUploaded={true}
-                        onView={() =>
-                          window.open(state.formData.signatureAttachment.url)
-                        }
                       />
                     ) : (
                       <Box component="label">
@@ -397,7 +477,7 @@ export const ReportList = () => {
                           type="file"
                           accept="application/pdf"
                           onChange={(event) =>
-                            handleFormChange({
+                            handleReportFormChange({
                               target: {
                                 name: "membershipFeesReport",
                                 value: event,
@@ -414,9 +494,9 @@ export const ReportList = () => {
                       </Box>
                     )}
 
-                    {helperText.aadharAttachment && (
+                    {helperText.membershipFeesReport && (
                       <FormHelperText sx={{ color: "#C60808" }}>
-                        {helperText.aadharAttachment}
+                        {helperText.membershipFeesReport}
                       </FormHelperText>
                     )}
                   </Stack>
@@ -427,7 +507,7 @@ export const ReportList = () => {
             <DialogActions>
               <LoadingButton
                 size="small"
-                loading={state.isFormSubmitting}
+                loading={state.reportFormButtonLoading}
                 type="submit"
                 variant="contained"
               >

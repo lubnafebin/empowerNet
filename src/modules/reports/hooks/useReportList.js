@@ -2,10 +2,15 @@ import dayjs from "dayjs";
 import React from "react";
 import SimpleReactValidator from "simple-react-validator";
 import { useImmer } from "use-immer";
-import { generateReportApi } from "../apis/reportApis";
+import {
+  createNewReportSummaryApi,
+  generateReportApi,
+  getAllReportsApi,
+} from "../apis/reportApis";
 import { enqueueSnackbar } from "notistack";
 import { saveAs } from "file-saver";
 import { useNavigate } from "react-router-dom";
+import { utilFunctions } from "../../../utils";
 
 export const useReportList = () => {
   const [_, setForceUpdate] = React.useState(0);
@@ -20,6 +25,7 @@ export const useReportList = () => {
       { value: "refund", label: "Refund" },
       { value: "member fee", label: "Member Fees" },
     ],
+    reports: { options: [], loading: true },
     reportForm: {
       startDate: null,
       endDate: null,
@@ -30,6 +36,7 @@ export const useReportList = () => {
       refundReport: null,
       membershipFeesReport: null,
     },
+    reportFormButtonLoading: false,
     generateReportButtonLoading: false,
   });
 
@@ -41,6 +48,26 @@ export const useReportList = () => {
       element: (message) => message,
     }),
   );
+
+  const getAllReports = async () => {
+    triggerTableLoading(true);
+    try {
+      const response = await getAllReportsApi();
+
+      const { success, message, data } = response;
+      if (success) {
+        setState((draft) => {
+          draft.reports.options = data;
+        });
+      } else {
+        throw { response: { data: { message } } };
+      }
+    } catch (exception) {
+      utilFunctions.displayError(exception);
+    } finally {
+      triggerTableLoading(false);
+    }
+  };
 
   const generateReport = async (params) => {
     triggerGenerateReportButtonLoading(true);
@@ -81,33 +108,43 @@ export const useReportList = () => {
     }
   };
 
+  const createNewReportSummary = async (formData) => {
+    triggerReportFormButtonLoading(true);
+    try {
+      const response = await createNewReportSummaryApi(formData);
+
+      const { success, message } = response;
+      if (success) {
+        enqueueSnackbar({ message, variant: "success" });
+        getAllReports();
+        // handleResetFormData();
+        navigate(location.pathname, { replace: true });
+      } else {
+        throw { response: { data: { message } } };
+      }
+    } catch (exception) {
+      utilFunctions.displayError(exception);
+    } finally {
+      triggerReportFormButtonLoading(false);
+    }
+  };
+
+  const triggerTableLoading = (status) => {
+    setState((draft) => {
+      draft.reports.loading = status;
+    });
+  };
+
   const triggerGenerateReportButtonLoading = (status) => {
     setState((draft) => {
       draft.generateReportButtonLoading = status;
     });
   };
 
-  const handleFormChange = (event) => {
-    const { name, value } = event.target;
+  const triggerReportFormButtonLoading = (status) => {
     setState((draft) => {
-      draft.formData[name] = value;
+      draft.reportFormButtonLoading = status;
     });
-  };
-
-  const handleFormSubmit = async (event) => {
-    event.preventDefault();
-    if (formValidator.current.allValid()) {
-      const params = {
-        ...state.formData,
-        startDate: dayjs(state.formData.startDate).format("YYYY-MM-DD"),
-        endDate: dayjs(state.formData.end).format("YYYY-MM-DD"),
-      };
-
-      await generateReport(params);
-    } else {
-      formValidator.current.showMessages();
-      setForceUpdate(1);
-    }
   };
 
   const toggleModel = async ({ type, id }) => {
@@ -138,11 +175,80 @@ export const useReportList = () => {
     }
   };
 
+  const handleFormChange = (event) => {
+    const { name, value } = event.target;
+    setState((draft) => {
+      draft.formData[name] = value;
+    });
+  };
+
+  const handleReportFormChange = (event) => {
+    const { name, value } = event.target;
+    setState((draft) => {
+      if (
+        ["depositReport", "refundReport", "membershipFeesReport"].includes(name)
+      ) {
+        draft.reportForm[name] = value?.target?.files
+          ? value.target.files[0]
+          : value;
+      } else {
+        draft.reportForm[name] = value;
+      }
+    });
+  };
+
+  const handleFormSubmit = async (event) => {
+    event.preventDefault();
+    if (formValidator.current.allValid()) {
+      const params = {
+        ...state.formData,
+        startDate: dayjs(state.formData.startDate).format("YYYY-MM-DD"),
+        endDate: dayjs(state.formData.end).format("YYYY-MM-DD"),
+      };
+
+      await generateReport(params);
+    } else {
+      formValidator.current.showMessages();
+      setForceUpdate(1);
+    }
+  };
+
+  const handleReportFormSubmit = async (event) => {
+    event.preventDefault();
+    if (formValidator.current.allValid()) {
+      const formData = new FormData();
+
+      Object.entries(state.reportForm).forEach(([key, value]) => {
+        if (
+          ["depositReport", "refundReport", "membershipFeesReport"].includes(
+            key,
+          )
+        ) {
+          value instanceof File && formData.append(key, value);
+        } else if (["startDate", "endDate"].includes(key)) {
+          formData.append(key, dayjs(value).format("YYYY-MM-DD"));
+        } else {
+          formData.append(key, value);
+        }
+      });
+
+      await createNewReportSummary(formData);
+    } else {
+      formValidator.current.showMessages();
+      setForceUpdate(1);
+    }
+  };
+
+  React.useEffect(() => {
+    getAllReports();
+  }, []);
   return {
     formValidator,
     state,
     handleFormSubmit,
     handleFormChange,
     toggleModel,
+    handleReportFormSubmit,
+    handleReportFormChange,
   };
 };
