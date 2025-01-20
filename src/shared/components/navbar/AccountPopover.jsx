@@ -118,7 +118,7 @@ export const AccountPopover = ({ showAvatarOnly }) => {
         <UserProfileCard handleCloseUserMenu={handleCloseUserMenu} />
         <Divider sx={{ mt: 2, mb: 1 }} />
 
-        <MenuItem
+        {/* <MenuItem
           selected={isProfilePage}
           sx={{ borderRadius: 0 }}
           onClick={handleRedirection}
@@ -127,7 +127,7 @@ export const AccountPopover = ({ showAvatarOnly }) => {
             <ManageAccounts />
           </ListItemIcon>
           <Typography>Manage Profile</Typography>
-        </MenuItem>
+        </MenuItem> */}
         <MenuItem
           sx={{ borderRadius: 0, mb: 1 }}
           onClick={() => {
