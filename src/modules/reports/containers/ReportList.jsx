@@ -41,6 +41,7 @@ export const ReportList = () => {
   const navigate = useNavigate();
   const {
     formValidator,
+    reportFormValidator,
     state,
     handleFormSubmit,
     handleFormChange,
@@ -180,44 +181,57 @@ export const ReportList = () => {
   );
 
   const helperText = {
-    startDate: formValidator.current.message(
+    startDate: reportFormValidator.current.message(
       "Start date",
       state.reportForm.startDate,
       "required",
     ),
-    endDate: formValidator.current.message(
+    endDate: reportFormValidator.current.message(
       "End date",
       state.reportForm.endDate,
       "required",
     ),
-    totalDeposits: formValidator.current.message(
+    totalDeposits: reportFormValidator.current.message(
       "Total deposits",
       state.reportForm.totalDeposits,
       "required",
     ),
-    totalRefunds: formValidator.current.message(
+    totalRefunds: reportFormValidator.current.message(
       "Total refunds",
       state.reportForm.totalRefunds,
       "required",
     ),
-    totalMembershipFees: formValidator.current.message(
+    totalMembershipFees: reportFormValidator.current.message(
       "Total membership fees",
       state.reportForm.totalMembershipFees,
       "required",
     ),
-    depositReport: formValidator.current.message(
+    depositReport: reportFormValidator.current.message(
       "Deposit Report",
       state.reportForm.depositReport,
       "required",
     ),
-    refundReport: formValidator.current.message(
+    refundReport: reportFormValidator.current.message(
       "Refund report",
       state.reportForm.refundReport,
       "required",
     ),
-    membershipFeesReport: formValidator.current.message(
+    membershipFeesReport: reportFormValidator.current.message(
       "Membership fee report",
       state.reportForm.membershipFeesReport,
+      "required",
+    ),
+  };
+
+  const generateReportHelperText = {
+    startDate: formValidator.current.message(
+      "Start date",
+      state.formData.startDate,
+      "required",
+    ),
+    endDate: formValidator.current.message(
+      "End date",
+      state.formData.endDate,
       "required",
     ),
   };
@@ -260,8 +274,8 @@ export const ReportList = () => {
             value={state.formData.startDate}
             label="Start Date"
             name="startDate"
-            error={Boolean(helperText.startDate)}
-            helperText={helperText.startDate}
+            error={Boolean(generateReportHelperText.startDate)}
+            helperText={generateReportHelperText.startDate}
             onChange={(newValue) =>
               handleFormChange({
                 target: { name: "startDate", value: newValue },
@@ -274,8 +288,8 @@ export const ReportList = () => {
             value={state.formData.endDate}
             label="End Date"
             name="endDate"
-            error={Boolean(helperText.endDate)}
-            helperText={helperText.endDate}
+            error={Boolean(generateReportHelperText.endDate)}
+            helperText={generateReportHelperText.endDate}
             onChange={(newValue) =>
               handleFormChange({
                 target: { name: "endDate", value: newValue },

@@ -52,6 +52,13 @@ export const useReportList = () => {
     }),
   );
 
+  const reportFormValidator = React.useRef(
+    new SimpleReactValidator({
+      autoForceUpdate: { forceUpdate: setForceUpdate },
+      element: (message) => message,
+    }),
+  );
+
   const getAllReports = async () => {
     triggerTableLoading(true);
     try {
@@ -235,7 +242,7 @@ export const useReportList = () => {
 
   const handleReportFormSubmit = async (event) => {
     event.preventDefault();
-    if (formValidator.current.allValid()) {
+    if (reportFormValidator.current.allValid()) {
       const formData = new FormData();
 
       Object.entries(state.reportForm).forEach(([key, value]) => {
@@ -254,7 +261,7 @@ export const useReportList = () => {
 
       await createNewReportSummary(formData);
     } else {
-      formValidator.current.showMessages();
+      reportFormValidator.current.showMessages();
       setForceUpdate(1);
     }
   };
@@ -280,6 +287,7 @@ export const useReportList = () => {
   }, []);
   return {
     formValidator,
+    reportFormValidator,
     state,
     handleFormSubmit,
     handleFormChange,
