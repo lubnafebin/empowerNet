@@ -10,6 +10,7 @@ import {
 import {
   Box,
   Button,
+  Chip,
   CircularProgress,
   DialogActions,
   DialogContent,
@@ -17,27 +18,24 @@ import {
   IconButton,
   Stack,
   Tooltip,
+  Typography,
 } from "@mui/material";
 import {
-  Add,
-  ArrowForward,
   DeleteOutlineRounded,
   ManageAccountsOutlined,
   VisibilityOutlined,
 } from "@mui/icons-material";
-import { useWardList } from "../hooks";
+import { useNhgList } from "../hooks";
 import { utilFunctions } from "../../../utils";
-import { useNavigate } from "react-router-dom";
 
-export const WardList = () => {
+export const NhgList = () => {
   const {
     state,
     formValidator,
     toggleModel,
     handleFormChange,
     handleFormSubmit,
-  } = useWardList();
-  const navigate = useNavigate();
+  } = useNhgList();
 
   const columns = React.useMemo(
     () => [
@@ -48,16 +46,53 @@ export const WardList = () => {
         placement: "right",
       },
       {
-        header: "Ward No",
-        accessorKey: "wardNo",
+        header: "Name",
+        cell: ({
+          row: {
+            original: { user },
+          },
+        }) => <Typography>{user.name}</Typography>,
         enableSorting: true,
         placement: "right",
       },
       {
-        header: "Name",
-        accessorKey: "name",
+        header: "President",
+        accessorKey: "president",
         enableSorting: true,
         placement: "right",
+      },
+      {
+        header: "Secretary",
+        accessorKey: "Secretary",
+        enableSorting: true,
+        placement: "right",
+      },
+      {
+        header: "Contact No",
+        accessorKey: "contactNo",
+        enableSorting: true,
+        placement: "right",
+      },
+      {
+        header: "Total Members",
+        accessorKey: "totalMembers",
+        enableSorting: true,
+        placement: "right",
+      },
+      {
+        header: "Status",
+        cell: ({
+          row: {
+            original: { status },
+          },
+        }) => {
+          return (
+            <Chip
+              label={status.name}
+              color={status === "Registered" ? "warning" : "success"}
+            />
+          );
+        },
       },
       {
         header: "Created At",
@@ -70,28 +105,25 @@ export const WardList = () => {
         placement: "right",
       },
       {
-        header: "ADS",
-        accessorKey: "ads",
-        enableSorting: true,
-        placement: "right",
-      },
-      {
         header: "Action",
         accessorKey: "action",
         enableSorting: false,
         placement: "right",
-        meta: { cellStyle: { width: 100 } },
+        meta: { cellStyle: { width: 70 } },
         cell: ({
           row: {
             original: { id },
           },
         }) => (
           <Stack flexDirection="row">
-            <Tooltip title="Ward Details" arrow disableInteractive>
-              <IconButton size="small" onClick={() => navigate(`${id}/nhgs`)}>
-                <ArrowForward fontSize="small" />
+            {/* <Tooltip title="Manage Ads" arrow disableInteractive>
+              <IconButton
+                size="small"
+                onClick={() => toggleModel({ type: "mangeAds" })}
+              >
+                <ManageAccountsOutlined fontSize="small" />
               </IconButton>
-            </Tooltip>
+            </Tooltip> */}
             <Tooltip title="Ward Details" arrow disableInteractive>
               <IconButton
                 size="small"
@@ -100,14 +132,14 @@ export const WardList = () => {
                 <VisibilityOutlined fontSize="small" />
               </IconButton>
             </Tooltip>
-            <Tooltip title="Delete Ward" arrow disableInteractive>
+            {/* <Tooltip title="Delete Ward" arrow disableInteractive>
               <IconButton
                 size="small"
                 onClick={() => toggleModel({ type: "deleteWard", id })}
               >
                 <DeleteOutlineRounded fontSize="small" />
               </IconButton>
-            </Tooltip>
+            </Tooltip> */}
           </Stack>
         ),
       },
@@ -128,27 +160,32 @@ export const WardList = () => {
     ),
   };
 
-  const breadcrumbs = [{ title: "Dashboard", href: "/" }, { title: "Nhgs" }];
+  const breadcrumbs = [
+    { title: "Dashboard", href: "/" },
+    { title: "Wards", href: "/wards" },
+    { title: state.formData.name },
+  ];
 
   return (
     <PageLayout
-      title="Wards"
+      title={state.formData.name}
       breadcrumbs={breadcrumbs}
       actionSection={
         <Button
           variant="contained"
-          startIcon={<Add />}
+          startIcon={<ManageAccountsOutlined />}
           onClick={() => toggleModel("newWard")}
         >
-          New Ward
+          Manage ADS
         </Button>
       }
     >
       <ReactTable
+        title="NHG List"
         columns={columns}
-        data={state.wardList.options}
+        data={state.NhgList.options}
         loading={state.isTableLoading}
-        rowClick={(row) => navigate(`${row.id}/nhgs`)}
+        rowClick={() => {}}
       />
 
       <GeneralDialog dialogValue={state.selectedWardId ? "?ward" : "?new-ward"}>

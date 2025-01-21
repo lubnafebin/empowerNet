@@ -24,3 +24,8 @@ export const deleteWardApi = async ({ wardId }) => {
   const response = await API.delete(`cds/ward/${wardId}/delete`);
   return response.data;
 };
+
+export const getWardNhgListApi = async (wardId) => {
+  const response = await API.get("ward/nhg/all", { params: { wardId } });
+  return response.data;
+};

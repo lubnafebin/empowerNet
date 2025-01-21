@@ -1,5 +1,5 @@
 import { Route, Routes } from "react-router-dom";
-import { WardList } from "./containers";
+import { NhgList, WardList } from "./containers";
 import {
   AuthProtectedRoute,
   DashboardLayout,
@@ -17,6 +17,7 @@ export const WardRoutes = () => {
         }
       >
         <Route index element={<WardList />} />
+        <Route path=":wardId/nhgs" element={<NhgList />} />
       </Route>
       <Route path="*" element={<PageNotFound />} />
     </Routes>

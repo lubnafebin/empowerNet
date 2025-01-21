@@ -28,7 +28,9 @@ export const usePageSignUp = () => {
     wardList: { options: [], loading: false },
     showPassword: false,
     showConfirmPassword: false,
+    submitButtonLoading: false,
   });
+
   const navigate = useNavigate();
   const { setAppState } = useAppStateContext();
   const { accountType } = useParams();
@@ -53,6 +55,7 @@ export const usePageSignUp = () => {
   );
 
   const doSignUp = async ({ registrationDetails }) => {
+    triggerButtonLoading(true);
     try {
       const response = await doSignUpApi(registrationDetails, accountType);
 
@@ -70,6 +73,8 @@ export const usePageSignUp = () => {
       }
     } catch (exception) {
       utilFunctions.displayError(exception);
+    } finally {
+      triggerButtonLoading(false);
     }
   };
 
@@ -121,6 +126,12 @@ export const usePageSignUp = () => {
     if (name === "cds" && value?.id) {
       await getWardList(value.id);
     }
+  };
+
+  const triggerButtonLoading = (status) => {
+    setState((draft) => {
+      draft.submitButtonLoading = status;
+    });
   };
 
   const togglePassword = ({ field }) => {
