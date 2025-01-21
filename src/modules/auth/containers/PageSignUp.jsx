@@ -1,13 +1,12 @@
 import {
   Box,
-  Button,
   Paper,
   Stack,
   TextField,
   Typography,
   useTheme,
 } from "@mui/material";
-import { InputControl } from "../../../shared";
+import { InputControl, LoadingButton } from "../../../shared";
 import Logo from "../../../assets/logo-dark.svg";
 import { Link, useParams } from "react-router-dom";
 import React from "react";
@@ -127,7 +126,7 @@ export const PageSignUp = () => {
             name="name"
             type="text"
             label={accountType.toUpperCase()}
-            placeholder="Enter CDS name"
+            placeholder="Enter name"
             value={state.formData.name}
             onChange={handleFormChange}
             helperText={helperTexts.name}
@@ -136,7 +135,7 @@ export const PageSignUp = () => {
           <InputControl
             name="email"
             label="Email"
-            placeholder="cdsemail@gmail.com"
+            placeholder="sample@gmail.com"
             value={state.formData.email}
             onChange={handleFormChange}
             helperText={helperTexts.email}
@@ -178,9 +177,9 @@ export const PageSignUp = () => {
           >
             Already have an account?
           </Link>
-          <Button variant="contained" size="small" type="submit">
+          <LoadingButton loading={state.submitButtonLoading}>
             Sign Up
-          </Button>
+          </LoadingButton>
         </Stack>
       </Stack>
     </Stack>
