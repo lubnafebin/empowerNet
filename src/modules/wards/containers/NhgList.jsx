@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import React from "react";
 import {
   DialogHeader,
@@ -8,6 +9,7 @@ import {
   ReactTable,
 } from "../../../shared";
 import {
+  Avatar,
   Box,
   Button,
   Chip,
@@ -16,12 +18,14 @@ import {
   DialogContent,
   Divider,
   IconButton,
+  ListItemButton,
+  ListItemText,
   Stack,
+  TextField,
   Tooltip,
   Typography,
 } from "@mui/material";
 import {
-  DeleteOutlineRounded,
   ManageAccountsOutlined,
   VisibilityOutlined,
 } from "@mui/icons-material";
@@ -56,14 +60,32 @@ export const NhgList = () => {
         placement: "right",
       },
       {
+        header: "Email",
+        cell: ({
+          row: {
+            original: { user },
+          },
+        }) => <Typography>{user.email}</Typography>,
+        enableSorting: true,
+        placement: "right",
+      },
+      {
         header: "President",
-        accessorKey: "president",
+        cell: ({
+          row: {
+            original: { president },
+          },
+        }) => <Typography>{president?.user?.name}</Typography>,
         enableSorting: true,
         placement: "right",
       },
       {
         header: "Secretary",
-        accessorKey: "Secretary",
+        cell: ({
+          row: {
+            original: { secretary },
+          },
+        }) => <Typography>{secretary?.user?.name}</Typography>,
         enableSorting: true,
         placement: "right",
       },
@@ -150,12 +172,12 @@ export const NhgList = () => {
   const helperText = {
     name: formValidator.current.message(
       "name",
-      state.formData.name,
+      state.wardDetails.name,
       "required",
     ),
     wardNo: formValidator.current.message(
       "wardNo",
-      state.formData.wardNo,
+      state.wardDetails.wardNo,
       "required",
     ),
   };
@@ -163,18 +185,18 @@ export const NhgList = () => {
   const breadcrumbs = [
     { title: "Dashboard", href: "/" },
     { title: "Wards", href: "/wards" },
-    { title: state.formData.name },
+    { title: state.wardDetails.name },
   ];
 
   return (
     <PageLayout
-      title={state.formData.name}
+      title={state.wardDetails.name}
       breadcrumbs={breadcrumbs}
       actionSection={
         <Button
           variant="contained"
           startIcon={<ManageAccountsOutlined />}
-          onClick={() => toggleModel("newWard")}
+          onClick={() => toggleModel({ type: "manageAds" })}
         >
           Manage ADS
         </Button>
@@ -188,10 +210,11 @@ export const NhgList = () => {
         rowClick={() => {}}
       />
 
-      <GeneralDialog dialogValue={state.selectedWardId ? "?ward" : "?new-ward"}>
-        <DialogHeader
-          title={state.selectedWardId ? state.formData.name : "New Ward"}
-        />
+      <GeneralDialog
+        dialogValue={state.selectedWardId ? "?ward" : "?manage-ads"}
+        disableCloseOnBackgroundClick={false}
+      >
+        <DialogHeader title="Manage ADS" />
         <Divider variant="fullWidth" orientation="horizontal" />
         {state.isFormLoading && state.selectedWardId ? (
           <Stack
@@ -210,24 +233,43 @@ export const NhgList = () => {
             <DialogContent>
               <Stack gap="14px">
                 <InputControl
-                  required
-                  size="small"
-                  label="Ward No"
-                  value={state.formData.wardNo}
-                  name="wardNo"
-                  onChange={handleFormChange}
-                  error={Boolean(helperText.wardNo)}
-                  helperText={helperText.wardNo}
-                />
-                <InputControl
-                  required
-                  size="small"
-                  label="Ward Name"
-                  value={state.formData.name}
-                  name="name"
-                  error={Boolean(helperText.name)}
-                  helperText={helperText.name}
-                  onChange={handleFormChange}
+                  label="ADS"
+                  name="ads"
+                  type="dropdown"
+                  options={state.president.options}
+                  onChange={(event, value) =>
+                    handleFormChange({ target: { name: "ads", value } })
+                  }
+                  value={state.formData.ads}
+                  isOptionEqualToValue={(option, current) => {
+                    return option.id === current.id;
+                  }}
+                  getOptionLabel={(option) => option.presidentEmail}
+                  renderInput={(props) => {
+                    return <TextField {...props} label="ADS" name="ads" />;
+                  }}
+                  renderOption={(props, option) => {
+                    const { key, ...optionProps } = props;
+                    return (
+                      <ListItemButton
+                        key={key}
+                        {...optionProps}
+                        sx={{ gap: 2 }}
+                      >
+                        <Avatar
+                          src={option?.profile}
+                          alt="avatar"
+                          sx={{ width: 36, height: 36, fontSize: 14 }}
+                        >
+                          {option.president[0]}
+                        </Avatar>
+                        <ListItemText
+                          primary={option.president}
+                          secondary={option.nhg}
+                        />
+                      </ListItemButton>
+                    );
+                  }}
                 />
               </Stack>
             </DialogContent>

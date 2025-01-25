@@ -3,6 +3,7 @@ import { useImmer } from "use-immer";
 import {
   createWardApi,
   deleteWardApi,
+  getNhgPresidentsByWardIdApi,
   getWardDetailsApi,
   getWardNhgListApi,
   updateWardApi,
@@ -20,11 +21,13 @@ export const useNhgList = () => {
     isFormSubmitting: false,
     isTableLoading: true,
     NhgList: { options: [] },
+    president: { options: [] },
     selectedWardId: null,
-    formData: {
+    wardDetails: {
       name: "",
       wardNo: "",
     },
+    formData: { ads: null },
   });
   const { wardId } = useParams();
   const { setAlert } = useAlertContext();
@@ -38,6 +41,26 @@ export const useNhgList = () => {
     }),
   );
 
+  const getNhgPresidentsByWardId = async (wardId) => {
+    // triggerTableLoading(true);
+    try {
+      const response = await getNhgPresidentsByWardIdApi(wardId);
+
+      const { success, message, data } = response;
+      if (success) {
+        setState((draft) => {
+          draft.president.options = data;
+        });
+      } else {
+        throw { response: { data: { message } } };
+      }
+    } catch (exception) {
+      utilFunctions.displayError(exception);
+    } finally {
+      // triggerTableLoading(false);
+    }
+  };
+
   const getWardDetails = async (wardId) => {
     triggerFormLoading(true);
     try {
@@ -46,7 +69,7 @@ export const useNhgList = () => {
       const { success, message, data } = response;
       if (success) {
         setState((draft) => {
-          draft.formData = data;
+          draft.wardDetails = data;
         });
       } else {
         throw { response: { data: { message } } };
@@ -78,10 +101,10 @@ export const useNhgList = () => {
     }
   };
 
-  const createNewWard = async (formData) => {
+  const createNewWard = async (wardDetails) => {
     triggerSubmitButtonLoading(true);
     try {
-      const response = await createWardApi(formData);
+      const response = await createWardApi(wardDetails);
 
       const { success, message } = response;
       if (success) {
@@ -98,10 +121,10 @@ export const useNhgList = () => {
     }
   };
 
-  const updateWard = async ({ formData, wardId }) => {
+  const updateWard = async ({ wardDetails, wardId }) => {
     triggerSubmitButtonLoading(true);
     try {
-      const response = await updateWardApi({ params: formData, wardId });
+      const response = await updateWardApi({ params: wardDetails, wardId });
 
       const { success, message } = response;
       if (success) {
@@ -161,6 +184,8 @@ export const useNhgList = () => {
         handleWardSelection(id);
         break;
       case "manageAds":
+        navigate("?manage-ads");
+        await getNhgPresidentsByWardId(wardId);
         break;
       case "deleteWard":
         setAlert((draft) => {
@@ -193,6 +218,7 @@ export const useNhgList = () => {
 
   const handleFormChange = (event) => {
     const { name, value } = event.target;
+    console.log(value);
     setState((draft) => {
       draft.formData[name] = value;
     });
@@ -203,13 +229,13 @@ export const useNhgList = () => {
     if (formValidator.current.allValid()) {
       switch (location.search) {
         case "?new-ward":
-          await createNewWard(state.formData);
+          await createNewWard(state.wardDetails);
           break;
         case "?ward":
           await updateWard({
-            formData: {
-              name: state.formData.name,
-              wardNo: state.formData.wardNo,
+            wardDetails: {
+              name: state.wardDetails.name,
+              wardNo: state.wardDetails.wardNo,
             },
             wardId: state.selectedWardId,
           });
@@ -222,23 +248,6 @@ export const useNhgList = () => {
       setForceUpdate(1);
     }
   };
-
-  // Reset form data
-  React.useEffect(() => {
-    if (
-      location.search === "" &&
-      (state.formData.name !== "" ||
-        state.formData.wardNo !== "" ||
-        formValidator.current.errorMessages)
-    ) {
-      formValidator.current.hideMessages();
-      setState((draft) => {
-        draft.formData = { name: "", wardNo: "" };
-        draft.selectedWardId = null;
-      });
-      setForceUpdate(0);
-    }
-  }, [location.search]);
 
   React.useEffect(() => {
     getWardNhgList(wardId);
