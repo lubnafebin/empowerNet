@@ -39,6 +39,7 @@ import {
 } from "@mui/icons-material";
 import { useMemberList } from "../hooks";
 import dayjs from "dayjs";
+import { useLocation, useParams } from "react-router-dom";
 
 export const MemberList = () => {
   const {
@@ -50,6 +51,8 @@ export const MemberList = () => {
     handleResetFormData,
   } = useMemberList();
   const theme = useTheme();
+  const { nhgId, wardId } = useParams();
+  const location = useLocation();
 
   const columns = React.useMemo(
     () => [
@@ -254,15 +257,33 @@ export const MemberList = () => {
     ),
   };
 
-  const breadcrumbs = [
-    {
-      title: "Dashboard",
-      href: "/",
-    },
-    {
-      title: "Members",
-    },
-  ];
+  const breadcrumbs = nhgId
+    ? [
+        {
+          title: "Dashboard",
+          href: "/",
+        },
+        {
+          title: "Wards",
+          href: "/wards",
+        },
+        {
+          title: location.state.ward,
+          href: `/wards/${wardId}/nhgs`,
+        },
+        {
+          title: "Members",
+        },
+      ]
+    : [
+        {
+          title: "Dashboard",
+          href: "/",
+        },
+        {
+          title: "Members",
+        },
+      ];
 
   return (
     <PageLayout

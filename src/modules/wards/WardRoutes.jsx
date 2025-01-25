@@ -5,6 +5,7 @@ import {
   DashboardLayout,
   PageNotFound,
 } from "../../shared";
+import { MemberList } from "../members";
 
 export const WardRoutes = () => {
   return (
@@ -18,6 +19,7 @@ export const WardRoutes = () => {
       >
         <Route index element={<WardList />} />
         <Route path=":wardId/nhgs" element={<NhgList />} />
+        <Route path=":wardId/nhgs/:nhgId/members" element={<MemberList />} />
       </Route>
       <Route path="*" element={<PageNotFound />} />
     </Routes>

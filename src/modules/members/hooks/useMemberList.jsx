@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useImmer } from "use-immer";
 import {
   createMemberApi,
@@ -67,6 +67,7 @@ export const useMemberList = () => {
   const { setAlert } = useAlertContext();
   const location = useLocation();
   const navigate = useNavigate();
+  const { nhgId } = useParams();
 
   const formValidator = React.useRef(
     new SimpleReactValidator({
@@ -155,10 +156,10 @@ export const useMemberList = () => {
     }
   };
 
-  const getMemberList = async () => {
+  const getMemberList = async (nhgId) => {
     triggerTableLoading(true);
     try {
-      const response = await getMemberListApi();
+      const response = await getMemberListApi(nhgId);
 
       const { success, message, data } = response;
       if (success) {
@@ -361,7 +362,7 @@ export const useMemberList = () => {
   }, [location.search]);
 
   React.useEffect(() => {
-    getMemberList();
+    getMemberList(nhgId);
     getDistrictsList();
     getRoleList();
   }, []);

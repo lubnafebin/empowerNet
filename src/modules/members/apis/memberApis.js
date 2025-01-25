@@ -8,8 +8,8 @@ export const getMemberDetailsApi = async (memberId) => {
   return response.data;
 };
 
-export const getMemberListApi = async () => {
-  const response = await API.get("nhg/member/all");
+export const getMemberListApi = async (nhgId) => {
+  const response = await API.get("nhg/member/all", { params: { nhgId } });
   return response.data;
 };
 

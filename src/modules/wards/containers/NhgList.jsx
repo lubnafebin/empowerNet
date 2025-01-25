@@ -31,6 +31,7 @@ import {
 } from "@mui/icons-material";
 import { useNhgList } from "../hooks";
 import { utilFunctions } from "../../../utils";
+import { useNavigate } from "react-router-dom";
 
 export const NhgList = () => {
   const {
@@ -40,6 +41,7 @@ export const NhgList = () => {
     handleFormChange,
     handleFormSubmit,
   } = useNhgList();
+  const navigate = useNavigate();
 
   const columns = React.useMemo(
     () => [
@@ -207,7 +209,11 @@ export const NhgList = () => {
         columns={columns}
         data={state.NhgList.options}
         loading={state.isTableLoading}
-        rowClick={() => {}}
+        rowClick={(row) =>
+          navigate(`${row.id}/members`, {
+            state: { ward: state.wardDetails.name, nhg: row.user },
+          })
+        }
       />
 
       <GeneralDialog

@@ -22,7 +22,6 @@ import {
   Add,
   ArrowForward,
   DeleteOutlineRounded,
-  ManageAccountsOutlined,
   VisibilityOutlined,
 } from "@mui/icons-material";
 import { useWardList } from "../hooks";
@@ -128,7 +127,7 @@ export const WardList = () => {
     ),
   };
 
-  const breadcrumbs = [{ title: "Dashboard", href: "/" }, { title: "Nhgs" }];
+  const breadcrumbs = [{ title: "Dashboard", href: "/" }, { title: "Wards" }];
 
   return (
     <PageLayout
