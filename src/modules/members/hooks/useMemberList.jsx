@@ -184,9 +184,9 @@ export const useMemberList = () => {
       const { success, message } = response;
       if (success) {
         enqueueSnackbar({ message, variant: "success" });
-        getMemberList();
+        getMemberList(nhgId);
         handleResetFormData();
-        navigate(location.pathname, { replace: true });
+        navigate(location.pathname, { replace: true, state: location.state });
       } else {
         throw { response: { data: { message } } };
       }
@@ -205,9 +205,9 @@ export const useMemberList = () => {
       const { success, message } = response;
       if (success) {
         enqueueSnackbar({ message, variant: "success" });
-        getMemberList();
+        getMemberList(nhgId);
         handleResetFormData();
-        navigate(location.pathname, { replace: true });
+        navigate(location.pathname, { replace: true, state: location.state });
       } else {
         throw { response: { data: { message } } };
       }
@@ -226,7 +226,7 @@ export const useMemberList = () => {
       const { success, message } = response;
       if (success) {
         enqueueSnackbar({ message, variant: "success" });
-        getMemberList();
+        getMemberList(nhgId);
       } else {
         throw { response: { data: { message } } };
       }
@@ -283,13 +283,13 @@ export const useMemberList = () => {
         });
         break;
       default:
-        navigate("?new-member");
+        navigate("?new-member", { state: location.state });
         break;
     }
   };
 
   const handleMemberSelection = async (id) => {
-    navigate("?member");
+    navigate("?member", { state: location.state });
     setState((draft) => {
       draft.selectedMemberId = id;
     });

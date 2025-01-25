@@ -53,7 +53,6 @@ export const MemberList = () => {
   const theme = useTheme();
   const { nhgId, wardId } = useParams();
   const location = useLocation();
-
   const columns = React.useMemo(
     () => [
       {
