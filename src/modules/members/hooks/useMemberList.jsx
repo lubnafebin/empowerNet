@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useImmer } from "use-immer";
 import {
@@ -41,7 +40,7 @@ const initialFormState = {
 };
 
 export const useMemberList = () => {
-  const [_, setForceUpdate] = React.useState(0);
+  const [, setForceUpdate] = React.useState(0);
   const [state, setState] = useImmer({
     isFormLoading: true,
     isFormSubmitting: false,
