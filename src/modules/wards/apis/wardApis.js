@@ -34,3 +34,8 @@ export const getNhgPresidentsByWardIdApi = async (wardId) => {
   const response = await API.get(`cds/ward/${wardId}/president/all`);
   return response.data;
 };
+
+export const assignWardAdsApi = async ({ wardId, params }) => {
+  const response = await API.put(`cds/ward/${wardId}/ads/update`, params);
+  return response.data;
+};

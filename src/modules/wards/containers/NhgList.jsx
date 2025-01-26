@@ -2,6 +2,7 @@
 import React from "react";
 import {
   DialogHeader,
+  FileCard,
   GeneralDialog,
   InputControl,
   LoadingButton,
@@ -17,9 +18,11 @@ import {
   DialogActions,
   DialogContent,
   Divider,
+  FormHelperText,
   IconButton,
   ListItemButton,
   ListItemText,
+  Skeleton,
   Stack,
   TextField,
   Tooltip,
@@ -27,6 +30,7 @@ import {
 } from "@mui/material";
 import {
   ManageAccountsOutlined,
+  PictureAsPdf,
   VisibilityOutlined,
 } from "@mui/icons-material";
 import { useNhgList } from "../hooks";
@@ -40,6 +44,7 @@ export const NhgList = () => {
     toggleModel,
     handleFormChange,
     handleFormSubmit,
+    handleFormResting,
   } = useNhgList();
   const navigate = useNavigate();
 
@@ -72,6 +77,18 @@ export const NhgList = () => {
         placement: "right",
       },
       {
+        header: "Contact No",
+        accessorKey: "contactNo",
+        enableSorting: true,
+        placement: "right",
+      },
+      {
+        header: "Total Members",
+        accessorKey: "totalMembers",
+        enableSorting: true,
+        placement: "right",
+      },
+      {
         header: "President",
         cell: ({
           row: {
@@ -88,18 +105,6 @@ export const NhgList = () => {
             original: { secretary },
           },
         }) => <Typography>{secretary?.user?.name}</Typography>,
-        enableSorting: true,
-        placement: "right",
-      },
-      {
-        header: "Contact No",
-        accessorKey: "contactNo",
-        enableSorting: true,
-        placement: "right",
-      },
-      {
-        header: "Total Members",
-        accessorKey: "totalMembers",
         enableSorting: true,
         placement: "right",
       },
@@ -172,14 +177,9 @@ export const NhgList = () => {
   );
 
   const helperText = {
-    name: formValidator.current.message(
-      "name",
-      state.wardDetails.name,
-      "required",
-    ),
-    wardNo: formValidator.current.message(
-      "wardNo",
-      state.wardDetails.wardNo,
+    ads: formValidator.current.message(
+      "Ads",
+      state.formData.ads,
       "required",
     ),
   };
@@ -220,79 +220,310 @@ export const NhgList = () => {
         dialogValue={state.selectedWardId ? "?ward" : "?manage-ads"}
         disableCloseOnBackgroundClick={false}
       >
-        <DialogHeader title="Manage ADS" />
+        <DialogHeader title="Manage ADS" resetCache={handleFormResting} />
         <Divider variant="fullWidth" orientation="horizontal" />
-        {state.isFormLoading && state.selectedWardId ? (
-          <Stack
-            sx={{ width: { md: 400, xs: "100%" }, height: 190 }}
-            alignItems="center"
-            justifyContent="center"
-          >
-            <CircularProgress />
-          </Stack>
-        ) : (
-          <Box
-            component="form"
-            onSubmit={handleFormSubmit}
-            sx={{ width: { md: 400, xs: "100%" } }}
-          >
-            <DialogContent>
-              <Stack gap="14px">
-                <InputControl
-                  label="ADS"
-                  name="ads"
-                  type="dropdown"
-                  options={state.president.options}
-                  onChange={(event, value) =>
-                    handleFormChange({ target: { name: "ads", value } })
-                  }
-                  value={state.formData.ads}
-                  isOptionEqualToValue={(option, current) => {
-                    return option.id === current.id;
-                  }}
-                  getOptionLabel={(option) => option.presidentEmail}
-                  renderInput={(props) => {
-                    return <TextField {...props} label="ADS" name="ads" />;
-                  }}
-                  renderOption={(props, option) => {
-                    const { key, ...optionProps } = props;
-                    return (
-                      <ListItemButton
-                        key={key}
-                        {...optionProps}
-                        sx={{ gap: 2 }}
+        <Box
+          component="form"
+          onSubmit={handleFormSubmit}
+          sx={{ width: { md: 550, xs: "100%" } }}
+        >
+          <DialogContent>
+            <Stack gap="14px">
+              <InputControl
+                label="ADS"
+                name="ads"
+                type="dropdown"
+                size='small'
+                options={state.president.options}
+                onChange={(event, value) =>
+                  handleFormChange({ target: { name: "ads", value } })
+                }
+                value={state.formData.ads}
+                isOptionEqualToValue={(option, current) => {
+                  return option.id === current.id;
+                }}
+                getOptionLabel={(option) => option.presidentEmail}
+                renderInput={(props) => {
+                  return (
+                    <TextField
+                      {...props}
+                      label="Current ADS"
+                      name="ads"
+                      placeholder="Select ADS"
+                      helperText={helperText.ads}
+                      error={Boolean(helperText.ads)}
+                    />
+                  );
+                }}
+                renderOption={(props, option) => {
+                  const { key, ...optionProps } = props;
+                  return (
+                    <ListItemButton key={key} {...optionProps} sx={{ gap: 2 }}>
+                      <Avatar
+                        src={option?.profile}
+                        alt="avatar"
+                        sx={{ width: 36, height: 36, fontSize: 14 }}
                       >
-                        <Avatar
-                          src={option?.profile}
-                          alt="avatar"
-                          sx={{ width: 36, height: 36, fontSize: 14 }}
-                        >
-                          {option.president[0]}
-                        </Avatar>
-                        <ListItemText
-                          primary={option.president}
-                          secondary={option.nhg}
+                        {option.president[0]}
+                      </Avatar>
+                      <ListItemText
+                        primary={option.president}
+                        secondary={option.nhg}
+                      />
+                    </ListItemButton>
+                  );
+                }}
+              />
+              {state.isFormLoading ? (
+                <Stack
+                  sx={{ width: "100%", height: 300 }}
+                  alignItems="center"
+                  justifyContent="center"
+                >
+                  <CircularProgress />
+                </Stack>
+              ) : state.useDetails?.name ? (
+                <Stack>
+                  <FormHelperText>Profile</FormHelperText>
+                  <Stack gap="14px" flexDirection={{ xs: "column", md: "row" }}>
+                    <Avatar
+                      variant="rounded"
+                      src={state.useDetails.profile}
+                      alt="profile picture"
+                      sx={{
+                        width: "100px",
+                        height: "100px",
+                        cursor: "pointer",
+                      }}
+                    >
+                      {state.useDetails?.name?.[0]}
+                    </Avatar>
+                    <Stack gap="14px">
+                      <InputControl
+                        size="small"
+                        label="Name"
+                        name="name"
+                        value={state.useDetails.name}
+                      />
+                      <Stack
+                        flexDirection={{ xs: "column", md: "row" }}
+                        gap="14px"
+                      >
+                        <InputControl
+                          size="small"
+                          label="Email"
+                          value={state.useDetails.email}
+                          name="email"
                         />
-                      </ListItemButton>
-                    );
-                  }}
-                />
-              </Stack>
-            </DialogContent>
-            <Divider />
-            <DialogActions>
-              <LoadingButton
-                size="small"
-                loading={state.isFormSubmitting}
-                type="submit"
-                variant="contained"
-              >
-                {state.selectedWardId ? "Update" : "Create"}
-              </LoadingButton>
-            </DialogActions>
-          </Box>
-        )}
+                        <InputControl
+                          size="small"
+                          label="Contact No"
+                          value={state.useDetails.contactNo}
+                          name="contactNo"
+                        />
+                      </Stack>
+                    </Stack>
+                  </Stack>
+                  <Stack gap="14px" mt="14px">
+                    <Stack
+                      flexDirection={{ xs: "column", md: "row" }}
+                      gap="14px"
+                    >
+                      <InputControl
+                        size="small"
+                        label="Aadhar No"
+                        value={state.useDetails.aadharNo}
+                        name="aadharNo"
+                      />
+                      <InputControl
+                        size="small"
+                        label="Role"
+                        value={state.useDetails.role}
+                        name="role"
+                      />
+                    </Stack>
+                    <Stack
+                      flexDirection={{ xs: "column", md: "row" }}
+                      gap="14px"
+                    >
+                      <InputControl
+                        size="small"
+                        label="AddressLine1"
+                        value={state.useDetails.addressLine1}
+                        name="addressLine1"
+                      />
+                      <InputControl
+                        size="small"
+                        label="AddressLine2"
+                        value={state.useDetails.addressLine2}
+                        name="addressLine2"
+                      />
+                    </Stack>
+                    <Stack
+                      flexDirection={{ xs: "column", md: "row" }}
+                      gap="14px"
+                    >
+                      <InputControl
+                        size="small"
+                        label="district"
+                        value={state.useDetails.district}
+                        name="district"
+                      />
+                      <InputControl
+                        size="small"
+                        label="Zipcode/Postcode"
+                        value={state.useDetails.postcode}
+                        name="postcode"
+                      />
+                    </Stack>
+
+                    <Stack gap="14px">
+                      <FileCard
+                        fileName={state.useDetails.aadharAttachment?.name}
+                        icon={<PictureAsPdf fontSize="small" color="error" />}
+                        isFileUploaded={true}
+                        onView={() =>
+                          window.open(state.useDetails.signatureAttachment?.url)
+                        }
+                      />
+                      <FileCard
+                        fileName={state.useDetails.signatureAttachment?.name}
+                        icon={<PictureAsPdf fontSize="small" color="error" />}
+                        onView={() =>
+                          window.open(state.useDetails.signatureAttachment?.url)
+                        }
+                        isFileUploaded={true}
+                      />
+                    </Stack>
+                  </Stack>
+                </Stack>
+              ) : (
+                <FormSkelton />
+              )}
+            </Stack>
+          </DialogContent>
+          <Divider />
+          <DialogActions>
+            <LoadingButton
+              size="small"
+              loading={state.isFormSubmitting}
+              type="submit"
+              variant="contained"
+            >
+              {state.selectedWardId ? "Update" : "Create"}
+            </LoadingButton>
+          </DialogActions>
+        </Box>
       </GeneralDialog>
     </PageLayout>
+  );
+};
+
+const FormSkelton = () => {
+  return (
+    <Stack>
+      <FormHelperText>Profile</FormHelperText>
+      <Stack gap="14px" flexDirection={{ xs: "column", md: "row" }}>
+        <Skeleton
+          variant="rounded"
+          sx={{
+            width: "100px",
+            height: "100px",
+          }}
+        />
+        <Stack gap="14px">
+          <Skeleton
+            variant="rounded"
+            sx={{
+              width: "100%",
+              height: "42px",
+            }}
+          />
+          <Stack flexDirection={{ xs: "column", md: "row" }} gap="14px">
+            <Skeleton
+              variant="rounded"
+              sx={{
+                width: "190px",
+                height: "42px",
+              }}
+            />
+            <Skeleton
+              variant="rounded"
+              sx={{
+                width: "190px",
+                height: "42px",
+              }}
+            />
+          </Stack>
+        </Stack>
+      </Stack>
+      <Stack gap="14px" mt="14px">
+        <Stack flexDirection={{ xs: "column", md: "row" }} gap="14px">
+          <Skeleton
+            variant="rounded"
+            sx={{
+              width: "100%",
+              height: "42px",
+            }}
+          />
+          <Skeleton
+            variant="rounded"
+            sx={{
+              width: "100%",
+              height: "42px",
+            }}
+          />
+        </Stack>
+        <Stack flexDirection={{ xs: "column", md: "row" }} gap="14px">
+          <Skeleton
+            variant="rounded"
+            sx={{
+              width: "100%",
+              height: "42px",
+            }}
+          />
+          <Skeleton
+            variant="rounded"
+            sx={{
+              width: "100%",
+              height: "42px",
+            }}
+          />
+        </Stack>
+        <Stack flexDirection={{ xs: "column", md: "row" }} gap="14px">
+          <Skeleton
+            variant="rounded"
+            sx={{
+              width: "100%",
+              height: "42px",
+            }}
+          />
+          <Skeleton
+            variant="rounded"
+            sx={{
+              width: "100%",
+              height: "42px",
+            }}
+          />
+        </Stack>
+
+        <Stack gap="14px">
+          <Skeleton
+            variant="rounded"
+            sx={{
+              width: "100%",
+              height: "42px",
+            }}
+          />
+          <Skeleton
+            variant="rounded"
+            sx={{
+              width: "100%",
+              height: "42px",
+            }}
+          />
+        </Stack>
+      </Stack>
+    </Stack>
   );
 };

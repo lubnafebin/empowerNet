@@ -17,6 +17,7 @@ import {
   IconButton,
   Stack,
   Tooltip,
+  Typography,
 } from "@mui/material";
 import {
   Add,
@@ -70,7 +71,11 @@ export const WardList = () => {
       },
       {
         header: "ADS",
-        accessorKey: "ads",
+        cell: ({
+          row: {
+            original: { ads },
+          },
+        }) => <Typography>{ads ? ads.user.name : "_"}</Typography>,
         enableSorting: true,
         placement: "right",
       },
@@ -85,7 +90,10 @@ export const WardList = () => {
             original: { id },
           },
         }) => (
-          <Stack flexDirection="row">
+          <Stack
+            flexDirection="row"
+            onClick={(event) => event.stopPropagation()}
+          >
             <Tooltip title="Ward Details" arrow disableInteractive>
               <IconButton size="small" onClick={() => navigate(`${id}/nhgs`)}>
                 <ArrowForward fontSize="small" />
