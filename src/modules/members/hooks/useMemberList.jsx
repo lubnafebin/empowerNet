@@ -14,6 +14,7 @@ import { AlertRowAction, useAlertContext } from "../../../shared";
 import {
   getDistrictsByStateIdApi,
   getRolesApi,
+  useUtilFunctions,
   utilFunctions,
 } from "../../../utils";
 import { BASE_URL } from "../../../configs";
@@ -66,7 +67,11 @@ export const useMemberList = () => {
   const { setAlert } = useAlertContext();
   const location = useLocation();
   const navigate = useNavigate();
-  const { nhgId } = useParams();
+  const { getLoggedInUser } = useUtilFunctions();
+  const user = getLoggedInUser();
+  const params = useParams();
+
+  const nhgId = params.nhgId ?? user?.nhgId;
 
   const formValidator = React.useRef(
     new SimpleReactValidator({

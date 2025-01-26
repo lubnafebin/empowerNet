@@ -1,4 +1,4 @@
-import { ArrowDropDown, Logout, ManageAccounts } from "@mui/icons-material";
+import { ArrowDropDown, Logout, Repeat } from "@mui/icons-material";
 import {
   Avatar,
   Divider,
@@ -14,36 +14,64 @@ import {
 import React from "react";
 import { useUtilFunctions } from "../../../utils";
 import { UserProfileCard } from "../cards";
-import { useLocation, useNavigate } from "react-router-dom";
 import PropTypes from "prop-types";
+import { BASE_URL } from "../../../configs";
+import { useImmer } from "use-immer";
+import { useNavigate } from "react-router-dom";
 
 export const AccountPopover = ({ showAvatarOnly }) => {
-  const [anchorElUser, setAnchorElUser] = React.useState(null);
+  const [state, setState] = useImmer({ roles: [], anchorElUser: null });
+
   const { logout, getLoggedInUser } = useUtilFunctions();
   const theme = useTheme();
-  const location = useLocation();
   const navigate = useNavigate();
-  const isProfilePage = location.pathname.includes("/profile/details");
 
   const handleOpenUserMenu = (event) => {
-    setAnchorElUser(event.currentTarget);
+    setState((draft) => {
+      draft.anchorElUser = event.currentTarget;
+    });
   };
 
   const handleCloseUserMenu = () => {
-    setAnchorElUser(null);
+    setState((draft) => {
+      draft.anchorElUser = null;
+    });
   };
 
   const user = getLoggedInUser();
-  const handleRedirection = () => {
-    const isClient = user.userType === 3;
 
-    handleCloseUserMenu();
-    navigate(
-      isClient
-        ? `/client/profile/details/${user.userId}`
-        : `/profile/details/${user.userId}`,
-    );
-  };
+  React.useEffect(() => {
+    switch (user.role?.name) {
+      case "ADS": {
+        setState((draft) => {
+          draft.roles = [
+            { label: "ADS", route: "/ads" },
+            { label: "President", route: "/nhg" },
+            { label: "Member", route: "/" },
+          ];
+        });
+        break;
+      }
+      case "President": {
+        setState((draft) => {
+          draft.roles = [
+            { label: "President", route: "/nhg" },
+            { label: "Member", route: "/" },
+          ];
+        });
+        break;
+      }
+      case "Secretary": {
+        setState((draft) => {
+          draft.roles = [
+            { label: "Secretary", route: "/nhg" },
+            { label: "Member", route: "/" },
+          ];
+        });
+        break;
+      }
+    }
+  }, []);
 
   return (
     <React.Fragment>
@@ -59,6 +87,7 @@ export const AccountPopover = ({ showAvatarOnly }) => {
           component={MenuItem}
         >
           <Avatar
+            src={user?.profile?.url ? BASE_URL + user.profile.url : ""}
             sx={{
               backgroundColor: "primary.main",
               width: 24,
@@ -72,8 +101,8 @@ export const AccountPopover = ({ showAvatarOnly }) => {
           {!showAvatarOnly && (
             <React.Fragment>
               <ListItemText
-                title={user.role.name}
-                primary={user.role.name}
+                title={user.name}
+                primary={user.name}
                 primaryTypographyProps={{
                   style: {
                     color: theme.palette.text.secondary,
@@ -94,7 +123,7 @@ export const AccountPopover = ({ showAvatarOnly }) => {
       <Menu
         id="menu-app-bar"
         elevation={3}
-        anchorEl={anchorElUser}
+        anchorEl={state.anchorElUser}
         anchorOrigin={{
           vertical: "bottom",
           horizontal: "right",
@@ -104,7 +133,7 @@ export const AccountPopover = ({ showAvatarOnly }) => {
           vertical: "top",
           horizontal: "right",
         }}
-        open={Boolean(anchorElUser)}
+        open={Boolean(state.anchorElUser)}
         onClose={handleCloseUserMenu}
         slotProps={{
           paper: {
@@ -118,16 +147,25 @@ export const AccountPopover = ({ showAvatarOnly }) => {
         <UserProfileCard handleCloseUserMenu={handleCloseUserMenu} />
         <Divider sx={{ mt: 2, mb: 1 }} />
 
-        {/* <MenuItem
-          selected={isProfilePage}
-          sx={{ borderRadius: 0 }}
-          onClick={handleRedirection}
-        >
-          <ListItemIcon>
-            <ManageAccounts />
-          </ListItemIcon>
-          <Typography>Manage Profile</Typography>
-        </MenuItem> */}
+        {state.roles.map((role, index) => {
+          const currentRoute =
+            location.pathname.split("/")[1] === role.route.split("/")[1];
+          return (
+            <MenuItem
+              key={index}
+              sx={{
+                borderRadius: 0,
+                display: currentRoute ? "none" : "flex",
+              }}
+              onClick={() => navigate(role.route)}
+            >
+              <ListItemIcon>
+                <Repeat />
+              </ListItemIcon>
+              <Typography>Switch to {role.label}</Typography>
+            </MenuItem>
+          );
+        })}
         <MenuItem
           sx={{ borderRadius: 0, mb: 1 }}
           onClick={() => {

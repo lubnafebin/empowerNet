@@ -8,7 +8,13 @@ import {
   useAppStateContext,
 } from "./shared";
 import { Route, Routes } from "react-router-dom";
-import { AdminRoutes, AuthenticationRoutes } from "./modules";
+import {
+  AdminRoutes,
+  AdsRoutes,
+  AuthenticationRoutes,
+  MemberRoutes,
+  NhgRoutes,
+} from "./modules";
 
 export const App = () => {
   const { appState } = useAppStateContext();
@@ -20,12 +26,11 @@ export const App = () => {
       <SnackbarComponent>
         <Routes>
           <Route element={<RedirectRoute />}>
+            <Route path="/*" element={<MemberRoutes />} />
+            <Route path="/nhg/*" element={<NhgRoutes />} />
             <Route path="/auth/*" element={<AuthenticationRoutes />} />
-
-            {/* Client side routes */}
-            {/* <Route path="/client/*" element={<PublicRoutes />} /> */}
-
-            <Route path="/*" element={<AdminRoutes />} />
+            <Route path="/cds/*" element={<AdminRoutes />} />
+            <Route path="/ads/*" element={<AdsRoutes />} />
           </Route>
         </Routes>
         <AlertComponent />

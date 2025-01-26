@@ -1,7 +1,7 @@
 import React from "react";
-import { enqueueSnackbar } from "notistack";
+// import { enqueueSnackbar } from "notistack";
 import { useImmer } from "use-immer";
-// import ClientIcon from "../../../assets/icons/clients.svg";
+import MembersIcon from "../../../assets/members-icon-dark.svg";
 // import ReportIcon from "../../../assets/icons/report.svg";
 // import CoachIcon from "../../../assets/icons/coach.svg";
 import { useUtilFunctions, utilFunctions } from "../../../utils";
@@ -10,31 +10,30 @@ import { getDashboardAnalyticsApi } from "../apis";
 export const useDashboard = () => {
   const { getLoggedInUser } = useUtilFunctions();
   const [state, setState] = useImmer({
-    dashboardCards: [],
-    // [
-    //   {
-    //     title: 'Total Clients',
-    //     accessor: 'totalClient',
-    //     value: 0,
-    //     icon: ClientIcon,
-    //     caption: 'Client analytics',
-    //   },
-    //   {
-    //     title: 'Total Coaches',
-    //     accessor: 'totalBIP',
-    //     value: 0,
-    //     icon: CoachIcon,
-    //     caption: 'Coach analytics',
-    //   },
-    //   {
-    //     title: 'Total Reports',
-    //     accessor: 'totalReport',
-    //     value: 0,
-    //     icon: ReportIcon,
-    //     caption: 'Report analytics',
-    //   },
-    // ],
-    contentLoading: true,
+    dashboardCards: [
+      {
+        title: "Total Savings",
+        accessor: "totalClient",
+        value: 0,
+        icon: MembersIcon,
+        caption: "Client analytics",
+      },
+      {
+        title: "Total Refunds",
+        accessor: "totalBIP",
+        value: 0,
+        icon: MembersIcon,
+        caption: "Coach analytics",
+      },
+      {
+        title: "Total Members",
+        accessor: "totalReport",
+        value: 0,
+        icon: MembersIcon,
+        caption: "Report analytics",
+      },
+    ],
+    contentLoading: false,
   });
 
   const user = getLoggedInUser();
