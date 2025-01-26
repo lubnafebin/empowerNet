@@ -39,3 +39,8 @@ export const assignWardAdsApi = async ({ wardId, params }) => {
   const response = await API.put(`cds/ward/${wardId}/ads/update`, params);
   return response.data;
 };
+
+export const getNhgDetailsApi = async (nhgId) => {
+  const response = await API.get(`nhg/${nhgId}/details`);
+  return response.data;
+};

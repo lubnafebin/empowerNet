@@ -11,7 +11,7 @@ import { enqueueSnackbar } from "notistack";
 import React from "react";
 import SimpleReactValidator from "simple-react-validator";
 import { AlertRowAction, useAlertContext } from "../../../shared";
-import { utilFunctions } from "../../../utils";
+import { useUtilFunctions, utilFunctions } from "../../../utils";
 import { BASE_URL } from "../../../configs";
 import { getMemberDetailsApi } from "../../members/apis";
 
@@ -59,7 +59,10 @@ export const useNhgList = () => {
     },
     formData: { ads: null },
   });
-  const { wardId } = useParams();
+  const { getLoggedInUser } = useUtilFunctions();
+  const user = getLoggedInUser();
+  const params = useParams();
+  const wardId = params?.wardId ?? user?.wardId;
   const { setAlert } = useAlertContext();
   const location = useLocation();
   const navigate = useNavigate();

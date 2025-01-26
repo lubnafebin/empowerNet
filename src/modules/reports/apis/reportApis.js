@@ -21,8 +21,8 @@ export const createNewReportSummaryApi = async (formData) => {
   return response;
 };
 
-export const getAllReportsApi = async () => {
-  const response = await API.get("nhg/report/all");
+export const getAllReportsApi = async (nhgId) => {
+  const response = await API.get("nhg/report/all", { params: { nhgId } });
   return response.data;
 };
 

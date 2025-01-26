@@ -12,6 +12,7 @@ export const defaultAppState = {
     profile: null,
     nhgId: null,
     cdsId: null,
+    wardId: null,
     role: {
       id: null,
       name: "",

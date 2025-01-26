@@ -19,7 +19,6 @@ import {
   DialogContent,
   Divider,
   FormHelperText,
-  IconButton,
   ListItemButton,
   ListItemText,
   Skeleton,
@@ -29,15 +28,16 @@ import {
   Typography,
 } from "@mui/material";
 import {
+  ArrowForward,
   ManageAccountsOutlined,
   PictureAsPdf,
-  VisibilityOutlined,
 } from "@mui/icons-material";
 import { useNhgList } from "../hooks";
 import { utilFunctions } from "../../../utils";
 import { useNavigate } from "react-router-dom";
 
-export const NhgList = () => {
+export const NhgList = ({ roleType = "CDS" }) => {
+  const isCds = roleType === "CDS";
   const {
     state,
     formValidator,
@@ -139,36 +139,11 @@ export const NhgList = () => {
         enableSorting: false,
         placement: "right",
         meta: { cellStyle: { width: 70 } },
-        cell: ({
-          row: {
-            original: { id },
-          },
-        }) => (
+        cell: () => (
           <Stack flexDirection="row">
-            {/* <Tooltip title="Manage Ads" arrow disableInteractive>
-              <IconButton
-                size="small"
-                onClick={() => toggleModel({ type: "mangeAds" })}
-              >
-                <ManageAccountsOutlined fontSize="small" />
-              </IconButton>
-            </Tooltip> */}
-            <Tooltip title="Ward Details" arrow disableInteractive>
-              <IconButton
-                size="small"
-                onClick={() => toggleModel({ type: "wardDetails", id })}
-              >
-                <VisibilityOutlined fontSize="small" />
-              </IconButton>
+            <Tooltip title="Nhg OVerview" arrow disableInteractive>
+              <ArrowForward fontSize="small" />
             </Tooltip>
-            {/* <Tooltip title="Delete Ward" arrow disableInteractive>
-              <IconButton
-                size="small"
-                onClick={() => toggleModel({ type: "deleteWard", id })}
-              >
-                <DeleteOutlineRounded fontSize="small" />
-              </IconButton>
-            </Tooltip> */}
           </Stack>
         ),
       },
@@ -177,22 +152,20 @@ export const NhgList = () => {
   );
 
   const helperText = {
-    ads: formValidator.current.message(
-      "Ads",
-      state.formData.ads,
-      "required",
-    ),
+    ads: formValidator.current.message("Ads", state.formData.ads, "required"),
   };
 
-  const breadcrumbs = [
-    { title: "Dashboard", href: "/" },
-    { title: "Wards", href: "/wards" },
-    { title: state.wardDetails.name },
-  ];
+  const breadcrumbs = isCds
+    ? [
+        { title: "Dashboard", href: "/" },
+        { title: "Wards", href: "/wards" },
+        { title: state.wardDetails.name },
+      ]
+    : [{ title: "Dashboard", href: "/ads" }, { title: "NHG List" }];
 
   return (
     <PageLayout
-      title={state.wardDetails.name}
+      title={isCds ? state.wardDetails.name : "NHG List"}
       breadcrumbs={breadcrumbs}
       actionSection={
         <Button
@@ -205,15 +178,15 @@ export const NhgList = () => {
       }
     >
       <ReactTable
-        title="NHG List"
+        title={isCds ? "NHG List" : ""}
         columns={columns}
         data={state.NhgList.options}
         loading={state.isTableLoading}
-        rowClick={(row) =>
-          navigate(`${row.id}/members`, {
+        rowClick={(row) => {
+          navigate(isCds ? `${row.id}/members` : `${row.id}/overview`, {
             state: { ward: state.wardDetails.name, nhg: row.user },
-          })
-        }
+          });
+        }}
       />
 
       <GeneralDialog
@@ -233,7 +206,7 @@ export const NhgList = () => {
                 label="ADS"
                 name="ads"
                 type="dropdown"
-                size='small'
+                size="small"
                 options={state.president.options}
                 onChange={(event, value) =>
                   handleFormChange({ target: { name: "ads", value } })

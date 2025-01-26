@@ -77,24 +77,68 @@ export const Sidebar = ({ sidebarOpen, toggleSidebar }) => {
       const adsRoutes = permittedItems.filter(
         (item) => item.href.split("/")[1].includes("ads") || item.href === "/",
       );
-      setNavigationList(adsRoutes);
+      setNavigationList(
+        [
+          {
+            href: "/ads",
+            title: "Dashboard",
+            lightModeIcon: DashboardLightModeIcon,
+            darkModeIcon: DashboardDarkModeIcon,
+            selectedIcon: DashboardSelectedIcon,
+            permission: "dashboard.GET",
+          },
+        ].concat(adsRoutes),
+      );
     } else if (location.pathname.split("/")[1].includes("nhg")) {
       const nhgRoutes = permittedItems.filter(
         (item) => item.href.split("/")[1].includes("nhg") || item.href === "/",
       );
-      setNavigationList(nhgRoutes);
+      setNavigationList(
+        [
+          {
+            href: "/nhg",
+            title: "Dashboard",
+            lightModeIcon: DashboardLightModeIcon,
+            darkModeIcon: DashboardDarkModeIcon,
+            selectedIcon: DashboardSelectedIcon,
+            permission: "dashboard.GET",
+          },
+        ].concat(nhgRoutes),
+      );
     } else if (location.pathname.split("/")[1].includes("cds")) {
       const cdsRoutes = permittedItems.filter(
         (item) => item.href.split("/")[1].includes("cds") || item.href === "/",
       );
-      setNavigationList(cdsRoutes);
+      setNavigationList(
+        [
+          {
+            href: "/cds",
+            title: "Dashboard",
+            lightModeIcon: DashboardLightModeIcon,
+            darkModeIcon: DashboardDarkModeIcon,
+            selectedIcon: DashboardSelectedIcon,
+            permission: "dashboard.GET",
+          },
+        ].concat(cdsRoutes),
+      );
     } else {
       const memberRoutes = permittedItems.filter(
         (item) =>
           !["cds", "ads", "nhg"].includes(item.href.split("/")[1]) ||
           item.href === "/",
       );
-      setNavigationList(memberRoutes);
+      setNavigationList(
+        [
+          {
+            href: "/",
+            title: "Dashboard",
+            lightModeIcon: DashboardLightModeIcon,
+            darkModeIcon: DashboardDarkModeIcon,
+            selectedIcon: DashboardSelectedIcon,
+            permission: "dashboard.GET",
+          },
+        ].concat(memberRoutes),
+      );
     }
   }, []);
 
@@ -368,14 +412,6 @@ const renderChildItem = ({
 // #006BD6
 const drawerItems = [
   {
-    href: "/",
-    title: "Dashboard",
-    lightModeIcon: DashboardLightModeIcon,
-    darkModeIcon: DashboardDarkModeIcon,
-    selectedIcon: DashboardSelectedIcon,
-    permission: "dashboard.GET",
-  },
-  {
     href: "/cds/wards",
     title: "Wards",
     lightModeIcon: WardsLightModeIcon,
@@ -423,6 +459,22 @@ const drawerItems = [
     lightModeIcon: ListLightModeIcon,
     darkModeIcon: ListDarkModeIcon,
     selectedIcon: ListSelectedIcon,
-    permission: "nhgs.all.GET",
+    permission: "nhgs.all",
+  },
+  {
+    href: "/ads/report/all",
+    title: "All Reports",
+    lightModeIcon: ListLightModeIcon,
+    darkModeIcon: ListDarkModeIcon,
+    selectedIcon: ListSelectedIcon,
+    permission: "report.verify",
+  },
+  {
+    href: "/ads/member/all",
+    title: "All Members",
+    lightModeIcon: ListLightModeIcon,
+    darkModeIcon: ListDarkModeIcon,
+    selectedIcon: ListSelectedIcon,
+    permission: "report.verify",
   },
 ];
