@@ -1,11 +1,11 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useImmer } from "use-immer";
 import {
   createMemberApi,
   deleteMemberApi,
   getMemberDetailsApi,
   getMemberListApi,
+  getNhgDetailsApi,
   updateMemberApi,
 } from "../apis";
 import { enqueueSnackbar } from "notistack";
@@ -15,6 +15,7 @@ import { AlertRowAction, useAlertContext } from "../../../shared";
 import {
   getDistrictsByStateIdApi,
   getRolesApi,
+  useUtilFunctions,
   utilFunctions,
 } from "../../../utils";
 import { BASE_URL } from "../../../configs";
@@ -41,7 +42,7 @@ const initialFormState = {
 };
 
 export const useMemberList = () => {
-  const [_, setForceUpdate] = React.useState(0);
+  const [, setForceUpdate] = React.useState(0);
   const [state, setState] = useImmer({
     isFormLoading: true,
     isFormSubmitting: false,
@@ -63,10 +64,24 @@ export const useMemberList = () => {
       aadharAttachment: null,
       signatureAttachment: null,
     },
+    nhgDetails: {
+      user: {
+        name: "",
+      },
+      status: {
+        name: "",
+      },
+    },
+    nhgDetailsFetching: true,
   });
   const { setAlert } = useAlertContext();
   const location = useLocation();
   const navigate = useNavigate();
+  const { getLoggedInUser } = useUtilFunctions();
+  const user = getLoggedInUser();
+  const params = useParams();
+
+  const nhgId = params.nhgId ?? user?.nhgId;
 
   const formValidator = React.useRef(
     new SimpleReactValidator({
@@ -74,6 +89,31 @@ export const useMemberList = () => {
       element: (message) => message,
     }),
   );
+
+  const getNhgDetails = async (nhgId) => {
+    triggerNhgDetailsFetching(true);
+    try {
+      const response = await getNhgDetailsApi({ nhgId });
+      const { success, data, message } = response;
+      if (success) {
+        setState((draft) => {
+          draft.nhgDetails = data;
+        });
+      } else {
+        throw {
+          response: {
+            data: {
+              message,
+            },
+          },
+        };
+      }
+    } catch (exception) {
+      utilFunctions.displayError(exception);
+    } finally {
+      triggerNhgDetailsFetching(false);
+    }
+  };
 
   const getDistrictsList = async () => {
     triggerTableLoading(true);
@@ -155,10 +195,10 @@ export const useMemberList = () => {
     }
   };
 
-  const getMemberList = async () => {
+  const getMemberList = async (nhgId) => {
     triggerTableLoading(true);
     try {
-      const response = await getMemberListApi();
+      const response = await getMemberListApi(nhgId);
 
       const { success, message, data } = response;
       if (success) {
@@ -183,9 +223,9 @@ export const useMemberList = () => {
       const { success, message } = response;
       if (success) {
         enqueueSnackbar({ message, variant: "success" });
-        getMemberList();
+        getMemberList(nhgId);
         handleResetFormData();
-        navigate(location.pathname, { replace: true });
+        navigate(location.pathname, { replace: true, state: location.state });
       } else {
         throw { response: { data: { message } } };
       }
@@ -204,9 +244,9 @@ export const useMemberList = () => {
       const { success, message } = response;
       if (success) {
         enqueueSnackbar({ message, variant: "success" });
-        getMemberList();
+        getMemberList(nhgId);
         handleResetFormData();
-        navigate(location.pathname, { replace: true });
+        navigate(location.pathname, { replace: true, state: location.state });
       } else {
         throw { response: { data: { message } } };
       }
@@ -225,7 +265,7 @@ export const useMemberList = () => {
       const { success, message } = response;
       if (success) {
         enqueueSnackbar({ message, variant: "success" });
-        getMemberList();
+        getMemberList(nhgId);
       } else {
         throw { response: { data: { message } } };
       }
@@ -234,6 +274,12 @@ export const useMemberList = () => {
     } finally {
       triggerTableLoading(false);
     }
+  };
+
+  const triggerNhgDetailsFetching = (status) => {
+    setState((draft) => {
+      draft.nhgDetailsFetching = status;
+    });
   };
 
   const triggerFormLoading = (status) => {
@@ -282,13 +328,13 @@ export const useMemberList = () => {
         });
         break;
       default:
-        navigate("?new-member");
+        navigate("?new-member", { state: location.state });
         break;
     }
   };
 
   const handleMemberSelection = async (id) => {
-    navigate("?member");
+    navigate("?member", { state: location.state });
     setState((draft) => {
       draft.selectedMemberId = id;
     });
@@ -361,7 +407,8 @@ export const useMemberList = () => {
   }, [location.search]);
 
   React.useEffect(() => {
-    getMemberList();
+    getMemberList(nhgId);
+    getNhgDetails(nhgId);
     getDistrictsList();
     getRoleList();
   }, []);

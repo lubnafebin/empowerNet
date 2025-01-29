@@ -9,6 +9,7 @@ import {
 // import { useUtilFunctions } from "../../utils";
 // import { ManageCoachDetails } from "../coach";
 
+// eslint-disable-next-line react/prop-types
 export const DashboardRoutes = () => {
   // const { getLoggedInUser } = useUtilFunctions();
   // const user = getLoggedInUser();
@@ -35,7 +36,6 @@ export const DashboardRoutes = () => {
         }
       >
         <Route index element={<Dashboard />} />
-        {/* {profileElement && <Route {...profileElement} />} */}
       </Route>
       <Route path="*" element={<PageNotFound />} />
     </Routes>

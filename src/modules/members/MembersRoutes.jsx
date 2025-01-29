@@ -6,7 +6,7 @@ import {
   PageNotFound,
 } from "../../shared";
 
-export const MemberRoutes = () => {
+export const MembersRoutes = () => {
   return (
     <Routes>
       <Route

@@ -69,10 +69,77 @@ export const Sidebar = ({ sidebarOpen, toggleSidebar }) => {
   };
 
   React.useLayoutEffect(() => {
-    const filteredItems = drawerItems.filter(({ permission }) =>
+    const permittedItems = drawerItems.filter(({ permission }) =>
       checkPermission(permission),
     );
-    setNavigationList(filteredItems);
+
+    if (location.pathname.split("/")[1].includes("ads")) {
+      const adsRoutes = permittedItems.filter(
+        (item) => item.href.split("/")[1].includes("ads") || item.href === "/",
+      );
+      setNavigationList(
+        [
+          {
+            href: "/ads",
+            title: "Dashboard",
+            lightModeIcon: DashboardLightModeIcon,
+            darkModeIcon: DashboardDarkModeIcon,
+            selectedIcon: DashboardSelectedIcon,
+            permission: "dashboard.GET",
+          },
+        ].concat(adsRoutes),
+      );
+    } else if (location.pathname.split("/")[1].includes("nhg")) {
+      const nhgRoutes = permittedItems.filter(
+        (item) => item.href.split("/")[1].includes("nhg") || item.href === "/",
+      );
+      setNavigationList(
+        [
+          {
+            href: "/nhg",
+            title: "Dashboard",
+            lightModeIcon: DashboardLightModeIcon,
+            darkModeIcon: DashboardDarkModeIcon,
+            selectedIcon: DashboardSelectedIcon,
+            permission: "dashboard.GET",
+          },
+        ].concat(nhgRoutes),
+      );
+    } else if (location.pathname.split("/")[1].includes("cds")) {
+      const cdsRoutes = permittedItems.filter(
+        (item) => item.href.split("/")[1].includes("cds") || item.href === "/",
+      );
+      setNavigationList(
+        [
+          {
+            href: "/cds",
+            title: "Dashboard",
+            lightModeIcon: DashboardLightModeIcon,
+            darkModeIcon: DashboardDarkModeIcon,
+            selectedIcon: DashboardSelectedIcon,
+            permission: "dashboard.GET",
+          },
+        ].concat(cdsRoutes),
+      );
+    } else {
+      const memberRoutes = permittedItems.filter(
+        (item) =>
+          !["cds", "ads", "nhg"].includes(item.href.split("/")[1]) ||
+          item.href === "/",
+      );
+      setNavigationList(
+        [
+          {
+            href: "/",
+            title: "Dashboard",
+            lightModeIcon: DashboardLightModeIcon,
+            darkModeIcon: DashboardDarkModeIcon,
+            selectedIcon: DashboardSelectedIcon,
+            permission: "dashboard.GET",
+          },
+        ].concat(memberRoutes),
+      );
+    }
   }, []);
 
   return (
@@ -163,7 +230,7 @@ export const Sidebar = ({ sidebarOpen, toggleSidebar }) => {
               const isSelected =
                 location.pathname === "/"
                   ? href === location.pathname
-                  : href.includes(location.pathname.split("/")[1]);
+                  : href.includes(location.pathname.split("/")[2]);
 
               return (
                 <React.Fragment key={title}>
@@ -345,15 +412,7 @@ const renderChildItem = ({
 // #006BD6
 const drawerItems = [
   {
-    href: "/",
-    title: "Dashboard",
-    lightModeIcon: DashboardLightModeIcon,
-    darkModeIcon: DashboardDarkModeIcon,
-    selectedIcon: DashboardSelectedIcon,
-    permission: "dashboard.GET",
-  },
-  {
-    href: "/wards",
+    href: "/cds/wards",
     title: "Wards",
     lightModeIcon: WardsLightModeIcon,
     darkModeIcon: WardsDarkModeIcon,
@@ -361,7 +420,7 @@ const drawerItems = [
     permission: "ward.all.GET",
   },
   {
-    href: "/members",
+    href: "/nhg/members",
     title: "Members",
     lightModeIcon: MembersLightModeIcon,
     darkModeIcon: MembersDarkModeIcon,
@@ -369,7 +428,7 @@ const drawerItems = [
     permission: "member.all.GET",
   },
   {
-    href: "/minutes",
+    href: "/nhg/minutes",
     title: "Minutes",
     lightModeIcon: ListLightModeIcon,
     darkModeIcon: ListDarkModeIcon,
@@ -377,7 +436,7 @@ const drawerItems = [
     permission: "meeting.all.GET",
   },
   {
-    href: "/roles",
+    href: "/cds/roles",
     title: "Roles",
     lightModeIcon: DashboardLightModeIcon,
     darkModeIcon: DashboardDarkModeIcon,
@@ -385,11 +444,37 @@ const drawerItems = [
     permission: "roles.GET",
   },
   {
-    href: "/reports",
+    href: "/nhg/reports",
     title: "Reports",
     lightModeIcon: ReportsLightModeIcon,
     darkModeIcon: ReportsDarkModeIcon,
     selectedIcon: ReportsSelectedIcon,
     permission: "report.all.GET",
+  },
+
+  // ads routes
+  {
+    href: "/ads/nhgs",
+    title: "NHGs",
+    lightModeIcon: ListLightModeIcon,
+    darkModeIcon: ListDarkModeIcon,
+    selectedIcon: ListSelectedIcon,
+    permission: "nhgs.all",
+  },
+  {
+    href: "/ads/report/all",
+    title: "All Reports",
+    lightModeIcon: ReportsLightModeIcon,
+    darkModeIcon: ReportsDarkModeIcon,
+    selectedIcon: ReportsSelectedIcon,
+    permission: "report.verify",
+  },
+  {
+    href: "/ads/member/all",
+    title: "All Members",
+    lightModeIcon: MembersLightModeIcon,
+    darkModeIcon: MembersDarkModeIcon,
+    selectedIcon: MembersSelectedIcon,
+    permission: "report.verify",
   },
 ];

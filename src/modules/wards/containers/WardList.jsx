@@ -17,12 +17,12 @@ import {
   IconButton,
   Stack,
   Tooltip,
+  Typography,
 } from "@mui/material";
 import {
   Add,
   ArrowForward,
   DeleteOutlineRounded,
-  ManageAccountsOutlined,
   VisibilityOutlined,
 } from "@mui/icons-material";
 import { useWardList } from "../hooks";
@@ -71,7 +71,11 @@ export const WardList = () => {
       },
       {
         header: "ADS",
-        accessorKey: "ads",
+        cell: ({
+          row: {
+            original: { ads },
+          },
+        }) => <Typography>{ads ? ads.user.name : "_"}</Typography>,
         enableSorting: true,
         placement: "right",
       },
@@ -86,7 +90,10 @@ export const WardList = () => {
             original: { id },
           },
         }) => (
-          <Stack flexDirection="row">
+          <Stack
+            flexDirection="row"
+            onClick={(event) => event.stopPropagation()}
+          >
             <Tooltip title="Ward Details" arrow disableInteractive>
               <IconButton size="small" onClick={() => navigate(`${id}/nhgs`)}>
                 <ArrowForward fontSize="small" />
@@ -128,7 +135,7 @@ export const WardList = () => {
     ),
   };
 
-  const breadcrumbs = [{ title: "Dashboard", href: "/" }, { title: "Nhgs" }];
+  const breadcrumbs = [{ title: "Dashboard", href: "/" }, { title: "Wards" }];
 
   return (
     <PageLayout

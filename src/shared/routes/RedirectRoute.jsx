@@ -12,10 +12,18 @@ export const RedirectRoute = () => {
   const isNHgLogin = appState.authentication.role?.name === "NHG";
 
   const path = location.pathname;
+
   return (path === "/auth/login" && isAuthenticated) ||
-    (isCdsLogin && path === "/" && isNHgLogin) ? (
-    <Navigate to="/" replace />
+    (path === "/" && isCdsLogin && isNHgLogin) ? (
+    <Navigate to={isCdsLogin ? "/cds" : isNHgLogin ? "/nhg" : "/"} replace />
   ) : (
     <Outlet />
   );
+
+  // return (path === "/auth/login" && isAuthenticated) ||
+  //   (isCdsLogin && path === "/" && isNHgLogin) ? (
+  //   <Navigate to="/" replace />
+  // ) : (
+  //   <Outlet />
+  // );
 };

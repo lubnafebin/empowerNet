@@ -10,12 +10,23 @@ import {
 } from "../apis/reportApis";
 import { enqueueSnackbar } from "notistack";
 import { saveAs } from "file-saver";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { utilFunctions } from "../../../utils";
 import { AlertRowAction, useAlertContext } from "../../../shared";
 
+const defaultFormData = {
+  startDate: null,
+  endDate: null,
+  totalDeposits: "",
+  totalRefunds: "",
+  totalMembershipFees: "",
+  depositReport: null,
+  refundReport: null,
+  membershipFeesReport: null,
+};
+
 export const useReportList = () => {
-  const [_, setForceUpdate] = React.useState(0);
+  const [, setForceUpdate] = React.useState(0);
   const [state, setState] = useImmer({
     formData: {
       startDate: null,
@@ -42,6 +53,7 @@ export const useReportList = () => {
     generateReportButtonLoading: false,
   });
 
+  const { nhgId } = useParams();
   const { setAlert } = useAlertContext();
   const navigate = useNavigate();
 
@@ -59,10 +71,10 @@ export const useReportList = () => {
     }),
   );
 
-  const getAllReports = async () => {
+  const getAllReports = async (nhgId) => {
     triggerTableLoading(true);
     try {
-      const response = await getAllReportsApi();
+      const response = await getAllReportsApi(nhgId);
 
       const { success, message, data } = response;
       if (success) {
@@ -126,8 +138,8 @@ export const useReportList = () => {
       const { success, message } = response;
       if (success) {
         enqueueSnackbar({ message, variant: "success" });
-        getAllReports();
-        // handleResetFormData();
+        getAllReports(nhgId);
+        handleResetFormData();
         navigate(location.pathname, { replace: true });
       } else {
         throw { response: { data: { message } } };
@@ -146,7 +158,7 @@ export const useReportList = () => {
       const { success, message } = response;
       if (success) {
         enqueueSnackbar({ message, variant: "success" });
-        getAllReports();
+        getAllReports(nhgId);
         navigate(location.pathname, { replace: true });
       } else {
         throw { response: { data: { message } } };
@@ -282,8 +294,14 @@ export const useReportList = () => {
     });
   };
 
+  const handleResetFormData = () => {
+    setState((draft) => {
+      draft.reportForm = defaultFormData;
+    });
+  };
+
   React.useEffect(() => {
-    getAllReports();
+    getAllReports(nhgId);
   }, []);
   return {
     formValidator,

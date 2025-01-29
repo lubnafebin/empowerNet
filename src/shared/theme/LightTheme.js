@@ -10,6 +10,33 @@ const backgroundColor = {
   default: "#f7f7f7", // Default background color
 };
 
+const alertColors = {
+  success: {
+    backgroundColor: "#E2F6F0",
+    color: "#0B815A",
+  },
+  error: {
+    backgroundColor: "#FDE8E7",
+    color: "#B42318",
+  },
+  warning: {
+    backgroundColor: "#FCF3EA",
+    color: "#B54708",
+  },
+  info: {
+    backgroundColor: "#E1F5FA",
+    color: "#0E7090",
+  },
+  primary: {
+    backgroundColor: "#E1EEFA",
+    color: "#177EDF",
+  },
+  secondary: {
+    backgroundColor: "rgba(63, 81, 181, 0.2)",
+    color: "rgb(63, 81, 181)",
+  },
+};
+
 export const LightTheme = createTheme({
   palette: {
     mode: "light", // Light theme mode
@@ -69,45 +96,27 @@ export const LightTheme = createTheme({
       variants: [
         {
           props: { variant: "filled", color: "success" },
-          style: {
-            backgroundColor: "#E2F6F0",
-            color: "#0B815A",
-          },
+          style: alertColors.success,
         },
         {
           props: { variant: "filled", color: "error" },
-          style: {
-            backgroundColor: "#FDE8E7",
-            color: "#B42318",
-          },
+          style: alertColors.error,
         },
         {
           props: { variant: "filled", color: "warning" },
-          style: {
-            backgroundColor: "#FCF3EA",
-            color: "#B54708",
-          },
+          style: alertColors.warning,
         },
         {
           props: { variant: "filled", color: "info" },
-          style: {
-            backgroundColor: "#E1F5FA",
-            color: "#0E7090",
-          },
+          style: alertColors.info,
         },
         {
           props: { variant: "filled", color: "primary" },
-          style: {
-            backgroundColor: "#E1EEFA",
-            color: "#177EDF",
-          },
+          style: alertColors.primary,
         },
         {
           props: { variant: "filled", color: "secondary" },
-          style: {
-            backgroundColor: "rgba(63, 81, 181, 0.2)",
-            color: "rgb(63, 81, 181)",
-          },
+          style: alertColors.secondary,
         },
       ],
     },

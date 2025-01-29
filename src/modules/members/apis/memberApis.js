@@ -8,8 +8,8 @@ export const getMemberDetailsApi = async (memberId) => {
   return response.data;
 };
 
-export const getMemberListApi = async () => {
-  const response = await API.get("nhg/member/all");
+export const getMemberListApi = async (nhgId) => {
+  const response = await API.get("nhg/member/all", { params: { nhgId } });
   return response.data;
 };
 
@@ -33,5 +33,10 @@ export const updateMemberApi = async ({ params, memberId }) => {
 
 export const deleteMemberApi = async ({ memberId }) => {
   const response = await API.delete(`cds/ward/${memberId}/delete`);
+  return response.data;
+};
+
+export const getNhgDetailsApi = async ({ nhgId }) => {
+  const response = await API.get(`nhg/${nhgId}/details`);
   return response.data;
 };

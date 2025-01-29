@@ -29,3 +29,18 @@ export const getWardNhgListApi = async (wardId) => {
   const response = await API.get("ward/nhg/all", { params: { wardId } });
   return response.data;
 };
+
+export const getNhgPresidentsByWardIdApi = async (wardId) => {
+  const response = await API.get(`cds/ward/${wardId}/president/all`);
+  return response.data;
+};
+
+export const assignWardAdsApi = async ({ wardId, params }) => {
+  const response = await API.put(`cds/ward/${wardId}/ads/update`, params);
+  return response.data;
+};
+
+export const getNhgDetailsApi = async (nhgId) => {
+  const response = await API.get(`nhg/${nhgId}/details`);
+  return response.data;
+};

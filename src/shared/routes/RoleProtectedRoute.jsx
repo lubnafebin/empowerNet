@@ -3,7 +3,7 @@ import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { useAppStateContext } from "../hooks";
 import { PageNotFound, PageUnAuthorized } from "../components";
 
-const baseRoutes = ["cds", "nhg"];
+const baseRoutes = ["cds", "nhg", "ads"];
 export const RoleProtectedRoute = ({ roles = [] }) => {
   const location = useLocation();
 

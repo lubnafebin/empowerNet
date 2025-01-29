@@ -1,56 +1,45 @@
 import { Route, Routes } from "react-router-dom";
 
-import { WardRoutes } from "../wards";
 import { DashboardRoutes } from "../dashboard";
 import {
   PageNotFound,
   PermissionProtectedRoute,
   RoleProtectedRoute,
 } from "../../shared";
-import { MinuteRoutes } from "../minutes";
 import { ReportRoutes } from "../reports/ReportRoutes";
+import { MinuteRoutes } from "../minutes";
 import { MembersRoutes } from "../members";
 
-export const AdminRoutes = () => {
+export const NhgRoutes = () => {
   return (
     <Routes>
-      <Route element={<RoleProtectedRoute roles={["CDS"]} />}>
-        <Route path="/*" element={<DashboardRoutes />} />
-      </Route>
-
-      <Route element={<RoleProtectedRoute roles={["ADS"]} />}>
-        {/* <Route element={<PermissionProtectedRoute permission="ward.all.GET" />}> */}
-        {/* <Route path="/nhgs" element={<>NHGS</>} /> */}
-        {/* </Route> */}
-      </Route>
-
-      <Route element={<RoleProtectedRoute roles={["CDS"]} />}>
-        <Route element={<PermissionProtectedRoute permission="ward.all.GET" />}>
-          <Route path="/wards/*" element={<WardRoutes />} />
-        </Route>
-      </Route>
-
-      {/* <Route
+      <Route
         element={
-          <RoleProtectedRoute roles={["NHG", "President", "Secretary"]} />
+          <RoleProtectedRoute
+            roles={["NHG", "President", "Secretary", "ADS"]}
+          />
         }
       >
+        <Route path="/*" element={<DashboardRoutes />} />
+
         <Route
           element={<PermissionProtectedRoute permission="member.all.GET" />}
         >
           <Route path="/members/*" element={<MembersRoutes />} />
         </Route>
+
         <Route
           element={<PermissionProtectedRoute permission="meeting.all.GET" />}
         >
           <Route path="/minutes/*" element={<MinuteRoutes />} />
         </Route>
+
         <Route
           element={<PermissionProtectedRoute permission="report.all.GET" />}
         >
           <Route path="/reports/*" element={<ReportRoutes />} />
         </Route>
-      </Route> */}
+      </Route>
 
       <Route path="*" element={<PageNotFound />} />
     </Routes>

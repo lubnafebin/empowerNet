@@ -18,11 +18,11 @@ export const createNewReportSummaryApi = async (formData) => {
     formData,
     contentTypeFormData,
   );
-  return response;
+  return response.data;
 };
 
-export const getAllReportsApi = async () => {
-  const response = await API.get("nhg/report/all");
+export const getAllReportsApi = async (nhgId) => {
+  const response = await API.get("nhg/report/all", { params: { nhgId } });
   return response.data;
 };
 
