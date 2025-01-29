@@ -5,6 +5,7 @@ import {
   deleteMemberApi,
   getMemberDetailsApi,
   getMemberListApi,
+  getNhgDetailsApi,
   updateMemberApi,
 } from "../apis";
 import { enqueueSnackbar } from "notistack";
@@ -63,6 +64,15 @@ export const useMemberList = () => {
       aadharAttachment: null,
       signatureAttachment: null,
     },
+    nhgDetails: {
+      user: {
+        name: "",
+      },
+      status: {
+        name: "",
+      },
+    },
+    nhgDetailsFetching: true,
   });
   const { setAlert } = useAlertContext();
   const location = useLocation();
@@ -79,6 +89,31 @@ export const useMemberList = () => {
       element: (message) => message,
     }),
   );
+
+  const getNhgDetails = async (nhgId) => {
+    triggerNhgDetailsFetching(true);
+    try {
+      const response = await getNhgDetailsApi({ nhgId });
+      const { success, data, message } = response;
+      if (success) {
+        setState((draft) => {
+          draft.nhgDetails = data;
+        });
+      } else {
+        throw {
+          response: {
+            data: {
+              message,
+            },
+          },
+        };
+      }
+    } catch (exception) {
+      utilFunctions.displayError(exception);
+    } finally {
+      triggerNhgDetailsFetching(false);
+    }
+  };
 
   const getDistrictsList = async () => {
     triggerTableLoading(true);
@@ -241,6 +276,12 @@ export const useMemberList = () => {
     }
   };
 
+  const triggerNhgDetailsFetching = (status) => {
+    setState((draft) => {
+      draft.nhgDetailsFetching = status;
+    });
+  };
+
   const triggerFormLoading = (status) => {
     setState((draft) => {
       draft.isFormLoading = status;
@@ -367,6 +408,7 @@ export const useMemberList = () => {
 
   React.useEffect(() => {
     getMemberList(nhgId);
+    getNhgDetails(nhgId);
     getDistrictsList();
     getRoleList();
   }, []);

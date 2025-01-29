@@ -1,5 +1,6 @@
 import React from "react";
 import {
+  AlertBlock,
   DialogHeader,
   FileCard,
   GeneralDialog,
@@ -24,6 +25,7 @@ import {
   Divider,
   FormHelperText,
   IconButton,
+  Skeleton,
   Stack,
   TextField,
   Tooltip,
@@ -33,6 +35,7 @@ import {
 import {
   Add,
   DeleteOutlineRounded,
+  InfoOutlined,
   PictureAsPdf,
   Telegram,
   VisibilityOutlined,
@@ -40,6 +43,7 @@ import {
 import { useMemberList } from "../hooks";
 import dayjs from "dayjs";
 import { useLocation, useParams } from "react-router-dom";
+import { alertColors, globalPadding } from "../../../utils";
 
 export const MemberList = () => {
   const {
@@ -50,6 +54,7 @@ export const MemberList = () => {
     handleFormSubmit,
     handleResetFormData,
   } = useMemberList();
+
   const theme = useTheme();
   const { nhgId, wardId } = useParams();
   const location = useLocation();
@@ -283,10 +288,29 @@ export const MemberList = () => {
           title: "Members",
         },
       ];
-
+  const isNhgRegistered = state.nhgDetails.status.name === "Registered";
   return (
     <PageLayout
-      title="Members"
+      title={
+        <Stack flexDirection="row" gap="8px" alignItems="center">
+          {state.nhgDetailsFetching ? (
+            <React.Fragment>
+              <Skeleton width="250px" height="30px" variant="rounded" />
+              <Skeleton width="80px" height="30px" variant="rounded" />
+            </React.Fragment>
+          ) : (
+            <React.Fragment>
+              <Typography component="h1" variant="h5" fontWeight="bold">
+                {state.nhgDetails.user.name}
+              </Typography>
+              <Chip
+                label={state.nhgDetails.status.name}
+                color={isNhgRegistered ? "success" : "warning"}
+              />
+            </React.Fragment>
+          )}
+        </Stack>
+      }
       breadcrumbs={breadcrumbs}
       actionSection={
         <Stack flexDirection="row" gap="14px">
@@ -307,7 +331,15 @@ export const MemberList = () => {
         </Stack>
       }
     >
+      {!isNhgRegistered && !state.nhgDetailsFetching && (
+        <AlertBlock>
+          <InfoOutlined fontSize="small" />
+          Add your NHG members and complete your NHG registration by requesting
+          ADS verification.
+        </AlertBlock>
+      )}
       <ReactTable
+        title="Members"
         columns={columns}
         data={state.memberList.options}
         loading={state.memberList.loading}

@@ -35,3 +35,8 @@ export const deleteMemberApi = async ({ memberId }) => {
   const response = await API.delete(`cds/ward/${memberId}/delete`);
   return response.data;
 };
+
+export const getNhgDetailsApi = async ({ nhgId }) => {
+  const response = await API.get(`nhg/${nhgId}/details`);
+  return response.data;
+};
