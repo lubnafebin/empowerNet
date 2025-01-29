@@ -43,7 +43,6 @@ import {
 import { useMemberList } from "../hooks";
 import dayjs from "dayjs";
 import { useLocation, useParams } from "react-router-dom";
-import { alertColors, globalPadding } from "../../../utils";
 
 export const MemberList = () => {
   const {
