@@ -464,17 +464,17 @@ const drawerItems = [
   {
     href: "/ads/report/all",
     title: "All Reports",
-    lightModeIcon: ListLightModeIcon,
-    darkModeIcon: ListDarkModeIcon,
-    selectedIcon: ListSelectedIcon,
+    lightModeIcon: ReportsLightModeIcon,
+    darkModeIcon: ReportsDarkModeIcon,
+    selectedIcon: ReportsSelectedIcon,
     permission: "report.verify",
   },
   {
     href: "/ads/member/all",
     title: "All Members",
-    lightModeIcon: ListLightModeIcon,
-    darkModeIcon: ListDarkModeIcon,
-    selectedIcon: ListSelectedIcon,
+    lightModeIcon: MembersLightModeIcon,
+    darkModeIcon: MembersDarkModeIcon,
+    selectedIcon: MembersSelectedIcon,
     permission: "report.verify",
   },
 ];

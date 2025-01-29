@@ -18,7 +18,7 @@ export const createNewReportSummaryApi = async (formData) => {
     formData,
     contentTypeFormData,
   );
-  return response;
+  return response.data;
 };
 
 export const getAllReportsApi = async (nhgId) => {

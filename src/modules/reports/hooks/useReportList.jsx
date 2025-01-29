@@ -14,6 +14,17 @@ import { useNavigate, useParams } from "react-router-dom";
 import { utilFunctions } from "../../../utils";
 import { AlertRowAction, useAlertContext } from "../../../shared";
 
+const defaultFormData = {
+  startDate: null,
+  endDate: null,
+  totalDeposits: "",
+  totalRefunds: "",
+  totalMembershipFees: "",
+  depositReport: null,
+  refundReport: null,
+  membershipFeesReport: null,
+};
+
 export const useReportList = () => {
   const [, setForceUpdate] = React.useState(0);
   const [state, setState] = useImmer({
@@ -128,7 +139,7 @@ export const useReportList = () => {
       if (success) {
         enqueueSnackbar({ message, variant: "success" });
         getAllReports(nhgId);
-        // handleResetFormData();
+        handleResetFormData();
         navigate(location.pathname, { replace: true });
       } else {
         throw { response: { data: { message } } };
@@ -280,6 +291,12 @@ export const useReportList = () => {
           label="Delete"
         />
       );
+    });
+  };
+
+  const handleResetFormData = () => {
+    setState((draft) => {
+      draft.reportForm = defaultFormData;
     });
   };
 
