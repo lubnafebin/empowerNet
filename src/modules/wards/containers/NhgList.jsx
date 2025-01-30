@@ -118,7 +118,7 @@ export const NhgList = ({ roleType = "CDS" }) => {
           return (
             <Chip
               label={status.name}
-              color={status === "Registered" ? "warning" : "success"}
+              color={status === "Registered" ? "success" : "warning"}
             />
           );
         },
