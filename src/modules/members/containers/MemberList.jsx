@@ -288,6 +288,9 @@ export const MemberList = () => {
         },
       ];
   const isNhgRegistered = state.nhgDetails.status.name === "Registered";
+  const isDraftMode = state.nhgDetails.status.name === "Draft";
+  const isAdsRequestDisabled = state.memberList.options.length < 5;
+
   return (
     <PageLayout
       title={
@@ -304,7 +307,13 @@ export const MemberList = () => {
               </Typography>
               <Chip
                 label={state.nhgDetails.status.name}
-                color={isNhgRegistered ? "success" : "warning"}
+                color={
+                  isDraftMode
+                    ? "primary"
+                    : isNhgRegistered
+                      ? "success"
+                      : "warning"
+                }
               />
             </React.Fragment>
           )}
@@ -317,6 +326,7 @@ export const MemberList = () => {
             variant="contained"
             startIcon={<Telegram />}
             onClick={() => toggleModel("newMember")}
+            disabled={isAdsRequestDisabled}
           >
             Request ADS Verification
           </Button>
@@ -330,11 +340,12 @@ export const MemberList = () => {
         </Stack>
       }
     >
-      {!isNhgRegistered && !state.nhgDetailsFetching && (
+      {isDraftMode && !state.nhgDetailsFetching && (
         <AlertBlock>
           <InfoOutlined fontSize="small" />
-          Add your NHG members and complete your NHG registration by requesting
-          ADS verification.
+          Add your members and complete your NHG registration by requesting ADS
+          verification. A minimum of three members, along with a president and a
+          secretary, is required to register an NHG.
         </AlertBlock>
       )}
       <ReactTable
