@@ -43,20 +43,30 @@ import {
 import { useMemberList } from "../hooks";
 import dayjs from "dayjs";
 import { useLocation, useParams } from "react-router-dom";
+import { useUtilFunctions } from "../../../utils";
+import { ApproveOrRejectNhg } from "../components";
 
 export const MemberList = () => {
   const {
     state,
     formValidator,
+    refetchNhgDetails,
+    sendRequestVerification,
     toggleModel,
     handleFormChange,
     handleFormSubmit,
     handleResetFormData,
+    updateNhgVerification,
   } = useMemberList();
+  const { checkPermission } = useUtilFunctions();
+  const approveNhgPermission = checkPermission("nhgs.id.APPROVE");
+  const createMemberPermission = checkPermission("member.id.POST");
+  const updateNhgPermission = checkPermission("nhg.PUT");
 
   const theme = useTheme();
   const { nhgId, wardId } = useParams();
   const location = useLocation();
+
   const columns = React.useMemo(
     () => [
       {
@@ -158,14 +168,23 @@ export const MemberList = () => {
           row: {
             original: { status },
           },
-        }) => (
-          <Chip
-            label={status.name}
-            color={status.name === "Not Verified" ? "warning" : "success"}
-          />
-        ),
+        }) => {
+          return (
+            <Chip
+              label={status.name}
+              color={
+                status.name === "Draft"
+                  ? "primary"
+                  : status.name === "In Review"
+                    ? "warning"
+                    : status.name === "Rejected"
+                      ? "error"
+                      : "success"
+              }
+            />
+          );
+        },
         enableSorting: true,
-        placement: "right",
       },
       {
         header: "Action",
@@ -264,15 +283,15 @@ export const MemberList = () => {
     ? [
         {
           title: "Dashboard",
-          href: "/",
+          href: "/cds",
         },
         {
           title: "Wards",
-          href: "/wards",
+          href: "/cds/wards",
         },
         {
           title: location.state.ward,
-          href: `/wards/${wardId}/nhgs`,
+          href: `/cds/wards/${wardId}/nhgs`,
         },
         {
           title: "Members",
@@ -287,9 +306,13 @@ export const MemberList = () => {
           title: "Members",
         },
       ];
+
   const isNhgRegistered = state.nhgDetails.status.name === "Registered";
+  const isNhgRejected = state.nhgDetails.status.name === "Rejected";
   const isDraftMode = state.nhgDetails.status.name === "Draft";
-  const isAdsRequestDisabled = state.memberList.options.length < 5;
+  const isInReviewMode = state.nhgDetails.status.name === "In Review";
+
+  const isAdsRequestDisabled = state.memberList.options.length <= 4;
 
   return (
     <PageLayout
@@ -310,9 +333,11 @@ export const MemberList = () => {
                 color={
                   isDraftMode
                     ? "primary"
-                    : isNhgRegistered
-                      ? "success"
-                      : "warning"
+                    : isNhgRejected
+                      ? "error"
+                      : isNhgRegistered
+                        ? "success"
+                        : "warning"
                 }
               />
             </React.Fragment>
@@ -322,21 +347,36 @@ export const MemberList = () => {
       breadcrumbs={breadcrumbs}
       actionSection={
         <Stack flexDirection="row" gap="14px">
-          <Button
-            variant="contained"
-            startIcon={<Telegram />}
-            onClick={() => toggleModel("newMember")}
-            disabled={isAdsRequestDisabled}
-          >
-            Request ADS Verification
-          </Button>
-          <Button
-            variant="contained"
-            startIcon={<Add />}
-            onClick={() => toggleModel("newMember")}
-          >
-            New Member
-          </Button>
+          {approveNhgPermission && isInReviewMode && (
+            <Button
+              variant="contained"
+              onClick={() => toggleModel({ type: "approve/reject" })}
+              disabled={isAdsRequestDisabled}
+            >
+              Approve/Reject
+            </Button>
+          )}
+          {state.verifyNhg &&
+            updateNhgPermission &&
+            (!isInReviewMode || isNhgRejected || isDraftMode) && (
+              <Button
+                variant="contained"
+                startIcon={<Telegram />}
+                onClick={sendRequestVerification}
+                disabled={isAdsRequestDisabled}
+              >
+                Request ADS Verification
+              </Button>
+            )}
+          {createMemberPermission && (
+            <Button
+              variant="contained"
+              startIcon={<Add />}
+              onClick={() => toggleModel({ type: "newMember" })}
+            >
+              New Member
+            </Button>
+          )}
         </Stack>
       }
     >
@@ -679,6 +719,7 @@ export const MemberList = () => {
           </Box>
         )}
       </GeneralDialog>
+      <ApproveOrRejectNhg refetchNhgDetails={refetchNhgDetails} />
     </PageLayout>
   );
 };

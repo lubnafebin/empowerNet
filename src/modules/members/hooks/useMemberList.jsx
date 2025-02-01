@@ -6,6 +6,7 @@ import {
   getMemberDetailsApi,
   getMemberListApi,
   getNhgDetailsApi,
+  sendRequestVerificationApi,
   updateMemberApi,
 } from "../apis";
 import { enqueueSnackbar } from "notistack";
@@ -34,6 +35,7 @@ const initialFormState = {
     addressLine2: "",
     addressLine1: "",
     districtId: null,
+    roleId: null,
     postcode: "",
     profile: null,
     aadharAttachment: null,
@@ -73,6 +75,7 @@ export const useMemberList = () => {
       },
     },
     nhgDetailsFetching: true,
+    verifyNhg: true,
   });
   const { setAlert } = useAlertContext();
   const location = useLocation();
@@ -204,6 +207,7 @@ export const useMemberList = () => {
       if (success) {
         setState((draft) => {
           draft.memberList.options = data;
+          draft.verifyNhg = data.some(member => member.status.name === "Draft")
         });
       } else {
         throw { response: { data: { message } } };
@@ -276,6 +280,28 @@ export const useMemberList = () => {
     }
   };
 
+  const sendVerificationRequest = async () => {
+    try {
+      const response = await sendRequestVerificationApi(nhgId);
+      const { success, data, message } = response;
+      if (success) {
+        enqueueSnackbar({ message, variant: "success" });
+        setState((draft) => {
+          draft.nhgDetails.status = data;
+        });
+        await getMemberList(nhgId);
+      } else {
+        throw {
+          response: {
+            data: { message },
+          },
+        };
+      }
+    } catch (exception) {
+      utilFunctions.displayError(exception);
+    }
+  };
+
   const triggerNhgDetailsFetching = (status) => {
     setState((draft) => {
       draft.nhgDetailsFetching = status;
@@ -305,6 +331,9 @@ export const useMemberList = () => {
       draft.formData = initialFormState.formData;
       draft.selectedMemberId = initialFormState.selectedMemberId;
     });
+
+    formValidator.current.hideMessages();
+    setForceUpdate(1);
   };
 
   const toggleModel = async ({ type, id }) => {
@@ -327,6 +356,10 @@ export const useMemberList = () => {
           );
         });
         break;
+      case "approve/reject": {
+        navigate("?approve/reject", { state: location.state });
+        break;
+      }
       default:
         navigate("?new-member", { state: location.state });
         break;
@@ -394,6 +427,23 @@ export const useMemberList = () => {
     }
   };
 
+  const sendRequestVerification = async () => {
+    if (state.memberList.options.length <= 4) {
+      enqueueSnackbar({
+        message: `A minimum of three members, along with a president and a
+          secretary, is required to register an NHG.`,
+        variant: "error",
+      });
+    } else {
+      await sendVerificationRequest(nhgId);
+    }
+  };
+
+  const refetchNhgDetails = async (nhgId) => {
+    await getNhgDetails(nhgId);
+    await getMemberList(nhgId);
+  };
+
   // Reset form data
   React.useEffect(() => {
     if (
@@ -416,6 +466,8 @@ export const useMemberList = () => {
   return {
     state,
     formValidator,
+    refetchNhgDetails,
+    sendRequestVerification,
     handleFormSubmit,
     toggleModel,
     handleFormChange,

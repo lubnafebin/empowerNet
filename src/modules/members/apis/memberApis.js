@@ -40,3 +40,15 @@ export const getNhgDetailsApi = async ({ nhgId }) => {
   const response = await API.get(`nhg/${nhgId}/details`);
   return response.data;
 };
+
+export const sendRequestVerificationApi = async (nhgId) => {
+  const response = await API.get(`nhg/verify/request`, { params: { nhgId } });
+  return response.data;
+};
+
+export const rejectOrApproveNhgApi = async (params) => {
+  const response = await API.get(`nhg/verify`, {
+    params,
+  });
+  return response.data;
+};

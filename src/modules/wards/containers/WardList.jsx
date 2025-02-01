@@ -135,7 +135,7 @@ export const WardList = () => {
     ),
   };
 
-  const breadcrumbs = [{ title: "Dashboard", href: "/" }, { title: "Wards" }];
+  const breadcrumbs = [{ title: "Dashboard", href: "/cds" }, { title: "Wards" }];
 
   return (
     <PageLayout

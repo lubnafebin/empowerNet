@@ -477,4 +477,20 @@ const drawerItems = [
     selectedIcon: MembersSelectedIcon,
     permission: "report.verify",
   },
+  // {
+  //   href: "/cds/report/all",
+  //   title: "All Reports",
+  //   lightModeIcon: ReportsLightModeIcon,
+  //   darkModeIcon: ReportsDarkModeIcon,
+  //   selectedIcon: ReportsSelectedIcon,
+  //   permission: "allReports.all.GET",
+  // },
+  // {
+  //   href: "/cds/member/all",
+  //   title: "All Members",
+  //   lightModeIcon: MembersLightModeIcon,
+  //   darkModeIcon: MembersDarkModeIcon,
+  //   selectedIcon: MembersSelectedIcon,
+  //   permission: "allMembers.all.GET",
+  // },
 ];
