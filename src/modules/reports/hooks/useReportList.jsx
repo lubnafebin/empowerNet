@@ -6,7 +6,7 @@ import {
   createNewReportSummaryApi,
   deleteReportApi,
   generateReportApi,
-  getAllReportsApi,
+  getReportsApi,
 } from "../apis/reportApis";
 import { enqueueSnackbar } from "notistack";
 import { saveAs } from "file-saver";
@@ -74,7 +74,7 @@ export const useReportList = () => {
   const getAllReports = async (nhgId) => {
     triggerTableLoading(true);
     try {
-      const response = await getAllReportsApi(nhgId);
+      const response = await getReportsApi(nhgId);
 
       const { success, message, data } = response;
       if (success) {

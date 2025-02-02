@@ -21,7 +21,7 @@ export const createNewReportSummaryApi = async (formData) => {
   return response.data;
 };
 
-export const getAllReportsApi = async (nhgId) => {
+export const getReportsApi = async (nhgId) => {
   const response = await API.get("nhg/report/all", { params: { nhgId } });
   return response.data;
 };
@@ -64,6 +64,20 @@ export const deleteConsolidateReportApi = async ({
 };
 
 export const sendRequestToVerifyReportApi = async ({ nhgId, reportId }) => {
-  const response = await API.get(`nhg/${nhgId}/report/${reportId}/verify/request`);
+  const response = await API.get(
+    `nhg/${nhgId}/report/${reportId}/verify/request`,
+  );
+  return response.data;
+};
+
+export const getAllReportsApi = async (params) => {
+  const response = await API.get("/ward/nhg/reports/all", { params });
+  return response.data;
+};
+
+export const verifyReportApi = async ({ reportId, approve }) => {
+  const response = await API.get(`/nhg/report/${reportId}/verify`, {
+    params: { approve },
+  });
   return response.data;
 };

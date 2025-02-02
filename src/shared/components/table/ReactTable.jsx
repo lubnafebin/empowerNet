@@ -163,9 +163,9 @@ export const ReactTable = ({
       <TableContainer
         sx={{
           // maxHeight: 'calc(100vh - 270px)',
-          // overflow: 'auto',
+          overflow: "auto",
           pb: disablePagination ? 5 : 0,
-          maxWidth: `calc(100vw - ${sidebarOpen ? "308px" : "30px"})`,
+          // maxWidth: `calc(100vw - ${sidebarOpen ? "308px" : "30px"})`,
         }}
       >
         <Table stickyHeader aria-label="sticky table">

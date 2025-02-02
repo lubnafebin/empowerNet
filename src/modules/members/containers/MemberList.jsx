@@ -45,7 +45,7 @@ import {
 import { useMemberList } from "../hooks";
 import dayjs from "dayjs";
 import { useLocation, useParams } from "react-router-dom";
-import { useUtilFunctions } from "../../../utils";
+import { useUtilFunctions, utilFunctions } from "../../../utils";
 import { ApproveOrRejectMember, ApproveOrRejectNhg } from "../components";
 
 export const MemberList = () => {
@@ -349,7 +349,6 @@ export const MemberList = () => {
       ];
 
   const isNhgRegistered = state.nhgDetails.status.name === "Registered";
-  const isNhgRejected = state.nhgDetails.status.name === "Rejected";
   const isDraftMode = state.nhgDetails.status.name === "Draft";
   const isInReviewMode = state.nhgDetails.status.name === "In Review";
 
@@ -371,15 +370,7 @@ export const MemberList = () => {
               </Typography>
               <Chip
                 label={state.nhgDetails.status.name}
-                color={
-                  isDraftMode
-                    ? "primary"
-                    : isNhgRejected
-                      ? "error"
-                      : isNhgRegistered
-                        ? "success"
-                        : "warning"
-                }
+                color={utilFunctions.getChipColor(state.nhgDetails.status.name)}
               />
             </React.Fragment>
           )}
@@ -399,8 +390,7 @@ export const MemberList = () => {
           )}
           {state.verifyNhg &&
             updateNhgPermission &&
-            !isNhgRegistered &&
-            isInReviewMode && (
+            ["Draft", "Rejected"].includes(state.nhgDetails.status.name) && (
               <Button
                 variant="contained"
                 startIcon={<Telegram />}

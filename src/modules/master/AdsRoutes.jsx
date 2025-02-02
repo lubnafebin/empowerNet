@@ -9,7 +9,7 @@ import {
   RoleProtectedRoute,
 } from "../../shared";
 import { NhgList, NhgOverview } from "../wards/containers";
-import { AllReports } from "../reports/containers";
+import { AllReports, ReportDetails } from "../reports/containers";
 import { AllMembers } from "../members/containers";
 
 export const AdsRoutes = () => {
@@ -27,7 +27,10 @@ export const AdsRoutes = () => {
           <Route
             element={<PermissionProtectedRoute permission="member.all.GET" />}
           >
-            <Route path="/report/all" element={<AllReports />} />
+            <Route path="/report/all">
+              <Route index element={<AllReports />} />
+              <Route path=":reportId" element={<ReportDetails />} />
+            </Route>
             <Route path="/member/all" element={<AllMembers />} />
             <Route path="/nhgs">
               <Route index element={<NhgList roleType="ads" />} />

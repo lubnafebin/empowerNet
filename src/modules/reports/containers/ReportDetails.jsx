@@ -35,11 +35,14 @@ import {
 } from "../../../utils";
 import { useReportDetails } from "../hooks";
 import dayjs from "dayjs";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import React from "react";
+import { ApproveOrRejectReport } from "../components";
 
 export const ReportDetails = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+
   const {
     state,
     handleFormSubmit,
@@ -48,10 +51,15 @@ export const ReportDetails = () => {
     formValidator,
     deleteConsolidateReport,
     handleSendRequestToVerifyReport,
+    getReportDetails,
   } = useReportDetails();
-  const { checkPermission } = useUtilFunctions();
+
+  const { checkPermission, getLoggedInUser } = useUtilFunctions();
+  const { role } = getLoggedInUser();
+
   const deleteReportPermission = checkPermission("report.id.DELETE");
   const createReportPermission = checkPermission("report.id.POST");
+  const reportApprovePermission = checkPermission("allReports.id.APPROVE");
 
   const title = `Report ${dayjs(state.report.details.startDate).format("MMM DD, YYYY to ")}
             ${dayjs(state.report.details.endDate).format("MMM DD, YYYY")} `;
@@ -137,7 +145,7 @@ export const ReportDetails = () => {
       }
       actionSection={
         <Stack gap="14px" flexDirection="row" flexWrap="wrap">
-          {status !== "In Review" && createReportPermission && (
+          {["Draft", "Rejected"].includes(status) && createReportPermission && (
             <React.Fragment>
               <Button
                 variant="contained"
@@ -149,12 +157,36 @@ export const ReportDetails = () => {
               <Button
                 variant="contained"
                 startIcon={<PrintOutlined />}
-                onClick={() => navigate("?create-report-consolidate")}
+                onClick={() =>
+                  navigate("?create-report-consolidate", {
+                    state: location.state,
+                  })
+                }
               >
                 Generate Report Consolidate
               </Button>
             </React.Fragment>
           )}
+          {(["In Review", "Rejected"].includes(status) &&
+            reportApprovePermission &&
+            role.name === "ADS" &&
+            state.report.details?.verifiedByAdsId === null) ||
+            (["In Review"].includes(status) &&
+              reportApprovePermission &&
+              role.name === "CDS" &&
+              state.report.details?.verifiedByAdsId !== null && (
+                <React.Fragment>
+                  <Button
+                    variant="contained"
+                    startIcon={<Telegram />}
+                    onClick={() =>
+                      navigate("?verify-report", { state: location.state })
+                    }
+                  >
+                    Verify Report
+                  </Button>
+                </React.Fragment>
+              ))}
         </Stack>
       }
     >
@@ -427,6 +459,7 @@ export const ReportDetails = () => {
           </Box>
         )}
       </GeneralDialog>
+      <ApproveOrRejectReport refetchReportDetails={getReportDetails} />
     </PageLayout>
   );
 };

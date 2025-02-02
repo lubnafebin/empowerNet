@@ -8,7 +8,7 @@ import {
   sendRequestToVerifyReportApi,
   uploadConsolidateReportApi,
 } from "../apis";
-import { replace, useLocation, useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import SimpleReactValidator from "simple-react-validator";
 import dayjs from "dayjs";
 import { saveAs } from "file-saver";
@@ -256,6 +256,7 @@ export const useReportDetails = () => {
   return {
     state,
     handleFormSubmit,
+    getReportDetails,
     handleFormChange,
     handleConsolidateReportUpload,
     deleteConsolidateReport,
