@@ -207,7 +207,11 @@ export const useMemberList = () => {
       if (success) {
         setState((draft) => {
           draft.memberList.options = data;
-          draft.verifyNhg = data.some(member => member.status.name === "Draft")
+          if (draft.nhgDetails.status.name !== "Registered") {
+            draft.verifyNhg = data.some((member) =>
+              ["Draft", "Rejected"].includes(member.status.name),
+            );
+          }
         });
       } else {
         throw { response: { data: { message } } };
