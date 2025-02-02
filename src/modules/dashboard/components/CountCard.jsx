@@ -1,5 +1,5 @@
-import PropTypes from 'prop-types';
-import { Box, Paper, Stack, Typography } from '@mui/material';
+import PropTypes from "prop-types";
+import { Box, Paper, Stack, Typography } from "@mui/material";
 
 export const CountCard = ({ title, value, color, icon }) => {
   return (
@@ -9,7 +9,7 @@ export const CountCard = ({ title, value, color, icon }) => {
       p="24px"
       borderRadius="6px"
       gap="16px"
-      minWidth={{ xs: '100%', md: '286.5px' }}
+      minWidth={{ xs: "100%", md: "286.5px" }}
       flexDirection="row"
       alignItems="center"
     >
@@ -17,21 +17,15 @@ export const CountCard = ({ title, value, color, icon }) => {
         sx={{
           background: color,
           p: 1,
-          borderRadius: '50%',
-          height: '56px',
-          width: '56px',
-          alignItems: 'center',
-          justifyContent: 'center',
-          display: 'flex',
+          borderRadius: "50%",
+          height: "56px",
+          width: "56px",
+          alignItems: "center",
+          justifyContent: "center",
+          display: "flex",
         }}
       >
-        <Box
-          component="img"
-          alignSelf="center"
-          src={icon}
-          height="22px"
-          width="22px"
-        />
+        {icon}
       </Box>
       <Stack>
         <Typography fontWeight={600} fontSize="25px">
@@ -48,6 +42,6 @@ export const CountCard = ({ title, value, color, icon }) => {
 CountCard.propTypes = {
   title: PropTypes.string.isRequired,
   value: PropTypes.number.isRequired,
-  icon: PropTypes.string.isRequired,
+  icon: PropTypes.node.isRequired,
   color: PropTypes.string,
 };

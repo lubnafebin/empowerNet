@@ -227,10 +227,11 @@ export const Sidebar = ({ sidebarOpen, toggleSidebar }) => {
             }) => {
               const isCollapsed = collapsed[title];
               const ExpandIcon = isCollapsed ? ExpandMore : ExpandLess;
-              const isSelected =
-                location.pathname === "/"
-                  ? href === location.pathname
-                  : href.includes(location.pathname.split("/")[2]);
+              const isSelected = ["ads", "cds", "nhg", ""].includes(
+                location.pathname.split("/")[1],
+              )
+                ? href === location.pathname
+                : href.includes(location.pathname.split("/")[2]);
 
               return (
                 <React.Fragment key={title}>
