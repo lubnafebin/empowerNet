@@ -34,7 +34,9 @@ import {
 } from "@mui/material";
 import {
   Add,
-  DeleteOutlineRounded,
+  CancelRounded,
+  CheckCircle,
+  // DeleteOutlineRounded,
   InfoOutlined,
   PictureAsPdf,
   Telegram,
@@ -43,20 +45,32 @@ import {
 import { useMemberList } from "../hooks";
 import dayjs from "dayjs";
 import { useLocation, useParams } from "react-router-dom";
+import { useUtilFunctions, utilFunctions } from "../../../utils";
+import { ApproveOrRejectMember, ApproveOrRejectNhg } from "../components";
 
 export const MemberList = () => {
   const {
     state,
     formValidator,
+    getMemberList,
+    refetchNhgDetails,
+    sendRequestVerification,
     toggleModel,
     handleFormChange,
     handleFormSubmit,
     handleResetFormData,
+    handleSendMemberVerificationRequest,
   } = useMemberList();
+  const { checkPermission } = useUtilFunctions();
+  const approveNhgPermission = checkPermission("nhgs.id.APPROVE");
+  const createMemberPermission = checkPermission("member.id.POST");
+  const updateNhgPermission = checkPermission("nhg.PUT");
+  const approveMemberPermission = checkPermission("allMembers.id.APPROVE");
 
   const theme = useTheme();
   const { nhgId, wardId } = useParams();
   const location = useLocation();
+
   const columns = React.useMemo(
     () => [
       {
@@ -158,45 +172,91 @@ export const MemberList = () => {
           row: {
             original: { status },
           },
-        }) => (
-          <Chip
-            label={status.name}
-            color={status.name === "Not Verified" ? "warning" : "success"}
-          />
-        ),
+        }) => {
+          return (
+            <Chip
+              label={status.name}
+              color={
+                status.name === "Draft"
+                  ? "primary"
+                  : status.name === "In Review"
+                    ? "warning"
+                    : status.name === "Rejected"
+                      ? "error"
+                      : "success"
+              }
+            />
+          );
+        },
         enableSorting: true,
-        placement: "right",
       },
       {
         header: "Action",
         accessorKey: "action",
         enableSorting: false,
-        placement: "right",
-        meta: { width: 150 },
+        meta: { rowCellStyle: { width: 100 } },
         cell: ({
           row: {
-            original: { id },
+            original: { id, status },
           },
-        }) => (
-          <Stack flexDirection="row">
-            <Tooltip title="Member Details" arrow disableInteractive>
-              <IconButton
-                size="small"
-                onClick={() => toggleModel({ type: "memberDetails", id })}
-              >
-                <VisibilityOutlined fontSize="small" />
-              </IconButton>
-            </Tooltip>
-            <Tooltip title="Delete Member" arrow disableInteractive>
-              <IconButton
-                size="small"
-                onClick={() => toggleModel({ type: "deleteMember", id })}
-              >
-                <DeleteOutlineRounded fontSize="small" />
-              </IconButton>
-            </Tooltip>
-          </Stack>
-        ),
+        }) => {
+          const isVerified = status?.name === "Verified";
+          const isRejected = status?.name === "Rejected";
+          return (
+            <Stack flexDirection="row">
+              {approveMemberPermission && (
+                <Tooltip
+                  title={isVerified ? "Verified" : "Verify"}
+                  arrow
+                  disableInteractive
+                >
+                  {isVerified || isRejected ? (
+                    <IconButton size="small" disableFocusRipple disableRipple>
+                      {isVerified ? (
+                        <CheckCircle fontSize="small" color="success" />
+                      ) : (
+                        <CancelRounded fontSize="small" color="error" />
+                      )}
+                    </IconButton>
+                  ) : (
+                    <IconButton
+                      size="small"
+                      onClick={() =>
+                        toggleModel({
+                          type: "approve-or-reject-member",
+                          id,
+                        })
+                      }
+                      sx={{
+                        visibility: ["Draft"].includes(status.name)
+                          ? "hidden"
+                          : "visible",
+                      }}
+                    >
+                      <CheckCircle fontSize="small" color="warning" />
+                    </IconButton>
+                  )}
+                </Tooltip>
+              )}
+              <Tooltip title="Member Details" arrow disableInteractive>
+                <IconButton
+                  size="small"
+                  onClick={() => toggleModel({ type: "memberDetails", id })}
+                >
+                  <VisibilityOutlined fontSize="small" />
+                </IconButton>
+              </Tooltip>
+              {/* <Tooltip title="Delete Member" arrow disableInteractive>
+                <IconButton
+                  size="small"
+                  onClick={() => toggleModel({ type: "deleteMember", id })}
+                >
+                  <DeleteOutlineRounded fontSize="small" />
+                </IconButton>
+              </Tooltip> */}
+            </Stack>
+          );
+        },
       },
     ],
     [],
@@ -264,15 +324,15 @@ export const MemberList = () => {
     ? [
         {
           title: "Dashboard",
-          href: "/",
+          href: "/cds",
         },
         {
           title: "Wards",
-          href: "/wards",
+          href: "/cds/wards",
         },
         {
           title: location.state.ward,
-          href: `/wards/${wardId}/nhgs`,
+          href: `/cds/wards/${wardId}/nhgs`,
         },
         {
           title: "Members",
@@ -287,7 +347,13 @@ export const MemberList = () => {
           title: "Members",
         },
       ];
+
   const isNhgRegistered = state.nhgDetails.status.name === "Registered";
+  const isDraftMode = state.nhgDetails.status.name === "Draft";
+  const isInReviewMode = state.nhgDetails.status.name === "In Review";
+
+  const isAdsRequestDisabled = state.memberList.options.length <= 4;
+
   return (
     <PageLayout
       title={
@@ -304,7 +370,7 @@ export const MemberList = () => {
               </Typography>
               <Chip
                 label={state.nhgDetails.status.name}
-                color={isNhgRegistered ? "success" : "warning"}
+                color={utilFunctions.getChipColor(state.nhgDetails.status.name)}
               />
             </React.Fragment>
           )}
@@ -313,28 +379,45 @@ export const MemberList = () => {
       breadcrumbs={breadcrumbs}
       actionSection={
         <Stack flexDirection="row" gap="14px">
-          <Button
-            variant="contained"
-            startIcon={<Telegram />}
-            onClick={() => toggleModel("newMember")}
-          >
-            Request ADS Verification
-          </Button>
-          <Button
-            variant="contained"
-            startIcon={<Add />}
-            onClick={() => toggleModel("newMember")}
-          >
-            New Member
-          </Button>
+          {approveNhgPermission && isInReviewMode && (
+            <Button
+              variant="contained"
+              onClick={() => toggleModel({ type: "approve/reject" })}
+              disabled={isAdsRequestDisabled}
+            >
+              Approve/Reject
+            </Button>
+          )}
+          {state.verifyNhg &&
+            updateNhgPermission &&
+            ["Draft", "Rejected"].includes(state.nhgDetails.status.name) && (
+              <Button
+                variant="contained"
+                startIcon={<Telegram />}
+                onClick={sendRequestVerification}
+                disabled={isAdsRequestDisabled}
+              >
+                Send Verification Request
+              </Button>
+            )}
+          {createMemberPermission && (
+            <Button
+              variant="contained"
+              startIcon={<Add />}
+              onClick={() => toggleModel({ type: "newMember" })}
+            >
+              New Member
+            </Button>
+          )}
         </Stack>
       }
     >
-      {!isNhgRegistered && !state.nhgDetailsFetching && (
+      {isDraftMode && !state.nhgDetailsFetching && (
         <AlertBlock>
           <InfoOutlined fontSize="small" />
-          Add your NHG members and complete your NHG registration by requesting
-          ADS verification.
+          Add your members and complete your NHG registration by requesting ADS
+          verification. A minimum of three members, along with a president and a
+          secretary, is required to register an NHG.
         </AlertBlock>
       )}
       <ReactTable
@@ -655,19 +738,32 @@ export const MemberList = () => {
               </Stack>
             </DialogContent>
             <Divider />
-            <DialogActions>
-              <LoadingButton
-                size="small"
-                loading={state.isFormSubmitting}
-                type="submit"
-                variant="contained"
-              >
-                {state.selectedMemberId ? "Update" : "Create"}
-              </LoadingButton>
+            <DialogActions sx={{ py: 2 }}>
+              {["Draft", "Rejected"].includes(state.formData?.status?.name) && (
+                <LoadingButton
+                  loading={state.isFormSubmitting}
+                  variant="contained"
+                  startIcon={<Telegram />}
+                  onClick={handleSendMemberVerificationRequest}
+                >
+                  Request to verify
+                </LoadingButton>
+              )}
+              {state.formData?.status?.name !== "In Review" && (
+                <LoadingButton
+                  loading={state.isFormSubmitting}
+                  type="submit"
+                  variant="contained"
+                >
+                  {state.selectedMemberId ? "Update" : "Create"}
+                </LoadingButton>
+              )}
             </DialogActions>
           </Box>
         )}
       </GeneralDialog>
+      <ApproveOrRejectNhg refetchNhgDetails={refetchNhgDetails} />
+      <ApproveOrRejectMember refetchMemberDetails={getMemberList} />
     </PageLayout>
   );
 };

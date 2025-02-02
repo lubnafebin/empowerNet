@@ -108,9 +108,7 @@ export const ReportList = () => {
           },
         }) => {
           return (
-            <Typography>
-              {verifiedByAds?.user ? verifiedByAds.user.name : "-"}
-            </Typography>
+            <Typography>{verifiedByAds ? verifiedByAds.name : "-"}</Typography>
           );
         },
         enableSorting: true,
@@ -124,9 +122,7 @@ export const ReportList = () => {
           },
         }) => {
           return (
-            <Typography>
-              {verifiedByCds?.user ? verifiedByCds.user.name : "-"}
-            </Typography>
+            <Typography>{verifiedByCds ? verifiedByCds.name : "-"}</Typography>
           );
         },
         enableSorting: true,
@@ -140,10 +136,8 @@ export const ReportList = () => {
             original: { status },
           },
         }) => {
-          const statusLabel = status?.name?.toLowerCase();
-
-          const color = statusLabel === "draft" ? "info" : "success";
-          return <Chip label={statusLabel} color={color} />;
+          const color = utilFunctions.getChipColor(status?.name);
+          return <Chip label={status.name} color={color} />;
         },
         enableSorting: true,
         placement: "right",

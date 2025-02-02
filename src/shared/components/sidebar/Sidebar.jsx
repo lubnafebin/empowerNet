@@ -227,10 +227,11 @@ export const Sidebar = ({ sidebarOpen, toggleSidebar }) => {
             }) => {
               const isCollapsed = collapsed[title];
               const ExpandIcon = isCollapsed ? ExpandMore : ExpandLess;
-              const isSelected =
-                location.pathname === "/"
-                  ? href === location.pathname
-                  : href.includes(location.pathname.split("/")[2]);
+              const isSelected = ["ads", "cds", "nhg", ""].includes(
+                location.pathname.split("/")[1],
+              )
+                ? href === location.pathname
+                : href.includes(location.pathname.split("/")[2]);
 
               return (
                 <React.Fragment key={title}>
@@ -467,14 +468,30 @@ const drawerItems = [
     lightModeIcon: ReportsLightModeIcon,
     darkModeIcon: ReportsDarkModeIcon,
     selectedIcon: ReportsSelectedIcon,
-    permission: "report.verify",
+    permission: "allReports.all.GET",
   },
+  // {
+  //   href: "/ads/member/all",
+  //   title: "All Members",
+  //   lightModeIcon: MembersLightModeIcon,
+  //   darkModeIcon: MembersDarkModeIcon,
+  //   selectedIcon: MembersSelectedIcon,
+  //   permission: "report.verify",
+  // },
   {
-    href: "/ads/member/all",
-    title: "All Members",
-    lightModeIcon: MembersLightModeIcon,
-    darkModeIcon: MembersDarkModeIcon,
-    selectedIcon: MembersSelectedIcon,
-    permission: "report.verify",
+    href: "/cds/report/all",
+    title: "All Reports",
+    lightModeIcon: ReportsLightModeIcon,
+    darkModeIcon: ReportsDarkModeIcon,
+    selectedIcon: ReportsSelectedIcon,
+    permission: "allReports.all.GET",
   },
+  // {
+  //   href: "/cds/member/all",
+  //   title: "All Members",
+  //   lightModeIcon: MembersLightModeIcon,
+  //   darkModeIcon: MembersDarkModeIcon,
+  //   selectedIcon: MembersSelectedIcon,
+  //   permission: "allMembers.all.GET",
+  // },
 ];

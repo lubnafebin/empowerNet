@@ -138,43 +138,43 @@ export const NhgOverview = () => {
         }) => (
           <Chip
             label={status.name}
-            color={status.name === "Not Verified" ? "warning" : "success"}
+            color={utilFunctions.getChipColor(status.name)}
           />
         ),
         enableSorting: true,
         placement: "right",
       },
-      {
-        header: "Action",
-        accessorKey: "action",
-        enableSorting: false,
-        placement: "right",
-        meta: { width: 150 },
-        cell: ({
-          row: {
-            original: { id },
-          },
-        }) => (
-          <Stack flexDirection="row">
-            {/* <Tooltip title="Member Details" arrow disableInteractive>
-              <IconButton
-                size="small"
-                onClick={() => toggleModel({ type: "memberDetails", id })}
-              >
-                <VisibilityOutlined fontSize="small" />
-              </IconButton>
-            </Tooltip>
-            <Tooltip title="Delete Member" arrow disableInteractive>
-              <IconButton
-                size="small"
-                onClick={() => toggleModel({ type: "deleteMember", id })}
-              >
-                <DeleteOutlineRounded fontSize="small" />
-              </IconButton>
-            </Tooltip> */}
-          </Stack>
-        ),
-      },
+      // {
+      //   header: "Action",
+      //   accessorKey: "action",
+      //   enableSorting: false,
+      //   placement: "right",
+      //   meta: { width: 150 },
+      //   cell: ({
+      //     row: {
+      //       original: { id },
+      //     },
+      //   }) => (
+      //     <Stack flexDirection="row">
+      //       <Tooltip title="Member Details" arrow disableInteractive>
+      //         <IconButton
+      //           size="small"
+      //           onClick={() => toggleModel({ type: "memberDetails", id })}
+      //         >
+      //           <VisibilityOutlined fontSize="small" />
+      //         </IconButton>
+      //       </Tooltip>
+      //       <Tooltip title="Delete Member" arrow disableInteractive>
+      //         <IconButton
+      //           size="small"
+      //           onClick={() => toggleModel({ type: "deleteMember", id })}
+      //         >
+      //           <DeleteOutlineRounded fontSize="small" />
+      //         </IconButton>
+      //       </Tooltip>
+      //     </Stack>
+      //   ),
+      // },
     ],
     [],
   );
@@ -237,7 +237,7 @@ export const NhgOverview = () => {
         }) => {
           return (
             <Typography>
-              {verifiedByAds?.user ? verifiedByAds.user.name : "-"}
+              {verifiedByAds ? verifiedByAds.name : "-"}
             </Typography>
           );
         },
@@ -253,7 +253,7 @@ export const NhgOverview = () => {
         }) => {
           return (
             <Typography>
-              {verifiedByCds?.user ? verifiedByCds.user.name : "-"}
+              {verifiedByCds ? verifiedByCds.name : "-"}
             </Typography>
           );
         },

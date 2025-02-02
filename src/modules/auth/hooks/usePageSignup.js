@@ -31,7 +31,6 @@ export const usePageSignUp = () => {
     submitButtonLoading: false,
   });
 
-  const navigate = useNavigate();
   const { setAppState } = useAppStateContext();
   const { accountType } = useParams();
 
@@ -67,7 +66,6 @@ export const usePageSignUp = () => {
         setAppState((draft) => {
           draft.authentication = data;
         });
-        navigate("/", { replace: true });
       } else {
         enqueueSnackbar({ message, variant: "error" });
       }

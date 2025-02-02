@@ -40,3 +40,29 @@ export const getNhgDetailsApi = async ({ nhgId }) => {
   const response = await API.get(`nhg/${nhgId}/details`);
   return response.data;
 };
+
+export const sendRequestVerificationApi = async (nhgId) => {
+  const response = await API.get(`nhg/verify/request`, { params: { nhgId } });
+  return response.data;
+};
+
+export const rejectOrApproveNhgApi = async (params) => {
+  const response = await API.get(`nhg/verify`, {
+    params,
+  });
+  return response.data;
+};
+
+export const sendMemberVerificationRequestApi = async (params) => {
+  const response = await API.get(`nhg/member/verify/request`, {
+    params,
+  });
+  return response.data;
+};
+
+export const approveOrRejectMemberApi = async (params) => {
+  const response = await API.get(`nhg/member/verify`, {
+    params,
+  });
+  return response.data;
+};

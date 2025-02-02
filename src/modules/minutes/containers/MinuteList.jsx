@@ -119,14 +119,14 @@ export const MinuteList = () => {
                 <CurrencyRupeeRounded fontSize="small" />
               </IconButton>
             </Tooltip>
-            <Tooltip title="Delete Meeting" arrow disableInteractive>
+            {/* <Tooltip title="Delete Meeting" arrow disableInteractive>
               <IconButton
                 size="small"
                 onClick={() => toggleModel({ type: "deleteWard", id })}
               >
                 <DeleteOutlineRounded fontSize="small" />
               </IconButton>
-            </Tooltip>
+            </Tooltip> */}
           </Stack>
         ),
       },

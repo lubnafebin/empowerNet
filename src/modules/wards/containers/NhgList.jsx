@@ -110,6 +110,7 @@ export const NhgList = ({ roleType = "CDS" }) => {
       },
       {
         header: "Status",
+        accessorKey: "status",
         cell: ({
           row: {
             original: { status },
@@ -118,7 +119,13 @@ export const NhgList = ({ roleType = "CDS" }) => {
           return (
             <Chip
               label={status.name}
-              color={status === "Registered" ? "warning" : "success"}
+              color={
+                status.name === "Registered"
+                  ? "success"
+                  : status.name === "Rejected"
+                    ? "error"
+                    : "warning"
+              }
             />
           );
         },
@@ -157,8 +164,8 @@ export const NhgList = ({ roleType = "CDS" }) => {
 
   const breadcrumbs = isCds
     ? [
-        { title: "Dashboard", href: "/" },
-        { title: "Wards", href: "/wards" },
+        { title: "Dashboard", href: "/cds" },
+        { title: "Wards", href: "/cds/wards" },
         { title: state.wardDetails.name },
       ]
     : [{ title: "Dashboard", href: "/ads" }, { title: "NHG List" }];
@@ -383,7 +390,7 @@ export const NhgList = ({ roleType = "CDS" }) => {
               type="submit"
               variant="contained"
             >
-              {state.selectedWardId ? "Update" : "Create"}
+              Update
             </LoadingButton>
           </DialogActions>
         </Box>

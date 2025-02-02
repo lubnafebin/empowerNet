@@ -17,4 +17,15 @@ export const utilFunctions = {
       );
     });
   },
+  getChipColor: (status) => {
+    return status === "Draft"
+      ? "info"
+      : ["In Review"].includes(status)
+        ? "warning"
+        : ["Rejected", "Inactive"].includes(status)
+          ? "error"
+          : ["Registered", "Verified", "Active"].includes(status)
+            ? "success"
+            : "default";
+  },
 };

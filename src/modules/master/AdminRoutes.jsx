@@ -1,56 +1,40 @@
 import { Route, Routes } from "react-router-dom";
 
 import { WardRoutes } from "../wards";
-import { DashboardRoutes } from "../dashboard";
+import { Dashboard, DashboardRoutes } from "../dashboard";
 import {
+  AuthProtectedRoute,
+  DashboardLayout,
   PageNotFound,
   PermissionProtectedRoute,
   RoleProtectedRoute,
 } from "../../shared";
-import { MinuteRoutes } from "../minutes";
-import { ReportRoutes } from "../reports/ReportRoutes";
-import { MembersRoutes } from "../members";
+import { AllReports, ReportDetails } from "../reports/containers";
 
 export const AdminRoutes = () => {
   return (
     <Routes>
-      <Route element={<RoleProtectedRoute roles={["CDS"]} />}>
-        <Route path="/*" element={<DashboardRoutes />} />
-      </Route>
-
-      <Route element={<RoleProtectedRoute roles={["ADS"]} />}>
-        {/* <Route element={<PermissionProtectedRoute permission="ward.all.GET" />}> */}
-        {/* <Route path="/nhgs" element={<>NHGS</>} /> */}
-        {/* </Route> */}
-      </Route>
-
-      <Route element={<RoleProtectedRoute roles={["CDS"]} />}>
-        <Route element={<PermissionProtectedRoute permission="ward.all.GET" />}>
-          <Route path="/wards/*" element={<WardRoutes />} />
-        </Route>
-      </Route>
-
-      {/* <Route
+      <Route
         element={
-          <RoleProtectedRoute roles={["NHG", "President", "Secretary"]} />
+          <AuthProtectedRoute>
+            <DashboardLayout />
+          </AuthProtectedRoute>
         }
       >
-        <Route
-          element={<PermissionProtectedRoute permission="member.all.GET" />}
-        >
-          <Route path="/members/*" element={<MembersRoutes />} />
+        <Route element={<RoleProtectedRoute roles={["CDS"]} />}>
+          <Route index element={<Dashboard />} />
+
+          <Route
+            element={<PermissionProtectedRoute permission="ward.all.GET" />}
+          >
+            <Route path="/wards/*" element={<WardRoutes />} />
+          </Route>
+          <Route path="/report/all">
+            <Route index element={<AllReports />} />
+            <Route path=":reportId" element={<ReportDetails />} />
+          </Route>
         </Route>
-        <Route
-          element={<PermissionProtectedRoute permission="meeting.all.GET" />}
-        >
-          <Route path="/minutes/*" element={<MinuteRoutes />} />
-        </Route>
-        <Route
-          element={<PermissionProtectedRoute permission="report.all.GET" />}
-        >
-          <Route path="/reports/*" element={<ReportRoutes />} />
-        </Route>
-      </Route> */}
+      </Route>
 
       <Route path="*" element={<PageNotFound />} />
     </Routes>

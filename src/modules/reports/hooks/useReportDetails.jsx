@@ -1,9 +1,11 @@
 import React from "react";
 import { useImmer } from "use-immer";
-import { utilFunctions } from "../../../utils";
+import { useUtilFunctions, utilFunctions } from "../../../utils";
 import {
+  deleteConsolidateReportApi,
   generateConsolidateReportApi,
   getReportDetailsApi,
+  sendRequestToVerifyReportApi,
   uploadConsolidateReportApi,
 } from "../apis";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
@@ -11,9 +13,10 @@ import SimpleReactValidator from "simple-react-validator";
 import dayjs from "dayjs";
 import { saveAs } from "file-saver";
 import { enqueueSnackbar } from "notistack";
+import { AlertRowAction, useAlertContext } from "../../../shared";
 
 export const useReportDetails = () => {
-  const [_, setForceUpdate] = React.useState(0);
+  const [, setForceUpdate] = React.useState(0);
 
   const [state, setState] = useImmer({
     report: {
@@ -38,9 +41,11 @@ export const useReportDetails = () => {
     },
     generateReportButtonLoading: false,
   });
+
   const navigate = useNavigate();
   const location = useLocation();
   const { reportId } = useParams();
+  const { setAlert } = useAlertContext();
 
   const formValidator = React.useRef(
     new SimpleReactValidator({
@@ -48,6 +53,8 @@ export const useReportDetails = () => {
       element: (message) => message,
     }),
   );
+  const { getLoggedInUser } = useUtilFunctions();
+  const { nhgId } = getLoggedInUser();
 
   const getReportDetails = async (reportId) => {
     triggerDetailsLoading(true);
@@ -76,6 +83,10 @@ export const useReportDetails = () => {
       const { success, message } = response;
       if (success) {
         enqueueSnackbar({ message, variant: "success" });
+        await getReportDetails(reportId);
+        setState((draft) => {
+          draft.report.consolidateReport = null;
+        });
       } else {
         throw { response: { data: { message } } };
       }
@@ -120,6 +131,51 @@ export const useReportDetails = () => {
       console.error(exception);
     } finally {
       triggerGenerateReportButtonLoading(false);
+    }
+  };
+
+  const deleteConsolidateReport = async ({ reportAttachmentId }) => {
+    try {
+      const response = await deleteConsolidateReportApi({
+        nhgId,
+        reportAttachmentId,
+      });
+      const { success, message } = response;
+      if (success) {
+        enqueueSnackbar({ message, variant: "success" });
+        await getReportDetails(reportId);
+      } else {
+        throw {
+          response: {
+            data: { message },
+          },
+        };
+      }
+    } catch (exception) {
+      utilFunctions.displayError(exception);
+    }
+  };
+
+  const sendRequestToVerifyReport = async ({ nhgId, reportId }) => {
+    try {
+      const response = await sendRequestToVerifyReportApi({ nhgId, reportId });
+      const { success, data, message } = response;
+      if (success) {
+        enqueueSnackbar({ message, variant: "success" });
+        setState((draft) => {
+          draft.report.details = { ...draft.report.details, status: data };
+        });
+      } else {
+        throw {
+          response: {
+            data: {
+              message,
+            },
+          },
+        };
+      }
+    } catch (exception) {
+      utilFunctions.displayError(exception);
     }
   };
 
@@ -171,6 +227,28 @@ export const useReportDetails = () => {
     }
   };
 
+  const handleSendRequestToVerifyReport = async () => {
+    setAlert((draft) => {
+      draft.open = true;
+      draft.title = "Request report verification";
+      draft.description =
+        "If you perform this action, the report will be forwards to the ads for the review";
+      draft.dialogValue = "?request-report-verification";
+      draft.rowAction = (
+        <AlertRowAction
+          onClick={async () => {
+            navigate(location.pathname, {
+              replace: true,
+              state: location.state,
+            });
+            await sendRequestToVerifyReport({ nhgId, reportId });
+          }}
+          label="Confirm"
+        />
+      );
+    });
+  };
+
   React.useEffect(() => {
     getReportDetails(reportId);
   }, []);
@@ -178,8 +256,11 @@ export const useReportDetails = () => {
   return {
     state,
     handleFormSubmit,
+    getReportDetails,
     handleFormChange,
     handleConsolidateReportUpload,
+    deleteConsolidateReport,
+    handleSendRequestToVerifyReport,
     formValidator,
   };
 };
