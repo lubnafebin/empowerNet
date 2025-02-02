@@ -1,7 +1,8 @@
 import React from "react";
 import { useImmer } from "use-immer";
-import { utilFunctions } from "../../../utils";
+import { useUtilFunctions, utilFunctions } from "../../../utils";
 import {
+  deleteConsolidateReportApi,
   generateConsolidateReportApi,
   getReportDetailsApi,
   uploadConsolidateReportApi,
@@ -13,7 +14,7 @@ import { saveAs } from "file-saver";
 import { enqueueSnackbar } from "notistack";
 
 export const useReportDetails = () => {
-  const [_, setForceUpdate] = React.useState(0);
+  const [, setForceUpdate] = React.useState(0);
 
   const [state, setState] = useImmer({
     report: {
@@ -38,6 +39,7 @@ export const useReportDetails = () => {
     },
     generateReportButtonLoading: false,
   });
+
   const navigate = useNavigate();
   const location = useLocation();
   const { reportId } = useParams();
@@ -48,6 +50,8 @@ export const useReportDetails = () => {
       element: (message) => message,
     }),
   );
+  const { getLoggedInUser } = useUtilFunctions();
+  const { nhgId } = getLoggedInUser();
 
   const getReportDetails = async (reportId) => {
     triggerDetailsLoading(true);
@@ -76,6 +80,10 @@ export const useReportDetails = () => {
       const { success, message } = response;
       if (success) {
         enqueueSnackbar({ message, variant: "success" });
+        await getReportDetails(reportId);
+        setState((draft) => {
+          draft.report.consolidateReport = null;
+        });
       } else {
         throw { response: { data: { message } } };
       }
@@ -120,6 +128,28 @@ export const useReportDetails = () => {
       console.error(exception);
     } finally {
       triggerGenerateReportButtonLoading(false);
+    }
+  };
+
+  const deleteConsolidateReport = async ({ reportAttachmentId }) => {
+    try {
+      const response = await deleteConsolidateReportApi({
+        nhgId,
+        reportAttachmentId,
+      });
+      const { success, message } = response;
+      if (success) {
+        enqueueSnackbar({ message, variant: "success" });
+        await getReportDetails(reportId);
+      } else {
+        throw {
+          response: {
+            data: { message },
+          },
+        };
+      }
+    } catch (exception) {
+      utilFunctions.displayError(exception);
     }
   };
 
@@ -180,6 +210,7 @@ export const useReportDetails = () => {
     handleFormSubmit,
     handleFormChange,
     handleConsolidateReportUpload,
+    deleteConsolidateReport,
     formValidator,
   };
 };

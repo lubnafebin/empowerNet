@@ -52,3 +52,13 @@ export const uploadConsolidateReportApi = async (formData) => {
   );
   return response.data;
 };
+
+export const deleteConsolidateReportApi = async ({
+  reportAttachmentId,
+  nhgId,
+}) => {
+  const response = await API.delete(
+    `nhg/${nhgId}/report/${reportAttachmentId}/delete`,
+  );
+  return response.data;
+};

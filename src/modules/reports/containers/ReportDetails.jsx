@@ -27,7 +27,7 @@ import {
   PrintOutlined,
   Telegram,
 } from "@mui/icons-material";
-import { globalGap, globalPadding } from "../../../utils";
+import { globalGap, globalPadding, useUtilFunctions } from "../../../utils";
 import { useReportDetails } from "../hooks";
 import dayjs from "dayjs";
 import { useNavigate } from "react-router-dom";
@@ -40,7 +40,10 @@ export const ReportDetails = () => {
     handleFormChange,
     handleConsolidateReportUpload,
     formValidator,
+    deleteConsolidateReport,
   } = useReportDetails();
+  const { checkPermission } = useUtilFunctions();
+  const deleteReportPermission = checkPermission("report.id.DELETE");
 
   const title = `Report ${dayjs(state.report.details.startDate).format("MMM DD, YYYY to ")}
             ${dayjs(state.report.details.endDate).format("MMM DD, YYYY")} `;
@@ -165,6 +168,7 @@ export const ReportDetails = () => {
               >
                 {state.report.details.reports.map((report) => {
                   const fileName = report.url.split("/uploads/")[1];
+                  const isConsolidateReport = fileName.includes("consolidate");
                   return (
                     <FileCard
                       key={report.id}
@@ -172,6 +176,14 @@ export const ReportDetails = () => {
                       icon={<PictureAsPdf color="error" fontSize="large" />}
                       isFileUploaded
                       onView={() => window.open(report.url)}
+                      onDelete={
+                        isConsolidateReport && deleteReportPermission
+                          ? () =>
+                              deleteConsolidateReport({
+                                reportAttachmentId: report.id,
+                              })
+                          : undefined
+                      }
                     />
                   );
                 })}
@@ -222,7 +234,7 @@ export const ReportDetails = () => {
                         />
                         <FileCard
                           fileName=""
-                          icon={<Description  />}
+                          icon={<Description />}
                           isFileUploaded={false}
                           fileNotUploadText="Click to upload consolidate report"
                         />
