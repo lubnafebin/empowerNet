@@ -15,26 +15,29 @@ import {
   DialogActions,
   DialogContent,
   Divider,
-  IconButton,
+  // IconButton,
   ListItem,
   ListItemText,
   Stack,
   TextField,
-  Tooltip,
+  // Tooltip,
   Typography,
 } from "@mui/material";
 import {
   Add,
-  AssignmentOutlined,
-  CurrencyRupeeRounded,
-  DeleteOutlineRounded,
+  // AssignmentOutlined,
+  // CurrencyRupeeRounded,
+  // DeleteOutlineRounded,
 } from "@mui/icons-material";
 import { useTransactions } from "../hooks";
-import { useLocation, useNavigate } from "react-router-dom";
+import {
+  useLocation,
+  // useNavigate
+} from "react-router-dom";
 import { BASE_URL } from "../../../configs";
 
 export const Transactions = () => {
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const location = useLocation();
   const {
     state,
@@ -190,11 +193,11 @@ export const Transactions = () => {
   const breadcrumbs = [
     {
       title: "Dashboard",
-      href: "/",
+      href: "/nhg/",
     },
     {
       title: "Minutes",
-      href: `/minutes`,
+      href: `/nhg/minutes`,
     },
     {
       title: location.state?.minuteDate ?? "",

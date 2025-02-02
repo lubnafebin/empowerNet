@@ -36,12 +36,10 @@ import {
   Add,
   CancelRounded,
   CheckCircle,
-  DeleteOutlineRounded,
+  // DeleteOutlineRounded,
   InfoOutlined,
   PictureAsPdf,
-  RadioButtonUnchecked,
   Telegram,
-  VerifiedUser,
   VisibilityOutlined,
 } from "@mui/icons-material";
 import { useMemberList } from "../hooks";
@@ -196,7 +194,7 @@ export const MemberList = () => {
         header: "Action",
         accessorKey: "action",
         enableSorting: false,
-        meta: { rowCellStyle: { width: 150 } },
+        meta: { rowCellStyle: { width: 100 } },
         cell: ({
           row: {
             original: { id, status },
@@ -248,14 +246,14 @@ export const MemberList = () => {
                   <VisibilityOutlined fontSize="small" />
                 </IconButton>
               </Tooltip>
-              <Tooltip title="Delete Member" arrow disableInteractive>
+              {/* <Tooltip title="Delete Member" arrow disableInteractive>
                 <IconButton
                   size="small"
                   onClick={() => toggleModel({ type: "deleteMember", id })}
                 >
                   <DeleteOutlineRounded fontSize="small" />
                 </IconButton>
-              </Tooltip>
+              </Tooltip> */}
             </Stack>
           );
         },

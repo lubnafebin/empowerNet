@@ -1,8 +1,8 @@
-import { Button, Stack } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
-import PropsType from 'prop-types';
-import React from 'react';
-import { LoadingButton } from './LoadingButton';
+import { Button, Stack } from "@mui/material";
+import { useLocation, useNavigate } from "react-router-dom";
+import PropsType from "prop-types";
+import React from "react";
+import { LoadingButton } from "./LoadingButton";
 
 /**
  * A component that renders a row of actions for an alert dialog.
@@ -14,10 +14,10 @@ import { LoadingButton } from './LoadingButton';
  *
  * @returns {JSX.Element} The rendered component.
  */
-export const AlertRowAction = ({ onClick, onClose, label = 'Confirm' }) => {
+export const AlertRowAction = ({ onClick, onClose, label = "Confirm" }) => {
   const [loading, setLoading] = React.useState(false);
   const navigate = useNavigate();
-  const { pathname } = useNavigate();
+  const { pathname, state } = useLocation();
 
   /**
    * Function to trigger button loading state.
@@ -32,7 +32,7 @@ export const AlertRowAction = ({ onClick, onClose, label = 'Confirm' }) => {
    */
   const handleCloseDialog = () => {
     triggerButtonLoading(false);
-    navigate(pathname, { replace: true });
+    navigate(pathname, { replace: true, state: state });
     onClose && onClose();
   };
 

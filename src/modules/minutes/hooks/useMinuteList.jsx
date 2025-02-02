@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import { useLocation, useNavigate } from "react-router-dom";
 import { useImmer } from "use-immer";
 import {
@@ -20,7 +19,7 @@ import {
 } from "../../../utils";
 
 export const useMinuteList = () => {
-  const [_, setForceUpdate] = React.useState(0);
+  const [, setForceUpdate] = React.useState(0);
   const { getLoggedInUser } = useUtilFunctions();
   const loggedUser = getLoggedInUser();
 

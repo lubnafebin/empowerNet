@@ -16,7 +16,9 @@ export const getDistrictsByStateIdApi = async ({ stateId = 1 }) => {
 };
 
 export const getAllNhgMembersApi = async (nhgId) => {
-  const response = await API.get(`data/${nhgId}/members`);
+  const response = await API.get(`data/${nhgId}/members`, {
+    params: { status: "Verified" },
+  });
   return response.data;
 };
 

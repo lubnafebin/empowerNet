@@ -14,13 +14,13 @@ import { initialAlertState } from "../../context";
 
 export const AlertComponent = () => {
   const { alert, setAlert } = useAlertContext();
-  const { pathname } = useLocation();
+  const { pathname, state } = useLocation();
   const navigate = useNavigate();
 
   // Effect to open the dialog using search-param
   React.useEffect(() => {
     if (alert.open) {
-      navigate(pathname.concat(alert.dialogValue));
+      navigate(pathname.concat(alert.dialogValue), { state: state });
     }
   }, [alert]);
 
@@ -56,7 +56,7 @@ export const AlertComponent = () => {
               variant="outlined"
               size="small"
               onClick={() => {
-                navigate(pathname, { replace: true });
+                navigate(pathname, { replace: true, state });
                 setAlert(initialAlertState);
               }}
             >

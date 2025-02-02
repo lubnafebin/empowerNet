@@ -11,10 +11,10 @@ export const GeneralDialog = ({
 }) => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { pathname, search } = location;
+  const { pathname, search, state } = location;
 
   const handleDialogClose = () => {
-    navigate(pathname, { replace: disableReplaceUrl });
+    navigate(pathname, { replace: disableReplaceUrl, state: state });
   };
 
   return (

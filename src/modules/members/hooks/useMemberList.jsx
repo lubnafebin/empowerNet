@@ -267,10 +267,10 @@ export const useMemberList = () => {
     }
   };
 
-  const deleteMember = async (wardId) => {
+  const deleteMember = async (memberId) => {
     triggerTableLoading(true);
     try {
-      const response = await deleteMemberApi({ wardId });
+      const response = await deleteMemberApi({ memberId });
 
       const { success, message } = response;
       if (success) {
