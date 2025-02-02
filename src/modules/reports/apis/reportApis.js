@@ -62,3 +62,8 @@ export const deleteConsolidateReportApi = async ({
   );
   return response.data;
 };
+
+export const sendRequestToVerifyReportApi = async ({ nhgId, reportId }) => {
+  const response = await API.get(`nhg/${nhgId}/report/${reportId}/verify/request`);
+  return response.data;
+};

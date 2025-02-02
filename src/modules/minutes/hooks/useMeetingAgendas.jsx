@@ -13,7 +13,7 @@ import { useImmer } from "use-immer";
 import { utilFunctions } from "../../../utils";
 
 export const useMeetingAgendas = () => {
-  const [_, setForceUpdate] = React.useState(0);
+  const [, setForceUpdate] = React.useState(0);
   const [state, setState] = useImmer({
     isFormLoading: true,
     isFormSubmitting: false,

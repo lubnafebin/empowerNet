@@ -27,10 +27,16 @@ import {
   PrintOutlined,
   Telegram,
 } from "@mui/icons-material";
-import { globalGap, globalPadding, useUtilFunctions } from "../../../utils";
+import {
+  globalGap,
+  globalPadding,
+  useUtilFunctions,
+  utilFunctions,
+} from "../../../utils";
 import { useReportDetails } from "../hooks";
 import dayjs from "dayjs";
 import { useNavigate } from "react-router-dom";
+import React from "react";
 
 export const ReportDetails = () => {
   const navigate = useNavigate();
@@ -41,14 +47,16 @@ export const ReportDetails = () => {
     handleConsolidateReportUpload,
     formValidator,
     deleteConsolidateReport,
+    handleSendRequestToVerifyReport,
   } = useReportDetails();
   const { checkPermission } = useUtilFunctions();
   const deleteReportPermission = checkPermission("report.id.DELETE");
+  const createReportPermission = checkPermission("report.id.POST");
 
   const title = `Report ${dayjs(state.report.details.startDate).format("MMM DD, YYYY to ")}
             ${dayjs(state.report.details.endDate).format("MMM DD, YYYY")} `;
 
-  const status = state.report.details?.status?.name.toLowerCase();
+  const status = state.report.details?.status?.name;
 
   const breadcrumbs = [
     {
@@ -122,23 +130,31 @@ export const ReportDetails = () => {
           </Typography>
           <Chip
             label={status}
-            color={status === "draft" ? "primary" : "success"}
+            color={utilFunctions.getChipColor(status)}
             size="small"
           />
         </Stack>
       }
       actionSection={
         <Stack gap="14px" flexDirection="row" flexWrap="wrap">
-          <Button variant="contained" startIcon={<Telegram />}>
-            Forward To ADS
-          </Button>
-          <Button
-            variant="contained"
-            startIcon={<PrintOutlined />}
-            onClick={() => navigate("?create-report-consolidate")}
-          >
-            Generate Report Consolidate
-          </Button>
+          {status !== "In Review" && createReportPermission && (
+            <React.Fragment>
+              <Button
+                variant="contained"
+                startIcon={<Telegram />}
+                onClick={handleSendRequestToVerifyReport}
+              >
+                Forward To ADS
+              </Button>
+              <Button
+                variant="contained"
+                startIcon={<PrintOutlined />}
+                onClick={() => navigate("?create-report-consolidate")}
+              >
+                Generate Report Consolidate
+              </Button>
+            </React.Fragment>
+          )}
         </Stack>
       }
     >
@@ -177,7 +193,9 @@ export const ReportDetails = () => {
                       isFileUploaded
                       onView={() => window.open(report.url)}
                       onDelete={
-                        isConsolidateReport && deleteReportPermission
+                        isConsolidateReport &&
+                        deleteReportPermission &&
+                        (status === "Draft" || status === "Rejected")
                           ? () =>
                               deleteConsolidateReport({
                                 reportAttachmentId: report.id,
