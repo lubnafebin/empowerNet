@@ -390,7 +390,7 @@ export const NhgList = ({ roleType = "CDS" }) => {
               type="submit"
               variant="contained"
             >
-              {state.selectedWardId ? "Update" : "Create"}
+              Update
             </LoadingButton>
           </DialogActions>
         </Box>

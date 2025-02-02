@@ -52,3 +52,17 @@ export const rejectOrApproveNhgApi = async (params) => {
   });
   return response.data;
 };
+
+export const sendMemberVerificationRequestApi = async (params) => {
+  const response = await API.get(`nhg/member/verify/request`, {
+    params,
+  });
+  return response.data;
+};
+
+export const approveOrRejectMemberApi = async (params) => {
+  const response = await API.get(`nhg/member/verify`, {
+    params,
+  });
+  return response.data;
+};

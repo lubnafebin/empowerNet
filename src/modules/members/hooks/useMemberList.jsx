@@ -6,6 +6,7 @@ import {
   getMemberDetailsApi,
   getMemberListApi,
   getNhgDetailsApi,
+  sendMemberVerificationRequestApi,
   sendRequestVerificationApi,
   updateMemberApi,
 } from "../apis";
@@ -187,6 +188,7 @@ export const useMemberList = () => {
           draft.formData.addressLine2 = data.address.addressLine2;
           draft.formData.districtId = data.address.district;
           draft.formData.postcode = data.address.postcode;
+          draft.formData.status = data.status;
         });
       } else {
         throw { response: { data: { message } } };
@@ -207,7 +209,7 @@ export const useMemberList = () => {
       if (success) {
         setState((draft) => {
           draft.memberList.options = data;
-          if (draft.nhgDetails.status.name !== "Registered") {
+          if (state.nhgDetails.status.name !== "Registered") {
             draft.verifyNhg = data.some((member) =>
               ["Draft", "Rejected"].includes(member.status.name),
             );
@@ -306,6 +308,29 @@ export const useMemberList = () => {
     }
   };
 
+  const sendMemberVerificationRequest = async ({ nhgId, memberId }) => {
+    try {
+      const response = await sendMemberVerificationRequestApi({
+        nhgId,
+        memberId,
+      });
+      const { success, message } = response;
+      if (success) {
+        enqueueSnackbar({ message, variant: "success" });
+        navigate(location.pathname, { replace: true, state: location.state });
+        await getMemberList(nhgId);
+      } else {
+        throw {
+          response: {
+            data: { message },
+          },
+        };
+      }
+    } catch (exception) {
+      utilFunctions.displayError(exception);
+    }
+  };
+
   const triggerNhgDetailsFetching = (status) => {
     setState((draft) => {
       draft.nhgDetailsFetching = status;
@@ -364,6 +389,12 @@ export const useMemberList = () => {
         navigate("?approve/reject", { state: location.state });
         break;
       }
+      case "approve-or-reject-member": {
+        navigate("?approve-or-reject-member", {
+          state: { ...location.state, memberId: id },
+        });
+        break;
+      }
       default:
         navigate("?new-member", { state: location.state });
         break;
@@ -408,7 +439,7 @@ export const useMemberList = () => {
         ) {
           value instanceof File && formData.append(key, newValue);
         } else {
-          formData.append(key, newValue);
+          key !== "status" && formData.append(key, newValue);
         }
       });
 
@@ -443,6 +474,13 @@ export const useMemberList = () => {
     }
   };
 
+  const handleSendMemberVerificationRequest = async () => {
+    await sendMemberVerificationRequest({
+      memberId: state.selectedMemberId,
+      nhgId,
+    });
+  };
+
   const refetchNhgDetails = async (nhgId) => {
     await getNhgDetails(nhgId);
     await getMemberList(nhgId);
@@ -460,9 +498,12 @@ export const useMemberList = () => {
     }
   }, [location.search]);
 
+  React.useLayoutEffect(() => {
+    getNhgDetails(nhgId);
+  }, []);
+
   React.useEffect(() => {
     getMemberList(nhgId);
-    getNhgDetails(nhgId);
     getDistrictsList();
     getRoleList();
   }, []);
@@ -472,9 +513,11 @@ export const useMemberList = () => {
     formValidator,
     refetchNhgDetails,
     sendRequestVerification,
+    handleSendMemberVerificationRequest,
     handleFormSubmit,
     toggleModel,
     handleFormChange,
     handleResetFormData,
+    getMemberList,
   };
 };

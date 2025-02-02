@@ -34,34 +34,40 @@ import {
 } from "@mui/material";
 import {
   Add,
+  CancelRounded,
+  CheckCircle,
   DeleteOutlineRounded,
   InfoOutlined,
   PictureAsPdf,
+  RadioButtonUnchecked,
   Telegram,
+  VerifiedUser,
   VisibilityOutlined,
 } from "@mui/icons-material";
 import { useMemberList } from "../hooks";
 import dayjs from "dayjs";
 import { useLocation, useParams } from "react-router-dom";
 import { useUtilFunctions } from "../../../utils";
-import { ApproveOrRejectNhg } from "../components";
+import { ApproveOrRejectMember, ApproveOrRejectNhg } from "../components";
 
 export const MemberList = () => {
   const {
     state,
     formValidator,
+    getMemberList,
     refetchNhgDetails,
     sendRequestVerification,
     toggleModel,
     handleFormChange,
     handleFormSubmit,
     handleResetFormData,
-    updateNhgVerification,
+    handleSendMemberVerificationRequest,
   } = useMemberList();
   const { checkPermission } = useUtilFunctions();
   const approveNhgPermission = checkPermission("nhgs.id.APPROVE");
   const createMemberPermission = checkPermission("member.id.POST");
   const updateNhgPermission = checkPermission("nhg.PUT");
+  const approveMemberPermission = checkPermission("allMembers.id.APPROVE");
 
   const theme = useTheme();
   const { nhgId, wardId } = useParams();
@@ -190,32 +196,69 @@ export const MemberList = () => {
         header: "Action",
         accessorKey: "action",
         enableSorting: false,
-        placement: "right",
-        meta: { width: 150 },
+        meta: { rowCellStyle: { width: 150 } },
         cell: ({
           row: {
-            original: { id },
+            original: { id, status },
           },
-        }) => (
-          <Stack flexDirection="row">
-            <Tooltip title="Member Details" arrow disableInteractive>
-              <IconButton
-                size="small"
-                onClick={() => toggleModel({ type: "memberDetails", id })}
-              >
-                <VisibilityOutlined fontSize="small" />
-              </IconButton>
-            </Tooltip>
-            <Tooltip title="Delete Member" arrow disableInteractive>
-              <IconButton
-                size="small"
-                onClick={() => toggleModel({ type: "deleteMember", id })}
-              >
-                <DeleteOutlineRounded fontSize="small" />
-              </IconButton>
-            </Tooltip>
-          </Stack>
-        ),
+        }) => {
+          const isVerified = status?.name === "Verified";
+          const isRejected = status?.name === "Rejected";
+          return (
+            <Stack flexDirection="row">
+              {approveMemberPermission && (
+                <Tooltip
+                  title={isVerified ? "Verified" : "Verify"}
+                  arrow
+                  disableInteractive
+                >
+                  {isVerified || isRejected ? (
+                    <IconButton size="small" disableFocusRipple disableRipple>
+                      {isVerified ? (
+                        <CheckCircle fontSize="small" color="success" />
+                      ) : (
+                        <CancelRounded fontSize="small" color="error" />
+                      )}
+                    </IconButton>
+                  ) : (
+                    <IconButton
+                      size="small"
+                      onClick={() =>
+                        toggleModel({
+                          type: "approve-or-reject-member",
+                          id,
+                        })
+                      }
+                      sx={{
+                        visibility: ["Draft"].includes(status.name)
+                          ? "hidden"
+                          : "visible",
+                      }}
+                    >
+                      <CheckCircle fontSize="small" color="warning" />
+                    </IconButton>
+                  )}
+                </Tooltip>
+              )}
+              <Tooltip title="Member Details" arrow disableInteractive>
+                <IconButton
+                  size="small"
+                  onClick={() => toggleModel({ type: "memberDetails", id })}
+                >
+                  <VisibilityOutlined fontSize="small" />
+                </IconButton>
+              </Tooltip>
+              <Tooltip title="Delete Member" arrow disableInteractive>
+                <IconButton
+                  size="small"
+                  onClick={() => toggleModel({ type: "deleteMember", id })}
+                >
+                  <DeleteOutlineRounded fontSize="small" />
+                </IconButton>
+              </Tooltip>
+            </Stack>
+          );
+        },
       },
     ],
     [],
@@ -358,14 +401,15 @@ export const MemberList = () => {
           )}
           {state.verifyNhg &&
             updateNhgPermission &&
-            (!isInReviewMode || isNhgRejected || isDraftMode) && (
+            !isNhgRegistered &&
+            isInReviewMode && (
               <Button
                 variant="contained"
                 startIcon={<Telegram />}
                 onClick={sendRequestVerification}
                 disabled={isAdsRequestDisabled}
               >
-                Request ADS Verification
+                Send Verification Request
               </Button>
             )}
           {createMemberPermission && (
@@ -706,20 +750,32 @@ export const MemberList = () => {
               </Stack>
             </DialogContent>
             <Divider />
-            <DialogActions>
-              <LoadingButton
-                size="small"
-                loading={state.isFormSubmitting}
-                type="submit"
-                variant="contained"
-              >
-                {state.selectedMemberId ? "Update" : "Create"}
-              </LoadingButton>
+            <DialogActions sx={{ py: 2 }}>
+              {["Draft", "Rejected"].includes(state.formData?.status?.name) && (
+                <LoadingButton
+                  loading={state.isFormSubmitting}
+                  variant="contained"
+                  startIcon={<Telegram />}
+                  onClick={handleSendMemberVerificationRequest}
+                >
+                  Request to verify
+                </LoadingButton>
+              )}
+              {state.formData?.status?.name !== "In Review" && (
+                <LoadingButton
+                  loading={state.isFormSubmitting}
+                  type="submit"
+                  variant="contained"
+                >
+                  {state.selectedMemberId ? "Update" : "Create"}
+                </LoadingButton>
+              )}
             </DialogActions>
           </Box>
         )}
       </GeneralDialog>
       <ApproveOrRejectNhg refetchNhgDetails={refetchNhgDetails} />
+      <ApproveOrRejectMember refetchMemberDetails={getMemberList} />
     </PageLayout>
   );
 };
