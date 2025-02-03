@@ -127,7 +127,7 @@ export const ReportDetails = () => {
       "required",
     ),
   };
-
+  console.log(status, reportApprovePermission, role.name, state.report.details);
   return (
     <PageLayout
       breadcrumbs={breadcrumbs}
@@ -167,26 +167,26 @@ export const ReportDetails = () => {
               </Button>
             </React.Fragment>
           )}
-          {(["In Review", "Rejected"].includes(status) &&
+          {((["In Review", "Rejected"].includes(status) &&
             reportApprovePermission &&
             role.name === "ADS" &&
             state.report.details?.verifiedByAdsId === null) ||
             (["In Review"].includes(status) &&
               reportApprovePermission &&
               role.name === "CDS" &&
-              state.report.details?.verifiedByAdsId !== null && (
-                <React.Fragment>
-                  <Button
-                    variant="contained"
-                    startIcon={<Telegram />}
-                    onClick={() =>
-                      navigate("?verify-report", { state: location.state })
-                    }
-                  >
-                    Verify Report
-                  </Button>
-                </React.Fragment>
-              ))}
+              state.report.details?.verifiedByAdsId !== null)) && (
+            <React.Fragment>
+              <Button
+                variant="contained"
+                startIcon={<Telegram />}
+                onClick={() =>
+                  navigate("?verify-report", { state: location.state })
+                }
+              >
+                Verify Report
+              </Button>
+            </React.Fragment>
+          )}
         </Stack>
       }
     >
