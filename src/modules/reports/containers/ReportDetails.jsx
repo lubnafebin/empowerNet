@@ -127,7 +127,6 @@ export const ReportDetails = () => {
       "required",
     ),
   };
-  console.log(status, reportApprovePermission, role.name, state.report.details);
   return (
     <PageLayout
       breadcrumbs={breadcrumbs}
