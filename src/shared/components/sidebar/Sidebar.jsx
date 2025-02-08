@@ -13,13 +13,22 @@ import {
   Typography,
   useMediaQuery,
   Drawer as MuiDrawer,
+  ToggleButtonGroup,
+  ToggleButton,
 } from "@mui/material";
 import { Drawer as CustomDrawer } from "./Drawer";
 import { DrawerHeader } from "./DrawerHeader";
 import LogoDark from "../../../assets/logo-dark.svg";
 import LogoLight from "../../../assets/logo-dark.svg";
 
-import { ExpandLess, ExpandMore, Menu, MenuOpen } from "@mui/icons-material";
+import {
+  DarkMode,
+  ExpandLess,
+  ExpandMore,
+  LightMode,
+  Menu,
+  MenuOpen,
+} from "@mui/icons-material";
 import PropsTypes from "prop-types";
 import React from "react";
 import { useImmer } from "use-immer";
@@ -47,7 +56,7 @@ import ListLightModeIcon from "../../../assets/list-icon-light.svg";
 import ListDarkModeIcon from "../../../assets/list-icon-dark.svg";
 import ListSelectedIcon from "../../../assets/list-icon-selected.svg";
 
-export const Sidebar = ({ sidebarOpen, toggleSidebar }) => {
+export const Sidebar = ({ sidebarOpen, toggleSidebar, toggleTheme }) => {
   const theme = useTheme();
   const location = useLocation();
   const navigate = useNavigate();
@@ -56,6 +65,7 @@ export const Sidebar = ({ sidebarOpen, toggleSidebar }) => {
   const largeDevice = useMediaQuery(theme.breakpoints.up("md"));
   const smallDevice = useMediaQuery("(max-width: 425px)");
   const Drawer = largeDevice ? CustomDrawer : MuiDrawer;
+  const isDarkModeEnabled = theme.palette.mode === "dark";
 
   const { checkPermission } = useUtilFunctions();
 
@@ -320,6 +330,37 @@ export const Sidebar = ({ sidebarOpen, toggleSidebar }) => {
           )}
         </List>
       </Box>
+      <Stack py={1} alignItems="center">
+        {sidebarOpen ? (
+          <ToggleButtonGroup
+            value={theme.palette.mode}
+            selected={isDarkModeEnabled}
+            size="small"
+            sx={{ borderRadius: 2 }}
+            exclusive
+            onChange={(event, mode) => toggleTheme(mode)}
+          >
+            <ToggleButton value="light">
+              <LightMode fontSize="small" color="warning" /> Light Mode
+            </ToggleButton>
+            <ToggleButton size="small" value="dark">
+              <DarkMode fontSize="small" /> Dark Mode
+            </ToggleButton>
+          </ToggleButtonGroup>
+        ) : (
+          <ToggleButton
+            size="small"
+            onChange={toggleTheme}
+            selected={isDarkModeEnabled}
+          >
+            {isDarkModeEnabled ? (
+              <LightMode fontSize="small" color="warning" />
+            ) : (
+              <DarkMode fontSize="small" />
+            )}
+          </ToggleButton>
+        )}
+      </Stack>
       <Stack
         width="100%"
         position="sticky"
@@ -345,6 +386,7 @@ export const Sidebar = ({ sidebarOpen, toggleSidebar }) => {
 Sidebar.propTypes = {
   sidebarOpen: PropsTypes.bool.isRequired,
   toggleSidebar: PropsTypes.func.isRequired,
+  toggleTheme: PropsTypes.func.isRequired,
 };
 
 const renderChildItem = ({
