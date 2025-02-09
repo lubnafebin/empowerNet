@@ -80,7 +80,7 @@ export const Navbar = ({
             </Typography>
           </Stack>
         )}
-        <Box sx={{ flexGrow: 1, border: 1 }} />
+        <Box sx={{ flexGrow: 1 }} />
         <Stack
           flexDirection="row"
           gap="4px"
