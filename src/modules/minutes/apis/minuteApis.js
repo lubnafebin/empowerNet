@@ -31,6 +31,22 @@ export const getMeetingAgendaListApi = async (meetingId) => {
   return response.data;
 };
 
+export const getMeetingAgendaDetailsApi = async ({ meetingId, agendaId }) => {
+  const response = await API.get(`nhg/meeting/${meetingId}/agenda/${agendaId}`);
+  return response.data;
+};
+
+export const updateAgendaApi = async ({ meetingId, agendaId, note }) => {
+  const response = await API.put(
+    `nhg/meeting/${meetingId}/agendas/${agendaId}/update`,
+    {
+      note,
+    },
+  );
+
+  return response.data;
+};
+
 // Transactions
 export const getMeetingTransactionListApi = async (meetingId) => {
   const response = await API.get(`nhg/meeting/${meetingId}/transactions`);
@@ -51,7 +67,6 @@ export const createNewTransactionApi = async ({ params, meetingId }) => {
 
 export const deleteAgendaApi = async () => {};
 export const getAgendaDetailsApi = async () => {};
-export const updateAgendaApi = async () => {};
 
 export const deleteTransactionApi = async () => {};
 export const getTransactionDetailsApi = async () => {};
