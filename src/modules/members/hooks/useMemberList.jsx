@@ -53,6 +53,7 @@ export const useMemberList = () => {
     district: { options: [], loading: true },
     role: { options: [], loading: true },
     selectedMemberId: null,
+    duplicateMemberRole: null,
     formData: {
       name: "",
       email: "",
@@ -182,6 +183,7 @@ export const useMemberList = () => {
           draft.formData.name = data.user.name;
           draft.formData.email = data.user.email;
           draft.formData.roleId = data.user.role;
+          draft.duplicateMemberRole = data.user.role;
           draft.formData.contactNo = data.address.contactNo;
           draft.formData.aadharNo = data.address.aadharNo;
           draft.formData.addressLine1 = data.address.addressLine1;
@@ -267,10 +269,10 @@ export const useMemberList = () => {
     }
   };
 
-  const deleteMember = async (memberId) => {
+  const deleteMember = async (userId) => {
     triggerTableLoading(true);
     try {
-      const response = await deleteMemberApi({ memberId });
+      const response = await deleteMemberApi({ userId });
 
       const { success, message } = response;
       if (success) {
@@ -362,7 +364,7 @@ export const useMemberList = () => {
     });
 
     formValidator.current.hideMessages();
-    setForceUpdate(1);
+    setForceUpdate(0);
   };
 
   const toggleModel = async ({ type, id }) => {
@@ -448,10 +450,23 @@ export const useMemberList = () => {
           await createNewMember(formData);
           break;
         case "?member":
-          await updateMember({
-            formData,
-            memberId: state.selectedMemberId,
-          });
+          {
+            if (
+              state.duplicateMemberRole.name === "ADS" &&
+              state.formData.roleId.name !== state.duplicateMemberRole.name
+            ) {
+              enqueueSnackbar({
+                message:
+                  "This member holds an ADS role. To change their user role, the CDS must first unassign the ADS role.",
+                variant: "error",
+              });
+            } else {
+              await updateMember({
+                formData,
+                memberId: state.selectedMemberId,
+              });
+            }
+          }
           break;
         default:
           break;

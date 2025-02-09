@@ -24,6 +24,7 @@ import SignatureDarkIcon from "../../../assets/signature-icon-dark.svg";
 import AadharIcon from "../../../assets/aadhar-icon-lite.svg";
 import AadharDarkIcon from "../../../assets/aadhar-icon-dark.svg";
 import propTypes from "prop-types";
+import { useUtilFunctions } from "../../../utils";
 
 export const ManageMember = ({
   state,
@@ -34,6 +35,11 @@ export const ManageMember = ({
   handleSendMemberVerificationRequest,
   dialogValue,
 }) => {
+  const { checkPermission } = useUtilFunctions();
+  const createMemberPermission = checkPermission("member.id.POST");
+  const updateMemberPermission = checkPermission("member.id.PUT");
+  const verifyMemberPermission = checkPermission("member.VERIFY");
+
   const theme = useTheme();
   const helperText = {
     name: formValidator.current.message(
@@ -267,8 +273,8 @@ export const ManageMember = ({
                       {...props}
                       placeholder="Select your District"
                       required
-                      error={Boolean(helperText.aadharNo)}
-                      helperText={helperText.aadharNo}
+                      error={Boolean(helperText.districtId)}
+                      helperText={helperText.districtId}
                     />
                   )}
                 />
@@ -290,13 +296,16 @@ export const ManageMember = ({
                     <FileCard
                       fileName={state.formData.aadharAttachment.name}
                       icon={<PictureAsPdf fontSize="small" color="error" />}
-                      onDelete={() =>
-                        handleFormChange({
-                          target: {
-                            name: "aadharAttachment",
-                            value: null,
-                          },
-                        })
+                      onDelete={
+                        updateMemberPermission
+                          ? () =>
+                              handleFormChange({
+                                target: {
+                                  name: "aadharAttachment",
+                                  value: null,
+                                },
+                              })
+                          : undefined
                       }
                       isFileUploaded={true}
                       onView={() =>
@@ -351,13 +360,16 @@ export const ManageMember = ({
                       onView={() =>
                         window.open(state.formData.signatureAttachment.url)
                       }
-                      onDelete={() =>
-                        handleFormChange({
-                          target: {
-                            name: "signatureAttachment",
-                            value: null,
-                          },
-                        })
+                      onDelete={
+                        updateMemberPermission
+                          ? () =>
+                              handleFormChange({
+                                target: {
+                                  name: "signatureAttachment",
+                                  value: null,
+                                },
+                              })
+                          : undefined
                       }
                       isFileUploaded={true}
                     />
@@ -406,25 +418,29 @@ export const ManageMember = ({
           </DialogContent>
           <Divider />
           <DialogActions sx={{ py: 2 }}>
-            {["Draft", "Rejected"].includes(state.formData?.status?.name) && (
-              <LoadingButton
-                loading={state.isFormSubmitting}
-                variant="contained"
-                startIcon={<Telegram />}
-                onClick={handleSendMemberVerificationRequest}
-              >
-                Request to verify
-              </LoadingButton>
-            )}
-            {state.formData?.status?.name !== "In Review" && (
-              <LoadingButton
-                loading={state.isFormSubmitting}
-                type="submit"
-                variant="contained"
-              >
-                {state.selectedMemberId ? "Update" : "Create"}
-              </LoadingButton>
-            )}
+            <>
+              {["Draft", "Rejected"].includes(state.formData?.status?.name) &&
+                verifyMemberPermission && (
+                  <LoadingButton
+                    loading={state.isFormSubmitting}
+                    variant="contained"
+                    startIcon={<Telegram />}
+                    onClick={handleSendMemberVerificationRequest}
+                  >
+                    Request to verify
+                  </LoadingButton>
+                )}
+              {state.formData?.status?.name !== "In Review" &&
+                (createMemberPermission || updateMemberPermission) && (
+                  <LoadingButton
+                    loading={state.isFormSubmitting}
+                    type="submit"
+                    variant="contained"
+                  >
+                    {state.selectedMemberId ? "Update" : "Create"}
+                  </LoadingButton>
+                )}
+            </>
           </DialogActions>
         </Box>
       )}

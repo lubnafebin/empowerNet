@@ -14,6 +14,7 @@ import {
   Add,
   CancelRounded,
   CheckCircle,
+  DeleteOutlineRounded,
   InfoOutlined,
   Telegram,
   VisibilityOutlined,
@@ -45,6 +46,7 @@ export const MemberList = () => {
   const approveNhgPermission = checkPermission("nhgs.id.APPROVE");
   const createMemberPermission = checkPermission("member.id.POST");
   const updateNhgPermission = checkPermission("nhg.PUT");
+  const deleteMemberPermission = checkPermission("member.id.DELETE");
   const approveMemberPermission = checkPermission("allMembers.id.APPROVE");
 
   const { nhgId, wardId } = useParams();
@@ -76,7 +78,7 @@ export const MemberList = () => {
                 backgroundColor: "primary.main",
               }}
             >
-              {user.name[0]}
+              {user?.name?.[0]}
             </Avatar>
           );
         },
@@ -89,7 +91,7 @@ export const MemberList = () => {
           row: {
             original: { user },
           },
-        }) => <Typography fontSize="14px">{user.name}</Typography>,
+        }) => <Typography fontSize="14px">{user?.name}</Typography>,
         enableSorting: true,
         placement: "right",
       },
@@ -99,7 +101,7 @@ export const MemberList = () => {
           row: {
             original: { user },
           },
-        }) => <Typography fontSize="14px">{user.email}</Typography>,
+        }) => <Typography fontSize="14px">{user?.email}</Typography>,
         enableSorting: true,
         placement: "right",
       },
@@ -176,7 +178,7 @@ export const MemberList = () => {
         meta: { rowCellStyle: { width: 100 } },
         cell: ({
           row: {
-            original: { id, status },
+            original: { id, status, user },
           },
         }) => {
           const isVerified = status?.name === "Verified";
@@ -225,14 +227,21 @@ export const MemberList = () => {
                   <VisibilityOutlined fontSize="small" />
                 </IconButton>
               </Tooltip>
-              {/* <Tooltip title="Delete Member" arrow disableInteractive>
-                <IconButton
-                  size="small"
-                  onClick={() => toggleModel({ type: "deleteMember", id })}
-                >
-                  <DeleteOutlineRounded fontSize="small" />
-                </IconButton>
-              </Tooltip> */}
+              {deleteMemberPermission && (
+                <Tooltip title="Delete Member" arrow disableInteractive>
+                  <>
+                    <IconButton
+                      size="small"
+                      onClick={() =>
+                        toggleModel({ type: "deleteMember", id: user?.id })
+                      }
+                      disabled={!["Rejected", "Draft"].includes(status.name)}
+                    >
+                      <DeleteOutlineRounded fontSize="small" />
+                    </IconButton>
+                  </>
+                </Tooltip>
+              )}
             </Stack>
           );
         },
@@ -269,7 +278,6 @@ export const MemberList = () => {
         },
       ];
 
-  const isNhgRegistered = state.nhgDetails.status.name === "Registered";
   const isDraftMode = state.nhgDetails.status.name === "Draft";
   const isInReviewMode = state.nhgDetails.status.name === "In Review";
 
@@ -309,8 +317,7 @@ export const MemberList = () => {
               Approve/Reject
             </Button>
           )}
-          {state.verifyNhg &&
-            updateNhgPermission &&
+          {updateNhgPermission &&
             ["Draft", "Rejected"].includes(state.nhgDetails.status.name) && (
               <Button
                 variant="contained"
@@ -359,6 +366,7 @@ export const MemberList = () => {
           state,
         }}
       />
+
       <ManageMember
         {...{
           dialogValue: "?new-member",

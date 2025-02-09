@@ -377,13 +377,7 @@ export const NhgOverview = () => {
             </Typography>
             <Chip
               label={state.nhg.details?.status?.name}
-              color={
-                state.nhg.details?.status?.name === "Registered"
-                  ? "success"
-                  : state.nhg.details?.status?.name === "Draft"
-                    ? "primary"
-                    : "warning"
-              }
+              color={utilFunctions.getChipColor(state.nhg.details.status.name)}
             />
           </Stack>
         ) : (
