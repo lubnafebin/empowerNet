@@ -3,31 +3,53 @@ import { PageLayout, ReactTable, TabPanel } from "../../../shared";
 import { useImmer } from "use-immer";
 import { useParams } from "react-router-dom";
 import { getNhgDetailsApi } from "../apis/wardApis";
-import { utilFunctions } from "../../../utils";
+import { useUtilFunctions, utilFunctions } from "../../../utils";
 import {
   Avatar,
+  Button,
   Chip,
+  IconButton,
   Paper,
   Skeleton,
   Stack,
   Tab,
   Tabs,
+  Tooltip,
   Typography,
 } from "@mui/material";
 import dayjs from "dayjs";
 import { useMemberList } from "../../members/hooks";
 import { useReportList } from "../../reports/hooks";
+import {
+  ApproveOrRejectMember,
+  ApproveOrRejectNhg,
+  ManageMember,
+} from "../../members/components";
+import {
+  CancelRounded,
+  CheckCircle,
+  VisibilityOutlined,
+} from "@mui/icons-material";
 
 export const NhgOverview = () => {
   const { state } = useNhgOverview();
   const memberListState = useMemberList();
   const reportListState = useReportList();
+  const { checkPermission } = useUtilFunctions();
+  const approveNhgPermission = checkPermission("nhgs.id.APPROVE");
+  const approveMemberPermission = checkPermission("allMembers.id.APPROVE");
+
+  const isInReviewMode =
+    memberListState.state.nhgDetails.status.name === "In Review";
+  const isAdsRequestDisabled =
+    memberListState.state.memberList.options.length <= 4;
 
   const breadcrumbs = [
     { title: "Dashboard", href: "/ads" },
     { title: "Nhg List", href: "/ads/nhgs" },
     { title: state.nhg.details?.user?.name ?? "" },
   ];
+
   const [value, setValue] = React.useState(0);
 
   const handleChange = (event, newValue) => {
@@ -144,37 +166,77 @@ export const NhgOverview = () => {
         enableSorting: true,
         placement: "right",
       },
-      // {
-      //   header: "Action",
-      //   accessorKey: "action",
-      //   enableSorting: false,
-      //   placement: "right",
-      //   meta: { width: 150 },
-      //   cell: ({
-      //     row: {
-      //       original: { id },
-      //     },
-      //   }) => (
-      //     <Stack flexDirection="row">
-      //       <Tooltip title="Member Details" arrow disableInteractive>
-      //         <IconButton
-      //           size="small"
-      //           onClick={() => toggleModel({ type: "memberDetails", id })}
-      //         >
-      //           <VisibilityOutlined fontSize="small" />
-      //         </IconButton>
-      //       </Tooltip>
-      //       <Tooltip title="Delete Member" arrow disableInteractive>
-      //         <IconButton
-      //           size="small"
-      //           onClick={() => toggleModel({ type: "deleteMember", id })}
-      //         >
-      //           <DeleteOutlineRounded fontSize="small" />
-      //         </IconButton>
-      //       </Tooltip>
-      //     </Stack>
-      //   ),
-      // },
+      {
+        header: "Action",
+        accessorKey: "action",
+        enableSorting: false,
+        placement: "right",
+        meta: { width: 150 },
+        cell: ({
+          row: {
+            original: { id, status },
+          },
+        }) => {
+          const isVerified = status?.name === "Verified";
+          const isRejected = status?.name === "Rejected";
+          return (
+            <Stack flexDirection="row">
+              {approveMemberPermission && (
+                <Tooltip
+                  title={isVerified ? "Verified" : "Verify"}
+                  arrow
+                  disableInteractive
+                >
+                  {isVerified || isRejected ? (
+                    <IconButton size="small" disableFocusRipple disableRipple>
+                      {isVerified ? (
+                        <CheckCircle fontSize="small" color="success" />
+                      ) : (
+                        <CancelRounded fontSize="small" color="error" />
+                      )}
+                    </IconButton>
+                  ) : (
+                    <IconButton
+                      size="small"
+                      onClick={() =>
+                        memberListState.toggleModel({
+                          type: "approve-or-reject-member",
+                          id,
+                        })
+                      }
+                      sx={{
+                        visibility: ["Draft"].includes(status.name)
+                          ? "hidden"
+                          : "visible",
+                      }}
+                    >
+                      <CheckCircle fontSize="small" color="warning" />
+                    </IconButton>
+                  )}
+                </Tooltip>
+              )}
+              <Tooltip title="Member Details" arrow disableInteractive>
+                <IconButton
+                  size="small"
+                  onClick={() =>
+                    memberListState.toggleModel({ type: "memberDetails", id })
+                  }
+                >
+                  <VisibilityOutlined fontSize="small" />
+                </IconButton>
+              </Tooltip>
+              {/* <Tooltip title="Delete Member" arrow disableInteractive>
+              <IconButton
+                size="small"
+                onClick={() => toggleModel({ type: "deleteMember", id })}
+              >
+                <DeleteOutlineRounded fontSize="small" />
+              </IconButton>
+            </Tooltip> */}
+            </Stack>
+          );
+        },
+      },
     ],
     [],
   );
@@ -236,9 +298,7 @@ export const NhgOverview = () => {
           },
         }) => {
           return (
-            <Typography>
-              {verifiedByAds ? verifiedByAds.name : "-"}
-            </Typography>
+            <Typography>{verifiedByAds ? verifiedByAds.name : "-"}</Typography>
           );
         },
         enableSorting: true,
@@ -252,9 +312,7 @@ export const NhgOverview = () => {
           },
         }) => {
           return (
-            <Typography>
-              {verifiedByCds ? verifiedByCds.name : "-"}
-            </Typography>
+            <Typography>{verifiedByCds ? verifiedByCds.name : "-"}</Typography>
           );
         },
         enableSorting: true,
@@ -334,6 +392,20 @@ export const NhgOverview = () => {
       }
       breadcrumbs={breadcrumbs}
       p={0}
+      actionSection={
+        approveNhgPermission &&
+        isInReviewMode && (
+          <Button
+            variant="contained"
+            onClick={() =>
+              memberListState.toggleModel({ type: "approve/reject" })
+            }
+            disabled={isAdsRequestDisabled}
+          >
+            Approve/Reject
+          </Button>
+        )
+      }
     >
       <Tabs
         value={value}
@@ -360,6 +432,24 @@ export const NhgOverview = () => {
           loading={reportListState.state.reports.loading}
         />
       </TabPanel>
+      <ApproveOrRejectNhg
+        refetchNhgDetails={memberListState.refetchNhgDetails}
+      />
+      <ApproveOrRejectMember
+        refetchMemberDetails={memberListState.getMemberList}
+      />
+      <ManageMember
+        {...{
+          dialogValue: "?member",
+          formValidator: memberListState.formValidator,
+          handleFormChange: memberListState.handleFormChange,
+          handleFormSubmit: memberListState.handleFormSubmit,
+          handleResetFormData: memberListState.handleResetFormData,
+          handleSendMemberVerificationRequest:
+            memberListState.handleSendMemberVerificationRequest,
+          state: memberListState.state,
+        }}
+      />
     </PageLayout>
   );
 };
