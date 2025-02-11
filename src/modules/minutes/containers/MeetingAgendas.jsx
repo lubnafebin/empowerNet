@@ -1,13 +1,14 @@
 import React from "react";
 import { PageLayout, ReactTable } from "../../../shared";
 import { Button, IconButton, Stack, Tooltip, Typography } from "@mui/material";
-import { Add, ArrowForwardRounded } from "@mui/icons-material";
+import { ArrowForwardRounded } from "@mui/icons-material";
 import { useMeetingAgendas } from "../hooks";
 import { useNavigate } from "react-router-dom";
 
 export const MeetingAgendas = () => {
   const navigate = useNavigate();
-  const { state, toggleModel } = useMeetingAgendas();
+  const { state } = useMeetingAgendas();
+
   const columns = React.useMemo(
     () => [
       {
@@ -57,7 +58,7 @@ export const MeetingAgendas = () => {
     },
     {
       title: "Minutes",
-      href: "/minutes",
+      href: "/nhg/minutes",
     },
     {
       title: "Agendas",
@@ -71,10 +72,10 @@ export const MeetingAgendas = () => {
       actionSection={
         <Button
           variant="contained"
-          startIcon={<Add />}
-          //   onClick={() => toggleModel("newWard")}
+          loading={state.generateButtonLoading}
+          onClick={() => navigate("preview")}
         >
-          New Minute
+          Minute Preview
         </Button>
       }
     >

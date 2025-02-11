@@ -1,5 +1,5 @@
-import { toggleThemeService } from '../../utils';
-import { useAppStateContext } from './useAppStateContext';
+import { toggleThemeService } from "../../utils";
+import { useAppStateContext } from "./useAppStateContext";
 
 export const useDashboardLayout = () => {
   const { appState, setAppState } = useAppStateContext();
@@ -10,12 +10,12 @@ export const useDashboardLayout = () => {
     });
   };
 
-  const toggleTheme = () => {
-    const newMode = appState.theme === 'light' ? 'dark' : 'light';
+  const toggleTheme = (mode) => {
+    const newMode = mode ?? (appState.theme === "light" ? "dark" : "light");
     setAppState((draft) => {
       draft.theme = newMode;
     });
-    toggleThemeService({ theme: newMode, type: 'set' });
+    toggleThemeService({ theme: newMode, type: "set" });
   };
 
   const { theme, sidebarOpen } = appState;

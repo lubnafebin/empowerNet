@@ -175,13 +175,15 @@ export const NhgList = ({ roleType = "CDS" }) => {
       title={isCds ? state.wardDetails.name : "NHG List"}
       breadcrumbs={breadcrumbs}
       actionSection={
-        <Button
-          variant="contained"
-          startIcon={<ManageAccountsOutlined />}
-          onClick={() => toggleModel({ type: "manageAds" })}
-        >
-          Manage ADS
-        </Button>
+        isCds && (
+          <Button
+            variant="contained"
+            startIcon={<ManageAccountsOutlined />}
+            onClick={() => toggleModel({ type: "manageAds" })}
+          >
+            Manage ADS
+          </Button>
+        )
       }
     >
       <ReactTable

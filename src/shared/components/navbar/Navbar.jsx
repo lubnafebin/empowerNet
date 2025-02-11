@@ -1,12 +1,12 @@
 import LogoDark from "../../../assets/logo-dark.svg";
 import LogoLight from "../../../assets/logo-dark.svg";
 
-import { DarkMode, LightMode, Menu } from "@mui/icons-material";
+import { Menu } from "@mui/icons-material";
 import {
   Box,
+  Chip,
   IconButton,
   Stack,
-  ToggleButton,
   Toolbar,
   Typography,
   useMediaQuery,
@@ -14,19 +14,35 @@ import {
 } from "@mui/material";
 import { AccountPopover, AppBar } from ".";
 import PropsTypes from "prop-types";
+import { useLocation } from "react-router-dom";
+import { useAppStateContext } from "../../hooks";
 
 export const Navbar = ({
   theme: themeMode,
   isSidebarOpen,
-  toggleTheme,
   toggleSidebar,
   isDashboard = true,
   hideSidebar = false,
 }) => {
+  const {
+    appState: { authentication },
+  } = useAppStateContext();
   const theme = useTheme();
+  const location = useLocation();
   const isDarkModeEnabled = themeMode === "dark";
   const smallDevices = useMediaQuery(theme.breakpoints.down("md"));
   const visibleSidebar = isDashboard && !hideSidebar;
+  const route = location.pathname.split("/")[1];
+  const loggedUserRole = authentication.role.name;
+
+  const role =
+    route === "nhg" && loggedUserRole !== "NHG"
+      ? ["ADS", "President"].includes(loggedUserRole)
+        ? "President"
+        : "Secretary"
+      : route === ""
+        ? "Member"
+        : route;
 
   return (
     <AppBar position="fixed" open={isSidebarOpen} elevation={0} id="navbar">
@@ -40,6 +56,7 @@ export const Navbar = ({
             sx={{
               marginRight: smallDevices ? 0 : 5,
               visibility: smallDevices ? "visible" : "hidden",
+              border: 1,
             }}
           >
             <Menu />
@@ -64,17 +81,24 @@ export const Navbar = ({
           </Stack>
         )}
         <Box sx={{ flexGrow: 1 }} />
-        <Box sx={{ display: "flex", gap: 1 }}>
-          <ToggleButton
-            value={theme}
-            selected={isDarkModeEnabled}
-            size="small"
-            sx={{ borderRadius: 2 }}
-            onChange={toggleTheme}
+        <Stack
+          flexDirection="row"
+          gap="4px"
+          alignItems="center"
+          sx={{ display: smallDevices ? "none" : "flex" }}
+        >
+          <Typography
+            color="text.primary"
+            fontSize="small"
+            variant="caption"
+            textTransform="uppercase"
           >
-            {isDarkModeEnabled ? <LightMode color="warning" /> : <DarkMode />}
-          </ToggleButton>
+            Logged In As
+          </Typography>
+          <Chip color="success" label={role} />
+        </Stack>
 
+        <Box sx={{ display: "flex", gap: 1 }}>
           {isDashboard && <AccountPopover showAvatarOnly={smallDevices} />}
         </Box>
       </Toolbar>
@@ -84,7 +108,6 @@ export const Navbar = ({
 Navbar.propTypes = {
   theme: PropsTypes.oneOf(["dark", "light"]).isRequired,
   isSidebarOpen: PropsTypes.bool.isRequired,
-  toggleTheme: PropsTypes.func.isRequired,
   toggleSidebar: PropsTypes.func.isRequired,
   isDashboard: PropsTypes.bool,
   hideSidebar: PropsTypes.bool,

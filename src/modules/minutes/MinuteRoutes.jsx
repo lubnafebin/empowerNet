@@ -1,5 +1,11 @@
 import { Route, Routes } from "react-router-dom";
-import { MeetingAgendas, MinuteList, Transactions } from "./containers";
+import {
+  ManageAgenda,
+  MeetingAgendas,
+  MinuteList,
+  MinutePreview,
+  Transactions,
+} from "./containers";
 import {
   AuthProtectedRoute,
   DashboardLayout,
@@ -17,9 +23,11 @@ export const MinuteRoutes = () => {
         }
       >
         <Route index element={<MinuteList />} />
+
         <Route path="/:meetingId/agendas">
           <Route index element={<MeetingAgendas />} />
-          <Route path=":agendaId/agenda" element={<MeetingAgendas />} />
+          <Route path="preview" element={<MinutePreview />} />
+          <Route path=":agendaId/agenda" element={<ManageAgenda />} />
         </Route>
         <Route path="/:meetingId/transactions" element={<Transactions />} />
       </Route>

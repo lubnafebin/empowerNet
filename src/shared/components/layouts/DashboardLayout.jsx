@@ -1,7 +1,7 @@
-import { Box, Container } from '@mui/material';
-import { Navbar, Sidebar } from '..';
-import { useDashboardLayout } from '../../hooks';
-import { Outlet } from 'react-router-dom';
+import { Box, Container } from "@mui/material";
+import { Navbar, Sidebar } from "..";
+import { useDashboardLayout } from "../../hooks";
+import { Outlet } from "react-router-dom";
 
 export const DashboardLayout = () => {
   const { toggleSidebar, sidebarOpen, toggleTheme, theme } =
@@ -9,11 +9,15 @@ export const DashboardLayout = () => {
 
   return (
     <Box display="flex">
-    <Sidebar sidebarOpen={sidebarOpen} toggleSidebar={toggleSidebar} />
+      <Sidebar
+        sidebarOpen={sidebarOpen}
+        toggleSidebar={toggleSidebar}
+        toggleTheme={toggleTheme}
+      />
       <Container
         maxWidth="2xl"
         sx={{
-          marginTop: '64px',
+          marginTop: "64px",
         }}
         disableGutters
       >
@@ -21,7 +25,6 @@ export const DashboardLayout = () => {
           isSidebarOpen={sidebarOpen}
           toggleSidebar={toggleSidebar}
           theme={theme}
-          toggleTheme={toggleTheme}
         />
         <Outlet />
       </Container>

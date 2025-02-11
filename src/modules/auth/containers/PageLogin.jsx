@@ -18,11 +18,7 @@ export const PageLogin = () => {
   const isLargeDevice = useMediaQuery("(min-width:1024px)");
   const slogan = !isLargeDevice
     ? "Welcome to EmpowerNet. Digitalize your work."
-    : `Kudumbashree empowers women and families through self-help groups,
-            promoting sustainable livelihoods and community development. It
-            envisions a society where women actively participate in
-            decision-making, driving poverty eradication and enhancing the
-            quality of life for marginalized communities in Kerala.`;
+    : `Kudumbashree empowers women and families.`;
   const title = !isLargeDevice ? " Sign In" : CONSTANTS.appName;
   const {
     formValidator,
@@ -83,7 +79,6 @@ export const PageLogin = () => {
             style={{
               textDecoration: "none",
               fontSize: "14px",
-              color: "#051A34",
               fontWeight: "600",
               display: isLargeDevice ? "block" : "none",
             }}
@@ -109,7 +104,7 @@ export const PageLogin = () => {
           <InputControl
             name="email"
             label="Email"
-            placeholder="cdsemail@gmail.com"
+            placeholder="email@gmail.com"
             value={state.formData.email}
             onChange={handleFormChange}
             helperText={helperTexts.email}
@@ -133,7 +128,6 @@ export const PageLogin = () => {
               style={{
                 fontSize: "14px",
                 textDecoration: "none",
-                color: "#051A34",
               }}
             >
               Forgot Password?

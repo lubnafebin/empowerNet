@@ -31,8 +31,8 @@ export const updateMemberApi = async ({ params, memberId }) => {
   return response.data;
 };
 
-export const deleteMemberApi = async ({ memberId }) => {
-  const response = await API.delete(`cds/ward/${memberId}/delete`);
+export const deleteMemberApi = async ({ userId }) => {
+  const response = await API.delete(`nhg/member/${userId}/delete`);
   return response.data;
 };
 
