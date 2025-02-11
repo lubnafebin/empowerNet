@@ -1,6 +1,6 @@
 import React from "react";
 import { PageLayout, ReactTable } from "../../../shared";
-import { IconButton, Stack, Tooltip, Typography } from "@mui/material";
+import { Button, IconButton, Stack, Tooltip, Typography } from "@mui/material";
 import { ArrowForwardRounded } from "@mui/icons-material";
 import { useMeetingAgendas } from "../hooks";
 import { useNavigate } from "react-router-dom";
@@ -66,7 +66,19 @@ export const MeetingAgendas = () => {
   ];
 
   return (
-    <PageLayout title="Agendas" breadcrumbs={breadcrumbs}>
+    <PageLayout
+      title="Agendas"
+      breadcrumbs={breadcrumbs}
+      actionSection={
+        <Button
+          variant="contained"
+          loading={state.generateButtonLoading}
+          onClick={() => navigate("preview")}
+        >
+          Minute Preview
+        </Button>
+      }
+    >
       <ReactTable
         columns={columns}
         data={state.agendaList.options}

@@ -47,6 +47,13 @@ export const updateAgendaApi = async ({ meetingId, agendaId, note }) => {
   return response.data;
 };
 
+export const generateMinuteReportApi = async ({ meetingId }) => {
+  const response = await API.get(`nhg/meetings/${meetingId}/report`, {
+    responseType: "blob",
+  });
+  return response;
+};
+
 // Transactions
 export const getMeetingTransactionListApi = async (meetingId) => {
   const response = await API.get(`nhg/meeting/${meetingId}/transactions`);
