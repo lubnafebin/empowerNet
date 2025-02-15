@@ -81,7 +81,7 @@ export const Transactions = () => {
           row: {
             original: { createdBy },
           },
-        }) => <Typography fontWeight={14}>{createdBy?.name ?? "-"}</Typography>,
+        }) => <Typography fontSize={14}>{createdBy?.name ?? "-"}</Typography>,
         enableSorting: true,
       },
       {
