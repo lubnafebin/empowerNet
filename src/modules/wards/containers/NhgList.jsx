@@ -77,18 +77,6 @@ export const NhgList = ({ roleType = "CDS" }) => {
         placement: "right",
       },
       {
-        header: "Contact No",
-        accessorKey: "contactNo",
-        enableSorting: true,
-        placement: "right",
-      },
-      {
-        header: "Total Members",
-        accessorKey: "totalMembers",
-        enableSorting: true,
-        placement: "right",
-      },
-      {
         header: "President",
         cell: ({
           row: {

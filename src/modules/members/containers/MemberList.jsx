@@ -157,15 +157,7 @@ export const MemberList = () => {
           return (
             <Chip
               label={status.name}
-              color={
-                status.name === "Draft"
-                  ? "primary"
-                  : status.name === "In Review"
-                    ? "warning"
-                    : status.name === "Rejected"
-                      ? "error"
-                      : "success"
-              }
+              color={utilFunctions.getChipColor(status.name)}
             />
           );
         },
