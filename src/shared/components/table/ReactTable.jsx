@@ -47,6 +47,7 @@ export const ReactTable = ({
   subRowsKey = "subRows",
   getSelectedRows = null,
   defaultSelectedRows = null,
+  actionSection = null,
 }) => {
   const {
     appState: { sidebarOpen },
@@ -145,18 +146,33 @@ export const ReactTable = ({
           }
         >
           {typeof title === "string" ? (
-            <Typography component="h1" variant="h5" fontWeight={500}>
+            <Typography
+              textTransform="capitalize"
+              component="h1"
+              variant="h5"
+              fontWeight={500}
+            >
               {title}
             </Typography>
           ) : (
             title
           )}
-          {!disableDefaultSearch && (
+          {!disableDefaultSearch && actionSection === null && (
             <DebouncedSearch
               fullWidth={searchFullWidth ?? !title}
               onChange={handleTableSearch}
               value={globalFilter}
             />
+          )}
+          {actionSection && !disableDefaultSearch && (
+            <Stack flexDirection="row" gap="12px">
+              <DebouncedSearch
+                fullWidth={searchFullWidth ?? !title}
+                onChange={handleTableSearch}
+                value={globalFilter}
+              />
+              {actionSection}
+            </Stack>
           )}
         </Stack>
       )}
@@ -345,4 +361,5 @@ ReactTable.propTypes = {
   defaultSelectedRows: propTypes.object,
   hideHeader: propTypes.bool,
   searchFullWidth: propTypes.bool,
+  actionSection: propTypes.node,
 };

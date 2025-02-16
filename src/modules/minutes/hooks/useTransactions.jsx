@@ -16,7 +16,9 @@ import { utilFunctions } from "../../../utils";
 import dayjs from "dayjs";
 
 export const useTransactions = () => {
-  const [_, setForceUpdate] = React.useState(0);
+  const [, setForceUpdate] = React.useState(0);
+  const [tab, setTab] = useImmer(0);
+
   const [state, setState] = useImmer({
     isFormLoading: true,
     isFormSubmitting: false,
@@ -94,7 +96,7 @@ export const useTransactions = () => {
   const getMeetingTransactionList = async (meetingId) => {
     triggerTableLoading(true);
     try {
-      const response = await getMeetingTransactionListApi(meetingId);
+      const response = await getMeetingTransactionListApi({ meetingId });
 
       const { success, message, data } = response;
       if (success) {
@@ -285,15 +287,18 @@ export const useTransactions = () => {
     });
     setForceUpdate(0);
   };
+  const handleTabChange = (event, newTab) => setTab(newTab);
 
   React.useEffect(() => {
-    getMeetingTransactionList(meetingId);
-    getMeetingParticipants(meetingId);
+    // getMeetingTransactionList(meetingId);
+    // getMeetingParticipants(meetingId);
   }, []);
 
   return {
+    tab,
     state,
     formValidator,
+    handleTabChange,
     handleFormSubmit,
     toggleModel,
     handleFormChange,
