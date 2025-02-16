@@ -55,10 +55,21 @@ export const generateMinuteReportApi = async ({ meetingId }) => {
 };
 
 // Transactions
-export const getMeetingTransactionListApi = async (meetingId) => {
-  const response = await API.get(`nhg/meeting/${meetingId}/transactions`);
+export const getMeetingTransactionListApi = async ({
+  meetingId,
+  transactionType,
+}) => {
+  const response = await API.get(`nhg/meeting/${meetingId}/transactions`, {
+    params: { transactionType },
+  });
   return response.data;
 };
+
+export const getMeetingLoanListApi = async ({ meetingId }) => {
+  const response = await API.get(`nhg/meeting/${meetingId}/loans`);
+  return response.data;
+};
+
 export const getMeetingParticipantsApi = async (meetingId) => {
   const response = await API.get(`nhg/meeting/${meetingId}/participants`);
   return response.data;
@@ -67,6 +78,14 @@ export const getMeetingParticipantsApi = async (meetingId) => {
 export const createNewTransactionApi = async ({ params, meetingId }) => {
   const response = await API.post(
     `nhg/meeting/${meetingId}/transaction/create`,
+    params,
+  );
+  return response.data;
+};
+
+export const createNewLoanApi = async ({ params, meetingId }) => {
+  const response = await API.post(
+    `nhg/meeting/${meetingId}/loan/create`,
     params,
   );
   return response.data;

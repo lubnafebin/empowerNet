@@ -1,7 +1,7 @@
 import React from "react";
 import { useImmer } from "use-immer";
 import { useAppStateContext } from "../../../shared";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import SimpleReactValidator from "simple-react-validator";
 import { doSignUpApi } from "../apis";
 import { enqueueSnackbar } from "notistack";
@@ -175,7 +175,6 @@ export const usePageSignUp = () => {
 
   React.useEffect(() => {
     getCds();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return {
