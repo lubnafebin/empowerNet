@@ -1,4 +1,9 @@
-import { ArrowDropDown, Logout, Repeat } from "@mui/icons-material";
+import {
+  ArrowDropDown,
+  Logout,
+  ManageAccounts,
+  Repeat,
+} from "@mui/icons-material";
 import {
   Avatar,
   Divider,
@@ -166,6 +171,18 @@ export const AccountPopover = ({ showAvatarOnly }) => {
             </MenuItem>
           );
         })}
+        <MenuItem
+          sx={{ borderRadius: 0, mb: 1 }}
+          onClick={() => {
+            handleCloseUserMenu();
+            navigate("profile");
+          }}
+        >
+          <ListItemIcon>
+            <ManageAccounts />
+          </ListItemIcon>
+          <Typography>Manage Profile</Typography>
+        </MenuItem>
         <MenuItem
           sx={{ borderRadius: 0, mb: 1 }}
           onClick={() => {

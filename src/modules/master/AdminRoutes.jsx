@@ -1,7 +1,7 @@
 import { Route, Routes } from "react-router-dom";
 
 import { WardRoutes } from "../wards";
-import { Dashboard, DashboardRoutes } from "../dashboard";
+import { Dashboard } from "../dashboard";
 import {
   AuthProtectedRoute,
   DashboardLayout,
@@ -10,6 +10,7 @@ import {
   RoleProtectedRoute,
 } from "../../shared";
 import { AllReports, ReportDetails } from "../reports/containers";
+import { PageManageProfile } from "../auth";
 
 export const AdminRoutes = () => {
   return (
@@ -33,6 +34,7 @@ export const AdminRoutes = () => {
             <Route index element={<AllReports />} />
             <Route path=":reportId" element={<ReportDetails />} />
           </Route>
+          <Route path="/profile" element={<PageManageProfile />} />
         </Route>
       </Route>
 

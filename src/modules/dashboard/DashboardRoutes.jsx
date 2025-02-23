@@ -5,27 +5,8 @@ import {
   DashboardLayout,
   PageNotFound,
 } from "../../shared";
-// import { ManageUserDetails } from "../profitune";
-// import { useUtilFunctions } from "../../utils";
-// import { ManageCoachDetails } from "../coach";
 
-// eslint-disable-next-line react/prop-types
 export const DashboardRoutes = () => {
-  // const { getLoggedInUser } = useUtilFunctions();
-  // const user = getLoggedInUser();
-  // const profileElement =
-  //   user.role === "CDS"
-  //     ? {
-  //         path: "profile/details/:userId",
-  //         element: <ManageUserDetails />,
-  //       }
-  //     : user.role === "NHG"
-  //       ? {
-  //           path: "profile/details/:coachId",
-  //           element: <ManageCoachDetails />,
-  //         }
-  //       : null;
-
   return (
     <Routes>
       <Route
