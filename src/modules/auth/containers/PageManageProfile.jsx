@@ -4,14 +4,14 @@ import {
   LoadingButton,
   PageLayout,
 } from "../../../shared";
-import { Button, Container, Paper, Stack } from "@mui/material";
+import { Container, Paper, Stack } from "@mui/material";
 import { ProfileCard } from "../components";
 import { globalGap, logoutServices, utilFunctions } from "../../../utils";
 import { useImmer } from "use-immer";
 import SimpleReactValidator from "simple-react-validator";
 import React from "react";
 import { enqueueSnackbar } from "notistack";
-import { updatePasswordApi } from "../apis";
+import { getUserDetailsApi, updatePasswordApi } from "../apis";
 
 export const PageManageProfile = () => {
   const { formValidator, state, handleFormChange, handleFormSubmit } =
@@ -53,11 +53,11 @@ export const PageManageProfile = () => {
           }}
         >
           <ProfileCard
-            avatarTitle="Ss"
-            email="local@gmail.com"
-            mobile="7306292239"
-            name="Mubashir angathil"
-            nhg="nanma"
+            avatarTitle={state.userDetails.name.charAt(0)}
+            email={state.userDetails.email}
+            mobile={state.userDetails.contactNo}
+            name={state.userDetails.name}
+            joinedAt={state.userDetails.joinedAt}
           />
         </Paper>
         <FormCardLayout
@@ -67,7 +67,12 @@ export const PageManageProfile = () => {
             flexDirection: { md: "row", xs: "column", alignItems: "center" },
           }}
         >
-          <Stack width='100%' gap='14px' component="form" onSubmit={handleFormSubmit}>
+          <Stack
+            width="100%"
+            gap="14px"
+            component="form"
+            onSubmit={handleFormSubmit}
+          >
             <InputControl
               label="Current Password"
               size="small"
@@ -95,7 +100,7 @@ export const PageManageProfile = () => {
               error={!!helperText.confirmPassword}
               onChange={handleFormChange}
             />
-            <Stack ml='auto'>
+            <Stack ml="auto">
               <LoadingButton loading={state.buttonLoading} variant="contained">
                 Update
               </LoadingButton>
@@ -110,6 +115,7 @@ export const PageManageProfile = () => {
 const usePageManageProfile = () => {
   const [, setForceUpdate] = React.useState(0);
   const [state, setState] = useImmer({
+    userDetails: { name: "", email: "", contactNo: "", joinedAt: "" },
     formData: {
       currentPassword: "",
       newPassword: "",
@@ -138,6 +144,26 @@ const usePageManageProfile = () => {
       },
     }),
   );
+
+  const getUserDetails = async () => {
+    try {
+      const response = await getUserDetailsApi();
+      const { success, message, data } = response;
+      if (success) {
+        setState((draft) => {
+          draft.userDetails = data;
+        });
+      } else {
+        throw {
+          response: {
+            data: { message },
+          },
+        };
+      }
+    } catch (exception) {
+      utilFunctions.displayError(exception);
+    }
+  };
 
   const updatePassword = async (params) => {
     triggerButtonLoading(true);
@@ -192,5 +218,8 @@ const usePageManageProfile = () => {
     }
   };
 
+  React.useEffect(() => {
+    getUserDetails();
+  }, []);
   return { state, formValidator, handleFormChange, handleFormSubmit };
 };

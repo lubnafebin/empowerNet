@@ -1,12 +1,12 @@
 import PropTypes from "prop-types";
-import { Avatar, Box, Stack, Typography } from "@mui/material";
-import { Email, Group, Phone } from "@mui/icons-material";
+import { Avatar, Stack, Typography } from "@mui/material";
+import { CalendarMonth, Email, Group, Phone } from "@mui/icons-material";
 
 export const ProfileCard = ({
   avatarTitle,
   name,
   email,
-  nhg,
+  joinedAt,
   mobile,
   headerSection,
 }) => {
@@ -51,7 +51,7 @@ export const ProfileCard = ({
               gap="8px"
               alignItems="center"
             >
-              <Email />
+              <Email fontSize="small" />
               {email}
             </Typography>
 
@@ -61,8 +61,8 @@ export const ProfileCard = ({
               gap="8px"
               alignItems="center"
             >
-              <Group />
-              {nhg}
+              <Phone fontSize="small" />
+              {mobile}
             </Typography>
 
             <Typography
@@ -71,9 +71,10 @@ export const ProfileCard = ({
               gap="8px"
               alignItems="center"
             >
-              <Phone />
-              {mobile}
+              <CalendarMonth fontSize="small" />
+              {joinedAt}
             </Typography>
+
           </Stack>
         </Stack>
       </Stack>
@@ -86,7 +87,7 @@ ProfileCard.propTypes = {
   avatarTitle: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
   email: PropTypes.string.isRequired,
-  nhg: PropTypes.string.isRequired,
+  joinedAt: PropTypes.string.isRequired,
   mobile: PropTypes.string.isRequired,
   headerSection: PropTypes.node,
 };

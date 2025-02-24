@@ -21,3 +21,8 @@ export const doSignInApi = async (data) => {
 export const updatePasswordApi = async (params) => {
   return await API.put("/password/update", params);
 };
+
+export const getUserDetailsApi = async () => {
+  const response = await API.get(`/data/user/details`);
+  return response.data;
+};
