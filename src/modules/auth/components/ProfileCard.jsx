@@ -1,6 +1,6 @@
 import PropTypes from "prop-types";
 import { Avatar, Stack, Typography } from "@mui/material";
-import { CalendarMonth, Email, Group, Phone } from "@mui/icons-material";
+import { CalendarMonth, Email, Phone } from "@mui/icons-material";
 
 export const ProfileCard = ({
   avatarTitle,
@@ -74,7 +74,6 @@ export const ProfileCard = ({
               <CalendarMonth fontSize="small" />
               {joinedAt}
             </Typography>
-
           </Stack>
         </Stack>
       </Stack>
