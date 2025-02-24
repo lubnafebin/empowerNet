@@ -104,6 +104,7 @@ export const PageLogin = () => {
           <InputControl
             name="email"
             label="Email"
+            size='small'
             placeholder="email@gmail.com"
             value={state.formData.email}
             onChange={handleFormChange}
@@ -114,6 +115,7 @@ export const PageLogin = () => {
             name="password"
             label="Password"
             type="password"
+            size='small'
             placeholder="Enter your password"
             showPassword={state.showPassword}
             value={state.formData.password}
