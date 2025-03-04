@@ -19,7 +19,8 @@ export const doSignInApi = async (data) => {
  * @returns {Promise<Object>} The response from the API.
  */
 export const updatePasswordApi = async (params) => {
-  return await API.put("/password/update", params);
+  const response = await API.put("/password/update", params);
+  return response.data;
 };
 
 export const getUserDetailsApi = async () => {

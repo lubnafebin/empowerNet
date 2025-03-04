@@ -6,7 +6,7 @@ import {
 } from "../../../shared";
 import { Container, Paper, Stack } from "@mui/material";
 import { ProfileCard } from "../components";
-import { globalGap, logoutServices, utilFunctions } from "../../../utils";
+import { globalGap, useUtilFunctions, utilFunctions } from "../../../utils";
 import { useImmer } from "use-immer";
 import SimpleReactValidator from "simple-react-validator";
 import React from "react";
@@ -123,6 +123,7 @@ const usePageManageProfile = () => {
     },
     buttonLoading: false,
   });
+  const { logout } = useUtilFunctions();
 
   const formValidator = React.useRef(
     new SimpleReactValidator({
@@ -175,7 +176,7 @@ const usePageManageProfile = () => {
           message,
           variant: "success",
         });
-        logoutServices();
+        logout();
       } else {
         throw {
           response: {
