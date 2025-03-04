@@ -40,7 +40,7 @@ export const Navbar = ({
       ? ["ADS", "President"].includes(loggedUserRole)
         ? "President"
         : "Secretary"
-      : ["", "profile"].includes(route)
+      : ["", "profile", "passbook"].includes(route)
         ? "Member"
         : route;
 
