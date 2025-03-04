@@ -55,15 +55,17 @@ export const ProfileCard = ({
               {email}
             </Typography>
 
-            <Typography
-              fontSize="14px"
-              display="flex"
-              gap="8px"
-              alignItems="center"
-            >
-              <Phone fontSize="small" />
-              {mobile}
-            </Typography>
+            {mobile && (
+              <Typography
+                fontSize="14px"
+                display="flex"
+                gap="8px"
+                alignItems="center"
+              >
+                <Phone fontSize="small" />
+                {mobile}
+              </Typography>
+            )}
 
             <Typography
               fontSize="14px"
@@ -72,7 +74,7 @@ export const ProfileCard = ({
               alignItems="center"
             >
               <CalendarMonth fontSize="small" />
-              {joinedAt}
+              {`Joined At ${joinedAt}`}
             </Typography>
           </Stack>
         </Stack>
@@ -87,6 +89,6 @@ ProfileCard.propTypes = {
   name: PropTypes.string.isRequired,
   email: PropTypes.string.isRequired,
   joinedAt: PropTypes.string.isRequired,
-  mobile: PropTypes.string.isRequired,
+  mobile: PropTypes.string,
   headerSection: PropTypes.node,
 };

@@ -5,6 +5,7 @@ import {
   DashboardLayout,
   PageNotFound,
 } from "../../shared";
+import { PageManageProfile } from "../auth/containers";
 
 export const DashboardRoutes = () => {
   return (
@@ -17,6 +18,7 @@ export const DashboardRoutes = () => {
         }
       >
         <Route index element={<Dashboard />} />
+        <Route path="/profile" element={<PageManageProfile />} />
       </Route>
       <Route path="*" element={<PageNotFound />} />
     </Routes>

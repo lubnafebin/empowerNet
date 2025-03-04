@@ -44,6 +44,8 @@ export const AccountPopover = ({ showAvatarOnly }) => {
   };
 
   const user = getLoggedInUser();
+  const pathArray = location.pathname.split("/");
+  const isProfileSelected = pathArray[pathArray.length - 1] === "profile";
 
   React.useEffect(() => {
     switch (user.role?.name) {
@@ -174,9 +176,13 @@ export const AccountPopover = ({ showAvatarOnly }) => {
         <MenuItem
           sx={{ borderRadius: 0, mb: 1 }}
           onClick={() => {
+            const url = ["CDS", "NHG"].includes(user.role.name)
+              ? "profile"
+              : "/profile";
             handleCloseUserMenu();
-            navigate("profile");
+            navigate(url);
           }}
+          selected={isProfileSelected}
         >
           <ListItemIcon>
             <ManageAccounts />

@@ -82,24 +82,26 @@ export const PageManageProfile = () => {
               error={!!helperText.currentPassword}
               onChange={handleFormChange}
             />
-            <InputControl
-              label="New Password"
-              size="small"
-              name="newPassword"
-              value={state.formData.newPassword}
-              helperText={helperText.newPassword}
-              error={!!helperText.newPassword}
-              onChange={handleFormChange}
-            />
-            <InputControl
-              label="Confirm Password"
-              size="small"
-              name="confirmPassword"
-              value={state.formData.confirmPassword}
-              helperText={helperText.confirmPassword}
-              error={!!helperText.confirmPassword}
-              onChange={handleFormChange}
-            />
+            <Stack flexDirection="row" gap="14px">
+              <InputControl
+                label="New Password"
+                size="small"
+                name="newPassword"
+                value={state.formData.newPassword}
+                helperText={helperText.newPassword}
+                error={!!helperText.newPassword}
+                onChange={handleFormChange}
+              />
+              <InputControl
+                label="Confirm Password"
+                size="small"
+                name="confirmPassword"
+                value={state.formData.confirmPassword}
+                helperText={helperText.confirmPassword}
+                error={!!helperText.confirmPassword}
+                onChange={handleFormChange}
+              />
+            </Stack>
             <Stack ml="auto">
               <LoadingButton loading={state.buttonLoading} variant="contained">
                 Update
