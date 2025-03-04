@@ -454,6 +454,14 @@ const renderChildItem = ({
 // #006BD6
 const drawerItems = [
   {
+    href: "/passbook",
+    title: "My Passbook",
+    lightModeIcon: MembersLightModeIcon,
+    darkModeIcon: MembersDarkModeIcon,
+    selectedIcon: MembersSelectedIcon,
+    permission: "dashboard.GET",
+  },
+  {
     href: "/cds/wards",
     title: "Wards",
     lightModeIcon: WardsLightModeIcon,

@@ -73,7 +73,7 @@ export const InputControl = React.forwardRef(function InputControl(
       break;
     case "password":
       inputElement = (
-        <FormControl fullWidth variant="outlined">
+        <FormControl fullWidth variant="outlined" size={rest?.size}>
           <InputLabel
             id={label + "-input"}
             htmlFor={rest?.id || rest?.name}

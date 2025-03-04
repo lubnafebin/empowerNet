@@ -4,28 +4,12 @@ import {
   AuthProtectedRoute,
   DashboardLayout,
   PageNotFound,
+  RoleProtectedRoute,
 } from "../../shared";
-// import { ManageUserDetails } from "../profitune";
-// import { useUtilFunctions } from "../../utils";
-// import { ManageCoachDetails } from "../coach";
+import { PageManageProfile } from "../auth/containers";
+import { PageMyPassbook } from "../members/containers";
 
-// eslint-disable-next-line react/prop-types
 export const DashboardRoutes = () => {
-  // const { getLoggedInUser } = useUtilFunctions();
-  // const user = getLoggedInUser();
-  // const profileElement =
-  //   user.role === "CDS"
-  //     ? {
-  //         path: "profile/details/:userId",
-  //         element: <ManageUserDetails />,
-  //       }
-  //     : user.role === "NHG"
-  //       ? {
-  //           path: "profile/details/:coachId",
-  //           element: <ManageCoachDetails />,
-  //         }
-  //       : null;
-
   return (
     <Routes>
       <Route
@@ -36,6 +20,16 @@ export const DashboardRoutes = () => {
         }
       >
         <Route index element={<Dashboard />} />
+        <Route path="/profile" element={<PageManageProfile />} />
+        <Route
+          element={
+            <RoleProtectedRoute
+              roles={["Member", "ADS", "President", "Secretary"]}
+            />
+          }
+        >
+          <Route path="/passbook" element={<PageMyPassbook />} />
+        </Route>
       </Route>
       <Route path="*" element={<PageNotFound />} />
     </Routes>

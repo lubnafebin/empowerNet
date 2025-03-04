@@ -1,4 +1,9 @@
-import { ArrowDropDown, Logout, Repeat } from "@mui/icons-material";
+import {
+  ArrowDropDown,
+  Logout,
+  ManageAccounts,
+  Repeat,
+} from "@mui/icons-material";
 import {
   Avatar,
   Divider,
@@ -39,6 +44,8 @@ export const AccountPopover = ({ showAvatarOnly }) => {
   };
 
   const user = getLoggedInUser();
+  const pathArray = location.pathname.split("/");
+  const isProfileSelected = pathArray[pathArray.length - 1] === "profile";
 
   React.useEffect(() => {
     switch (user.role?.name) {
@@ -166,6 +173,22 @@ export const AccountPopover = ({ showAvatarOnly }) => {
             </MenuItem>
           );
         })}
+        <MenuItem
+          sx={{ borderRadius: 0, mb: 1 }}
+          onClick={() => {
+            const url = ["CDS", "NHG"].includes(user.role.name)
+              ? "profile"
+              : "/profile";
+            handleCloseUserMenu();
+            navigate(url);
+          }}
+          selected={isProfileSelected}
+        >
+          <ListItemIcon>
+            <ManageAccounts />
+          </ListItemIcon>
+          <Typography>Manage Profile</Typography>
+        </MenuItem>
         <MenuItem
           sx={{ borderRadius: 0, mb: 1 }}
           onClick={() => {
