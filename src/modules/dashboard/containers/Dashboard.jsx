@@ -2,13 +2,18 @@ import { Box, Skeleton, Stack } from "@mui/material";
 import { PageLayout } from "../../../shared";
 import { useDashboard } from "../hooks";
 import { CountCard } from "../components";
+import { Passbook } from "../../members/containers";
+import { useLocation } from "react-router-dom";
 
 export const Dashboard = () => {
+  const location = useLocation();
   const { state } = useDashboard();
   const { dashboardCards, contentLoading } = state;
 
+  const isMember = location.pathname === "/";
+
   return (
-    <PageLayout title="Dashboard" >
+    <PageLayout title="Dashboard">
       <Stack flexDirection="row" gap={{ xs: 1, md: 3 }} flexWrap="wrap">
         {contentLoading
           ? dashboardCards.map((card) => {
@@ -27,6 +32,12 @@ export const Dashboard = () => {
               return <CountCard key={card.accessor} {...card} />;
             })}
       </Stack>
+
+      {isMember && (
+        <Stack mt={3}>
+          <Passbook />
+        </Stack>
+      )}
     </PageLayout>
   );
 };

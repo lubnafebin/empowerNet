@@ -73,7 +73,15 @@ export const ReportDetails = () => {
     },
     {
       title: "Monthly Reports",
-      href: "/reports",
+      href:
+        role?.name === "NHG" ||
+        (role?.name === "ADS" && location.pathname.includes("/nhg"))
+          ? "/nhg/reports"
+          : role?.name === "CDS"
+            ? "/cds/report/all"
+            : role?.name === "ADS" && location.pathname.includes("/ads")
+              ? "/ads/report/all"
+              : "",
     },
     {
       title,
