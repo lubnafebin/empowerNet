@@ -66,3 +66,8 @@ export const approveOrRejectMemberApi = async (params) => {
   });
   return response.data;
 };
+
+export const getMemberTransactionsApi = async () => {
+  const response = await API.get(`nhg/member/transactions`);
+  return response.data;
+};
