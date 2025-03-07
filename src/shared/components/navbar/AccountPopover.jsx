@@ -176,9 +176,12 @@ export const AccountPopover = ({ showAvatarOnly }) => {
         <MenuItem
           sx={{ borderRadius: 0, mb: 1 }}
           onClick={() => {
-            const url = ["CDS", "NHG"].includes(user.role.name)
-              ? "profile"
-              : "/profile";
+            const url =
+              user.role.name === "NHG"
+                ? "/nhg/profile"
+                : user.role.name === "CDS"
+                  ? "/cds/profile"
+                  : "/profile";
             handleCloseUserMenu();
             navigate(url);
           }}
