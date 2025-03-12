@@ -3,6 +3,7 @@ import { enqueueSnackbar } from "notistack";
 
 export const utilFunctions = {
   formatDateAndTime: (date) => dayjs(date).format("ddd DD, MMM YYYY, hh:mm A"),
+  formatTime: (date) => dayjs(date).format("hh:mm A"),
   formatDate: (date) => dayjs(date).format("ddd DD, MMM YYYY"),
   displayError: (exception) => {
     const { message, error } = exception.response.data.data;
