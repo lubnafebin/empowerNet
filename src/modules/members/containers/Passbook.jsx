@@ -13,11 +13,25 @@ export const Passbook = () => {
         header: "Date",
         accessorKey: "transactionDate",
         enableSorting: true,
+        cell: ({
+          row: {
+            original: { transactionDate },
+          },
+        }) => {
+          return utilFunctions.formatDate(transactionDate);
+        },
       },
       {
         header: "Time",
         accessorKey: "transactionTime",
         enableSorting: true,
+        cell: ({
+          row: {
+            original: { transactionTime },
+          },
+        }) => {
+          return utilFunctions.formatTime(transactionTime);
+        },
       },
       {
         header: "Transaction Type",
@@ -38,11 +52,9 @@ export const Passbook = () => {
 
           return (
             <Typography
-              color={
-                credit ? "success" : debit ? "error" : "text.primary"
-              }
+              color={credit ? "success" : debit ? "error" : "text.primary"}
             >
-              {credit ? `+₦${amount}` : debit ? `-₦${amount}` : `₦${amount}`}
+              {credit ? `₹${amount}` : debit ? `₹${amount}` : `₹${amount}`}
             </Typography>
           );
         },
@@ -60,7 +72,7 @@ export const Passbook = () => {
 
           return (
             <Typography color="success">
-              {depositOrWithdraw ? currentBalance : "-"}
+              {depositOrWithdraw ? `₹${currentBalance}` : "-"}
             </Typography>
           );
         },
@@ -74,11 +86,29 @@ export const Passbook = () => {
             original: { type, currentBalance },
           },
         }) => {
-          const refundOrLoan = ["Refund", "Loan"].includes(type);
+          const refundOrLoan = ["Refund"].includes(type);
 
           return (
             <Typography color="success">
-              {refundOrLoan ? currentBalance : "-"}
+              {refundOrLoan ? `₹${currentBalance}` : "-"}
+            </Typography>
+          );
+        },
+      },
+      {
+        header: "Total Member Fee",
+        accessorKey: "currentBalance",
+        enableSorting: true,
+        cell: ({
+          row: {
+            original: { type, currentBalance },
+          },
+        }) => {
+          const memberFee = ["Member Fee"].includes(type);
+
+          return (
+            <Typography color="success">
+              {memberFee ? `₹${currentBalance}` : "-"}
             </Typography>
           );
         },

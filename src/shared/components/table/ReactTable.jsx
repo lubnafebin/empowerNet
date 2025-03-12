@@ -107,8 +107,8 @@ export const ReactTable = ({
   };
 
   const totalRows = getRowCount();
-  const filteredRows =
-    totalRows && totalRows < defaultPageSize ? defaultPageSize : totalRows;
+  const filteredRows = totalRows;
+  // totalRows && totalRows < defaultPageSize ? defaultPageSize : totalRows;
 
   React.useLayoutEffect(() => {
     if (defaultSelectedRows) {
@@ -311,11 +311,8 @@ export const ReactTable = ({
       {disablePagination ? null : (
         <TablePagination
           rowsPerPageOptions={[
-            5,
-            10,
-            25,
-            50,
-            { label: "All", value: data.length },
+            5, 10, 25, 50,
+            // { label: "All", value: data.length },
           ]}
           component="div"
           count={filteredRows}
